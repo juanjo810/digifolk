@@ -10,11 +10,12 @@
                         <v-card-text>
                             <v-row>
                                 <v-col cols="6">
-                                    <v-text-field v-model="this.id" label="Identifier" ></v-text-field>
+                                    <v-text-field v-model="this.id" label="Identifier" readonly></v-text-field>
                                 </v-col>
 
                                 <v-col cols="6">
-                                    <v-text-field v-model="this.title" label="Title" :rules="rules"></v-text-field>
+                                    <v-text-field v-model="this.title" label="Title" :rules="rules" hint="Use ' : ', i.e. space colon space, to separate title and subtitle
+Use ' = ' i.e. space equals space, where a title is available in different languages" persistent-hint></v-text-field>
                                 </v-col>
 
                                 <v-col cols="6">

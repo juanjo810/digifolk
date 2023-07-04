@@ -1,12 +1,12 @@
 export default{
   error: '',
   userForm: {
-    identifier: '',
+    identifier: 'XX-XXXX-XX-XX-X',
     title: '',
     rights: '',
     creator: '',
     date: null,
-    type: '',
+    type: 'MusicXML',
     publisher: '',
     contributor: [],
     description:''

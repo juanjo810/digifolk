@@ -49,7 +49,7 @@
                             </v-col>
 
                             <v-col cols="6">
-                                <v-select v-model="instrument" label="Instrument" :items="instruments"></v-select>
+                                <v-select v-model="instrument" label="Instrument" :items="instruments" multiple></v-select>
                             </v-col>
 
                             <v-col cols="6">
