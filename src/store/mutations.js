@@ -336,6 +336,36 @@ export default{
     state.userForm.contributor.push({name: '', role: ''})
   },
 
+  [types.ADD_SHEET_CONTRIBUTOR] (state) {
+    state.sheetForm.contributor.push({name: '', role: ''})
+  },
+
+  [types.ADD_COLLECTION_CONTRIBUTOR] (state) {
+    state.userForm.contributor.push({name: '', role: ''})
+  },
+
+  [types.REMOVE_USER_CONTRIBUTOR] (state, index) {
+    state.userForm.contributor.splice(index, 1)
+  },
+
+  [types.REMOVE_SHEET_CONTRIBUTOR] (state, index) {
+    state.sheetForm.contributor.splice(index, 1)
+  },
+
+  [types.REMOVE_COLLECTION_CONTRIBUTOR] (state, index) {
+    state.collectionForm.contributor.splice(index, 1)
+  },
+
+  [types.SAVE_COLLECTION_DATE] (state, date) {
+    state.collectionForm.date = date
+  },
+
+/**
+ * UPDATE OF USER FORM FIELDS
+ * 
+ * Each following method update the corresponding field of the user form in the vuex state
+ */
+
   ['UPDATE_USER_ID'] (state, id) {
     state.userForm.identifier = id
   },
@@ -352,7 +382,7 @@ export default{
     state.userForm.creator = creator
   },
 
-  ['UPDATE_USER_DATE'] (state, date) {
+  [types.SAVE_USER_DATE] (state, date) {
     state.userForm.date = date
   },
 
@@ -364,12 +394,216 @@ export default{
     state.userForm.publisher = publisher
   },
 
-  ['UPDATE_USER_CONTRIBUTOR'] (state, {value, index}) {
-    if (index < state.userForm.contributor.length)
-      state.userForm.contributor[index].name = value
+  ['UPDATE_USER_CONTRIBUTOR'] (state, contribuidores) {
+    state.userForm.contributor = structuredClone(contribuidores)
   },
 
   ['UPDATE_USER_DESCRIPTION'] (state, description) {
     state.userForm.description = description
-  }
+  },
+
+  /**
+   * UPDATE OF SHEET FORM FIELDS
+   * 
+   * Each following method update the corresponding field of the sheet form in the vuex state
+   */
+
+  ['UPDATE_SHEET_RIGHT'] (state, right) {
+    state.sheetForm.right = right
+  },
+
+  ['UPDATE_SHEET_CREATORNAME'] (state, name) {
+    state.sheetForm.creator.name = name
+  },
+
+  ['UPDATE_SHEET_CREATORROLE'] (state, role) {
+    state.sheetForm.creator.role = role
+  },
+
+  ['UPDATE_SHEET_CREATORGENDER'] (state, gender) {
+    state.sheetForm.creator.gender = gender
+  },
+
+  [types.SAVE_SHEET_DATE] (state, date) {
+    state.sheetForm.date = date
+  },
+
+  ['UPDATE_SHEET_KEY'] (state, key) {
+    state.sheetForm.key = key
+  },
+
+  ['UPDATE_SHEET_METRE'] (state, metre) {
+    state.sheetForm.metre = metre
+  },
+
+  ['UPDATE_SHEET_TEMPO'] (state, tempo) {
+    state.sheetForm.tempo = tempo
+  },
+
+  ['UPDATE_SHEET_INSTRUMENT'] (state, instrument) {
+    state.sheetForm.instrument = instrument
+  },
+
+  ['UPDATE_SHEET_GENRE'] (state, genre) {
+    state.sheetForm.genre = genre
+  },
+
+  ['UPDATE_SHEET_CONTRIBUTOR'] (state, contributors) {
+    state.sheetForm.contributor = structuredClone(contributors)
+  },
+
+  ['UPDATE_SHEET_ALTTITLE'] (state, altTitle) {
+    state.sheetForm.altTitle = altTitle
+  },
+
+  ['UPDATE_SHEET_DESCRIPTION'] (state, description) {
+    state.sheetForm.description = description
+  },
+
+  ['UPDATE_SHEET_TYPE'] (state, type) {
+    state.sheetForm.type = type
+  },
+
+  ['UPDATE_SHEET_FORMAT'] (state, format) {
+    state.sheetForm.format = format
+  },
+
+  ['UPDATE_SHEET_SUBJECT'] (state, subject) {
+    state.sheetForm.subject = subject
+  },
+
+  ['UPDATE_SHEET_LANGUAGE'] (state, language) {
+    state.sheetForm.language = language
+  },
+
+  ['UPDATE_SHEET_RELATION'] (state, relation) {
+    state.sheetForm.relation = relation
+  },
+
+  ['UPDATE_SHEET_HASVERSION'] (state, hasVersion) {
+    state.sheetForm.hasVersion = hasVersion
+  },
+
+  ['UPDATE_SHEET_ISVERSIONOF'] (state, isVersionOf) {
+    state.sheetForm.isVersionOf = isVersionOf
+  },
+
+  ['UPDATE_SHEET_COVERAGE'] (state, coverage) {
+    state.sheetForm.coverage = coverage
+  },
+
+  ['UPDATE_SHEET_SPATIAL'] (state, spatial) {
+    state.sheetForm.spatial = spatial
+  },
+
+  ['UPDATE_SHEET_TEMPORALCENTURY'] (state, century) {
+    state.sheetForm.temporal.century = century
+  },
+
+  ['UPDATE_SHEET_TEMPORALDECADE'] (state, decade) {
+    state.sheetForm.temporal.decade = decade
+  },
+
+  ['UPDATE_SHEET_TEMPORALYEAR'] (state, year) {
+    state.sheetForm.temporal.year = year
+  },
+
+  ['UPDATE_SHEET_SOURCE'] (state, source) {
+    state.sheetForm.source = source
+  },
+  
+  /**
+   * UPDATE OF COLLECTION FORM FIELDS
+   * 
+   * Each following method update the corresponding field of the collection form in the vuex state
+   */
+
+  ['UPDATE_COLLECTION_TITLE'] (state, title) {
+    state.collectionForm.title = title
+  },
+
+  ['UPDATE_COLLECTION_RIGHT'] (state, right) {
+    state.collectionForm.right = right
+  },
+
+  ['UPDATE_COLLECTION_CREATORNAME'] (state, name) {
+    state.collectionForm.creator.name = name
+  },
+
+  ['UPDATE_COLLECTION_CREATORROLE'] (state, role) {
+    state.collectionForm.creator.role = role
+  },
+
+  [types.SAVE_COLLECTION_DATE] (state, date) {
+    state.collectionForm.date = date
+  },
+
+  ['UPDATE_COLLECTION_CONTRIBUTOR'] (state, contributors) {
+    state.collectionForm.contributor = structuredClone(contributors)
+  },
+
+  ['UPDATE_COLLECTION_EXTENT'] (state, extent) {
+    state.collectionForm.extent = extent
+  },
+
+  ['UPDATE_COLLECTION_DESCRIPTION'] (state, description) {
+    state.collectionForm.description = description
+  },
+
+  ['UPDATE_COLLECTION_TYPE'] (state, type) {
+    state.collectionForm.type = type
+  },
+
+  ['UPDATE_COLLECTION_FORMAT'] (state, format) {
+    state.collectionForm.format = format
+  },
+
+  ['UPDATE_COLLECTION_SUBJECT'] (state, subject) {
+    state.collectionForm.subject = subject
+  },
+
+  ['UPDATE_COLLECTION_LANGUAGE'] (state, language) {
+    state.collectionForm.language = language
+  },
+
+  ['UPDATE_COLLECTION_RELATION'] (state, relation) {
+    state.collectionForm.relation = relation
+  },
+
+  ['UPDATE_COLLECTION_PUBLISHER'] (state, publisher) {
+    state.collectionForm.publisher = publisher
+  },
+
+  ['UPDATE_COLLECTION_BIBLIOGRAPHIC'] (state, bibliographic) {
+    state.collectionForm.bibliographic = bibliographic
+  },
+
+  ['UPDATE_COLLECTION_COVERAGE'] (state, coverage) {
+    state.collectionForm.coverage = coverage
+  },
+
+  ['UPDATE_COLLECTION_SPATIAL'] (state, spatial) {
+    state.collectionForm.spatial = spatial
+  },
+
+  ['UPDATE_COLLECTION_TEMPORALCENTURY'] (state, century) {
+    state.collectionForm.temporal.century = century
+  },
+
+  ['UPDATE_COLLECTION_TEMPORALDECADE'] (state, decade) {
+    state.collectionForm.temporal.decade = decade
+  },
+
+  ['UPDATE_COLLECTION_TEMPORALYEAR'] (state, year) {
+    state.collectionForm.temporal.year = year
+  },
+
+  ['UPDATE_COLLECTION_SOURCE'] (state, source) {
+    state.collectionForm.source = source
+  },
+
+  ['UPDATE_COLLECTION_RIGHTSHOLDER'] (state, rightsHolder) {
+    state.collectionForm.rightsHolder = rightsHolder
+  },
+  
 }

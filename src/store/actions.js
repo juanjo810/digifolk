@@ -7,6 +7,7 @@
 
 import * as types from './mutations-types'
 import API from '@/api'
+import { format } from 'date-fns';
 
 export default{
   
@@ -47,11 +48,56 @@ export default{
   },
 
   saveDataUserForm () {
-    // commit(types.SET_USER_FORM, userForm)
+    console.log("hola")
   },
 
-  addUserContributor ({ commit }){
-    commit(types.ADD_USER_CONTRIBUTOR)
+  addContributor ({ commit }, form){
+    switch (form) {
+      case 'User':
+        commit(types.ADD_USER_CONTRIBUTOR)
+        break
+      case 'Sheet':
+        commit(types.ADD_SHEET_CONTRIBUTOR)
+        break
+      case 'Collection':
+        commit(types.ADD_COLLECTION_CONTRIBUTOR)
+        break
+      default:
+        return
+    }
+  },
+
+  removeContributor ({ commit }, {index, form}){
+    switch (form) {
+      case 'User':
+        commit(types.REMOVE_USER_CONTRIBUTOR, index)
+        break
+      case 'Sheet':
+        commit(types.REMOVE_SHEET_CONTRIBUTOR, index)
+        break
+      case 'Collection':
+        commit(types.REMOVE_COLLECTION_CONTRIBUTOR, index)
+        break
+      default:
+        return
+    }
+  },
+
+  formatAndSaveDate ({commit}, {date, form}) {
+    var formattedDate = format(date[0], 'd MMMM yyyy')
+    switch (form) {
+      case 'User':
+        commit(types.SAVE_USER_DATE, formattedDate)
+        break
+      case 'Sheet':
+        commit(types.SAVE_SHEET_DATE, formattedDate)
+        break
+      case 'Collection':
+        commit(types.SAVE_COLLECTION_DATE, formattedDate)
+        break
+      default:
+        return
+    }
   }
 
   

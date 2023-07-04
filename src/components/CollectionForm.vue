@@ -9,109 +9,119 @@
                     </template>
                     <v-card-text>
                         <v-row>
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Title" :rules="rulesEmail"></v-text-field>
+                            <v-col cols="6">
+                                <v-text-field v-model="title" label="Title" :rules="rules"></v-text-field>
                             </v-col>
 
-                            <v-col cols="12">
-                                <v-select v-model="email" label="Rights" :items="rights"></v-select>
+                            <v-col cols="6">
+                                <v-select v-model="right" label="Rights" :items="rights"></v-select>
                             </v-col>
 
-                            <v-col cols="12">
-                                <VDatePicker hide-actions="true"></VDatePicker>
+                            <v-col cols="6">
+                                <v-date-picker
+                                v-model="this.selectedDate"
+                                @update:modelValue="formatDate"
+                                ></v-date-picker>
+                            </v-col>
+                            <v-col cols="6">
+                                <h2>Fecha seleccionada: {{ this.date }}</h2>
                             </v-col>
 
                             <v-col cols="12">
                                 <label>Creator</label>
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="email" label="Name or URI" :rules="rulesEmail" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                <v-text-field v-model="creatorName" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                             </v-col>
                             <v-col cols="6">
-                                <v-select v-model="email" label="Role" :items="roles" :rules="rulesEmail"></v-select>
+                                <v-select v-model="creatorRole" label="Role" :items="roles" :rules="rules"></v-select>
                             </v-col>
 
-                            <v-col cols="12">
-                                <label>Contributor</label>
+                            <v-col cols="6  ">
+                                <h2>Contributors</h2>
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="email" label="Name or URI" :rules="rulesEmail" hint="URI example in http://www.dib.ie. Multiple separated by |" persistent-hint></v-text-field>
+                                <v-btn @click="addFields()">Add contributor</v-btn>
                             </v-col>
-                            <v-col cols="6">
-                                <v-select v-model="email" label="Role" :items="rolesCont" :rules="rulesEmail"></v-select>
-                            </v-col>
+                            <v-container v-for="(c,index) in contribuidores" :key="index">
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                    </v-col>
+                                    <v-col cols="5">
+                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="['Editor', 'Arranger']" :rules="rules"></v-select>
+                                    </v-col>
+                                    <v-col cols="1">
+                                        <v-btn @click="removeField(index)">
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
                             
-                            <v-col cols="12">
-                                <v-select v-model="email" label="Type" :items="types"></v-select>
+                            <v-col cols="6">
+                                <v-select v-model="type" label="Type" :items="types"></v-select>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="source" label="Source" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="description" label="Description" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="format" label="Format" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="extent" label="Extent" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="publisher" label="Publisher" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="bibliographic" label="Bibliographic citation" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index" persistent-hint></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="language" label="Language code" :rules="rules" hint="You can check the code in https://www.loc.gov/standards/iso639-2/php/code_list.php" persistent-hint></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="relation" label="Relation" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="coverage" label="Coverage" :rules="rules"></v-text-field>
+                            </v-col>
+
+                            <v-col cols="6">
+                                <v-text-field v-model="spatial" label="Spatial" :rules="rules"></v-text-field>
                             </v-col>
 
                             <v-col cols="12">
-                                <v-text-field v-model="email" label="Source" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Description" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-                            
-                            <v-col cols="12">
-                                <v-select v-model="email" label="Type" :items="types"></v-select>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Format" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Extent" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Publisher" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Bibliographic citation" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Subject" :rules="rulesEmail" hint="You can check the subject in https://www.vwml.org/song-subject-index" persistent-hint></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Language code" :rules="rulesEmail" hint="You can check the code in https://www.loc.gov/standards/iso639-2/php/code_list.php" persistent-hint></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Relation" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Coverage" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="Spatial" :rules="rulesEmail"></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <label>Temporal</label>
+                                <h2>Temporal</h2>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="email" label="Century" :rules="rulesEmail"></v-text-field>
+                                <v-text-field v-model="temporalCentury" label="Century" :rules="rules"></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="email" label="Decade" :rules="rulesEmail"></v-text-field>
+                                <v-text-field v-model="temporalDecade" label="Decade" :rules="rules"></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="email" label="Year" :rules="rulesEmail"></v-text-field>
+                                <v-text-field v-model="temporalYear" label="Year" :rules="rules"></v-text-field>
                             </v-col>
 
                             <v-col cols="12">
-                                <v-select v-model="email" label="Rights" :items="rights"></v-select>
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-text-field v-model="email" label="RightsHolder" :rules="rulesEmail"></v-text-field>
+                                <v-text-field v-model="rightsHolder" label="RightsHolder" :rules="rules"></v-text-field>
                             </v-col>
                         </v-row>
 
@@ -121,9 +131,13 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="deep-purple lighten-2" text @click="register()" v-if="!fetchingUser">
-                            Guardar datos
+                        <v-btn color="deep-purple lighten-2" text @click="saveData()">
+                            Save data
                         </v-btn>
+                        <v-btn color="deep-purple lighten-2" text @click="importFile()">
+                            Import File
+                        </v-btn>
+                        <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei" @change="handleFileChange">
                     </v-card-actions>
                 </div>
             </v-col>
@@ -146,22 +160,8 @@ export default {
             rolesCont:['Sound engineer', 'Videographer', 'Typesetter'],
             types:['Collection', 'Dataset', 'Event', 'Image', 'InteractiveResource', 'MovingImage', 'PhysicalObject', 'Service', 'Software', 'Sound', 'StillImage', 'Text'],
             rights:['Rights statements', 'In copyright', 'In copyright – EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
-            name: '',
-            surname: '',
-            email: '',
-            profilePhoto: '',
-            password: '',
-            password2: '',
-            visible1: false,
-            visible2: false,
-            visibility: false,
-            rulesEmail: [
-                value => !!value || 'Required.',
-                value => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || 'Invalid e-mail.'
-                },
-            ],
+            contribuidores: [],
+            selectedDate: null,
             rules: [
                 value => !!value || 'Required.'
             ]
@@ -169,34 +169,213 @@ export default {
     },
     computed: {
         ...mapState([
-            'fetchingUser',
-            'error'
-        ])
+            'error',
+            'collectionForm'
+        ]),
+        title: {
+            get () {
+                return this.collectionForm.title
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_TITLE', value)
+            }
+        },
+        right: {
+            get () {
+                return this.collectionForm.right
+            },
+            set (value) {
+                this.$store.commit('UPDATE_COLLECTION_RIGHT', value)
+            }
+        },
+        creatorName: {
+            get () {
+                return this.collectionForm.creator.name
+            },
+            set (value) {
+                this.$store.commit('UPDATE_COLLECTION_CREATORNAME', value)
+            }
+        },
+        creatorRole: {
+            get () {
+                return this.collectionForm.creator.role
+            },
+            set (value) {
+                this.$store.commit('UPDATE_COLLECTION_CREATORROLE', value)
+            }
+        },
+        contributor () {
+            return this.collectionForm.contributor
+        },
+        date () {
+            return this.collectionForm.date
+        },
+        description: {
+            get () {
+                return this.collectionForm.description
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_DESCRIPTION', value)
+            }
+        },
+        type: {
+            get () {
+                return this.collectionForm.type
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_TYPE', value)
+            }
+        },
+        format: {
+            get () {
+                return this.collectionForm.format
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_FORMAT', value)
+            }
+        },
+        subject: {
+            get () {
+                return this.collectionForm.subject
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_SUBJECT', value)
+            }
+        },
+        language: {
+            get () {
+                return this.collectionForm.language
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_LANGUAGE', value)
+            }
+        },
+        relation: {
+            get () {
+                return this.collectionForm.relation
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_RELATION', value)
+            }
+        },
+        coverage: {
+            get () {
+                return this.collectionForm.coverage
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_COVERAGE', value)
+            }
+        },
+        spatial: {
+            get () {
+                return this.collectionForm.spatial
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_SPATIAL', value)
+            }
+        },
+        temporalCentury: {
+            get () {
+                return this.collectionForm.temporal.century
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_TEMPORALCENTURY', value)
+            }
+        },
+        temporalDecade: {
+            get () {
+                return this.collectionForm.temporal.decade
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_TEMPORALDECADE', value)
+            }
+        },
+        temporalYear: {
+            get () {
+                return this.collectionForm.temporal.year
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_TEMPORALYEAR', value)
+            }
+        },
+        source: {
+            get () {
+                return this.collectionForm.source
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_SOURCE', value)
+            }
+        },
+        extent: {
+            get () {
+                return this.collectionForm.extent
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_EXTENT', value)
+            }
+        },
+        publisher: {
+            get () {
+                return this.collectionForm.publisher
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_PUBLISHER', value)
+            }
+        },
+        bibliographic: {
+            get () {
+                return this.collectionForm.bibliographic
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_BIBLIOGRAPHIC', value)
+            }
+        },
+        rightsHolder: {
+            get () {
+                return this.collectionForm.rightsHolder
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_RIGHTSHOLDER', value)
+            }
+        },
     },
     methods: {
         ...mapActions([
-            'registerUser'
+            'saveDataUserForm',
+            'addContributor',
+            'formatAndSaveDate',
+            'removeContributor'
         ]),
-        register() {
-            if (this.name !== '' && this.surname !== '' && this.email !== '' && this.password !== '' && this.password2 !== '') {
-                this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
-                    .then(() => {
-                        if (this.error === '') {
-                            this.name = ''
-                            this.surname = ''
-                            this.email = ''
-                            this.profilePhoto = ''
-                            this.password = ''
-                            this.password2 = ''
-                            this.visibility = true
-                        }
-                    })
+        saveData () {
+            this.saveDataUserForm(this.userFormData)
+        },
+        importFile () {
+            this.$refs.fileInput.click();
+        },
+        handleFileChange(event) {
+            const file = event.target.files[0];
+            console.log('Archivo seleccionado:', file);
+        },
+        addFields ()  {
+            this.addContributor('Collection')
+            this.contribuidores.push({name: '', role: ''})
+        },
+        removeField (index) {
+            this.removeContributor({index:index, form: 'Collection'})
+            this.contribuidores.splice(index, 1)
+        },
+        updateContributor() {
+            this.$store.commit('UPDATE_COLLECTION_CONTRIBUTOR', this.contribuidores);
+        },
+        formatDate() {
+            if (this.selectedDate) {   
+                this.formatAndSaveDate( {date: this.selectedDate, form: 'Collection'})
             }
         },
-        continuar() {
-            this.visibility = false
-            this.$router.push({ name: 'login' })
-        }
+    },
+    
+    created () {
+        this.contribuidores = structuredClone(this.contributor)
     }
 }
 </script>

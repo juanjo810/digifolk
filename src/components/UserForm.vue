@@ -9,53 +9,64 @@
                         </template>
                         <v-card-text>
                             <v-row>
-                                <v-col cols="12">
+                                <v-col cols="6">
                                     <v-text-field v-model="this.id" label="Identifier" ></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12">
+                                <v-col cols="6">
                                     <v-text-field v-model="this.title" label="Title" :rules="rules"></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12">
+                                <v-col cols="6">
                                 <v-select v-model="this.right" label="Rights" :items="rights"></v-select>
                             </v-col>
 
-                                <v-col cols="12">
+                                <v-col cols="6">
                                     <v-text-field v-model="this.creator" label="Creator" :rules="rules"></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12">
-                                    <VDatePicker hide-actions="true"></VDatePicker>
+                                <v-col cols="6">
+                                    <v-date-picker
+                                    v-model="this.selectedDate"
+                                    @update:modelValue="formatDate"
+                                    ></v-date-picker>
+                                </v-col>
+                                <v-col cols="6">
+                                    <h2>Fecha seleccionada: {{ this.date }}</h2>
                                 </v-col>
 
-                                <v-col cols="12">
+                                <v-col cols="6">
                                     <v-text-field v-model="this.type" label="Type" :rules="rules"></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12">
+                                <v-col cols="6">
                                     <v-text-field v-model="this.publisher" label="Publisher" :rules="rules"></v-text-field>
                                 </v-col>
 
                                 <v-col cols="6  ">
-                                <label>Contributor</label>
+                                <h2>Contributors</h2>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-btn @click="addFields()">Add contributor</v-btn>
                                 </v-col>
-                                <v-container v-for="(cont, index) in contributor" :key="index">
+                                <v-container v-for="(c,index) in contribuidores" :key="index">
                                     <v-row>
                                         <v-col cols="6">
-                                            <v-text-field v-model="contribuidores[index].name" @input="updateContributorName(contribuidores[index].name, index)" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                            <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                         </v-col>
-                                        <v-col cols="6">
-                                            <v-select label="Role" :items="['Editor', 'Arranger']" :rules="rules"></v-select>
+                                        <v-col cols="5">
+                                            <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="['Editor', 'Arranger']" :rules="rules"></v-select>
+                                        </v-col>
+                                        <v-col cols="1">
+                                            <v-btn @click="removeField(index)">
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-container>
 
                                 <v-col cols="12">
-                                    <v-text-field v-model="this.description" label="Description" :rules="rules"></v-text-field>
+                                    <v-text-field v-model="this.description" @update:modelValue="updateDate()" label="Description" :rules="rules"></v-text-field>
                                 </v-col>
                             </v-row>
 
@@ -65,9 +76,13 @@
 
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="deep-purple lighten-2" text @click="saveData()" v-if="!fetchingUser">
-                                Guardar datos
+                            <v-btn color="deep-purple lighten-2" text @click="saveData()">
+                                Save Data
                             </v-btn>
+                            <v-btn color="deep-purple lighten-2" text @click="importFile()">
+                                Import File
+                            </v-btn>
+                            <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei" @change="handleFileChange">
                         </v-card-actions>
                 </div>
             </v-col>
@@ -90,7 +105,8 @@ export default {
             rules: [
                 value => !!value || 'Required.'
             ],
-            contribuidores: []
+            contribuidores: [],
+            selectedDate: null
         }
     },
     computed: {
@@ -100,7 +116,7 @@ export default {
         ]),
         id: {
             get () {
-                return this.$store.state.userForm.identifier
+                return this.userForm.identifier
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_ID', value)
@@ -108,7 +124,7 @@ export default {
         },
         title: {
             get () {
-                return this.$store.state.userForm.title
+                return this.userForm.title
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_TITLE', value)
@@ -116,7 +132,7 @@ export default {
         },
         right: {
             get () {
-                return this.$store.state.userForm.right
+                return this.userForm.right
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_RIGHT', value)
@@ -124,23 +140,18 @@ export default {
         },
         creator: {
             get () {
-                return this.$store.state.userForm.creator
+                return this.userForm.creator
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_CREATOR', value)
             }
         },
-        date: {
-            get () {
-                return this.$store.state.userForm.date
-            },
-            set (value) {
-                this.$store.commit('UPDATE_USER_DATE', value)
-            }
+        date () {
+            return this.userForm.date
         },
         type: {
             get () {
-                return this.$store.state.userForm.type
+                return this.userForm.type
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_TYPE', value)
@@ -148,7 +159,7 @@ export default {
         },
         publisher: {
             get () {
-                return this.$store.state.userForm.publisher
+                return this.userForm.publisher
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_PUBLISHER', value)
@@ -159,7 +170,7 @@ export default {
         },
         description: {
             get () {
-                return this.$store.state.userForm.description
+                return this.userForm.description
             },
             set (value) {   
                 this.$store.commit('UPDATE_USER_DESCRIPTION', value)
@@ -169,24 +180,39 @@ export default {
     methods: {
         ...mapActions([
             'saveDataUserForm',
-            'addUserContributor'
+            'addUserContributor',
+            'formatAndSaveDate',
+            'removeContributor'
         ]),
         saveData () {
             this.saveDataUserForm(this.userFormData)
         },
+        importFile () {
+            this.$refs.fileInput.click();
+        },
+        handleFileChange(event) {
+            const file = event.target.files[0];
+            console.log('Archivo seleccionado:', file);
+        },
         addFields ()  {
-            this.addUserContributor()
+            this.addUserContributor('User')
             this.contribuidores.push({name: '', role: ''})
         },
-        updateContributorName(value, index) {
-            console.log(value,index) 
-            this.$store.commit('UPDATE_USER_CONTRIBUTOR', { value, index });
-        }
+        removeField (index) {
+            this.removeContributor({index:index, form: 'User'})
+            this.contribuidores.splice(index, 1)
+        },
+        updateContributor() {
+            this.$store.commit('UPDATE_USER_CONTRIBUTOR', this.contribuidores);
+        },
+        formatDate() {
+            if (this.selectedDate) {   
+                this.formatAndSaveDate( {date: this.selectedDate, form: 'User'})
+            }
+        },
     },
     created () {
-        console.log(this.$store.state)
-        debugger
-        this.contribuidores = structuredClone(this.userForm.contributor)
+        this.contribuidores = structuredClone(this.contributor)
     }
 }
 </script>
