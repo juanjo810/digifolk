@@ -10,7 +10,8 @@
                     <v-card-text>
                         <v-row>
                             <v-col cols="6">
-                                <v-text-field v-model="title" label="Title" :rules="rules"></v-text-field>
+                                <v-text-field v-model="title" label="Title" :rules="rules" hint="Use ' : ', i.e. space colon space, to separate title and subtitle
+Use ' = ' i.e. space equals space, where a title is available in different languages" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
@@ -88,7 +89,7 @@
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index" persistent-hint></v-text-field>
+                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index. Multiple subjects must be separated by '|'" persistent-hint></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
@@ -96,7 +97,7 @@
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="relation" label="Relation" :rules="rules"></v-text-field>
+                                <v-text-field v-model="relation" label="Relation" :rules="rules" hint=" Multiple subjects must be separated by '|'" persistent-hint=""></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
@@ -137,7 +138,7 @@
                         <v-btn color="deep-purple lighten-2" text @click="importFile()">
                             Import File
                         </v-btn>
-                        <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei" @change="handleFileChange">
+                        <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml" @change="handleFileChange">
                     </v-card-actions>
                 </div>
             </v-col>

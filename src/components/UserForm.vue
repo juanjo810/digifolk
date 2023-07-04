@@ -83,7 +83,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             <v-btn color="deep-purple lighten-2" text @click="importFile()">
                                 Import File
                             </v-btn>
-                            <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei" @change="handleFileChange">
+                            <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml" @change="handleFileChange">
                         </v-card-actions>
                 </div>
             </v-col>

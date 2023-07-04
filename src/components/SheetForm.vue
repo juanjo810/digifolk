@@ -94,7 +94,7 @@
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index" persistent-hint></v-text-field>
+                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index. Multiple subjects must be separated by ':'" persistent-hint></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
@@ -102,15 +102,15 @@
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="relation" label="Relation" :rules="rules"></v-text-field>
+                                <v-text-field v-model="relation" label="Relation" :rules="rules" hint="Multiple relations must be separated by ':'"></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="hasVersion" label="HasVersion" :rules="rules"></v-text-field>
+                                <v-text-field v-model="hasVersion" label="HasVersion" :rules="rules" hint="Multiple versions must be separated by ':'"></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="isVersionOf" label="IsVersionOf" :rules="rules"></v-text-field>
+                                <v-text-field v-model="isVersionOf" label="IsVersionOf" :rules="rules" hint="Multiple versions must be separated by ':'"></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
@@ -151,7 +151,7 @@
                         <v-btn color="deep-purple lighten-2" text @click="importFile()">
                             Import File
                         </v-btn>
-                        <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei" @change="handleFileChange">
+                        <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml" @change="handleFileChange">
                     </v-card-actions>
                 </div>
             </v-col>
