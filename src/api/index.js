@@ -3,6 +3,13 @@ export default{
         return new Promise((resolve,reject) => {
             var respuesta = {codigo: '200'}
             console.log(user, password)
+
+            var xhr = new XMLHttpRequest()
+            xhr.responseType = 'blob'
+            var params = url
+            xhr.open('POST', 'http://65.108.220.52', true)
+
+            xhr.onload = function () {}
             // respuesta = PETICION DE INICIO DE SESIÓN (user,password)
             if (respuesta.codigo == '200') {
                 resolve()
