@@ -47,8 +47,56 @@ export default{
     })
   },
 
-  saveDataUserForm () {
-    console.log("hola")
+  saveDataCollection ({state}) {
+    var collectionTemp = structuredClone(state.collectionForm)
+    collectionTemp.relation = state.collectionForm.relation.split(state.separator)
+    collectionTemp.subject = state.collectionForm.subject.split(state.separator)
+    collectionTemp.title = state.collectionForm.title.split(state.separator)
+    collectionTemp.rights = state.defaultSelections.rightsMapping[state.collectionForm.rights]
+    collectionTemp.source_type = state.defaultSelections.typesMapping[state.collectionForm.source_type]
+    collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
+      name: contributor.name,
+      role: state.defaultSelections.cont_rolessMapping[contributor.role]
+    }));
+    collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
+      name: creator.name,
+      role: state.defaultSelections.creator_rolessMapping[creator.role]
+    }));
+    const json = JSON.stringify(collectionTemp)
+    console.log(json)
+  },
+
+  saveDataPiece ({state}) {
+    var userTemp = structuredClone(state.userForm)
+    var sheetTemp = structuredClone(state.sheetForm)
+    const combinedForm = {
+      ...userTemp,
+      ...sheetTemp
+    };
+    
+    combinedForm.title = userTemp.title.split(state.separator)
+    combinedForm.subject = sheetTemp.subject.split(state.separator)
+    combinedForm.relationp = sheetTemp.relationp.split(state.separator)
+    combinedForm.hasVersion = sheetTemp.hasVersion.split(state.separator)
+    combinedForm.isVersionOf = sheetTemp.isVersionOf.split(state.separator)
+    combinedForm.rights = state.defaultSelections.rightsMapping[state.userForm.rights]
+    combinedForm.type_file = state.defaultSelections.typesMapping[state.userForm.type_file]
+    combinedForm.rightsp = state.defaultSelections.rightsMapping[state.sheetForm.rightsp]
+    combinedForm.type_piece = state.defaultSelections.typesMapping[state.sheetForm.type_piece]
+    combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
+      name: contributor.name,
+      role: state.defaultSelections.cont_rolesXMLMapping[contributor.role]
+    }));
+    combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
+      name: creator.name,
+      role: state.defaultSelections.creator_rolespMapping[creator.role]
+    }));
+    combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
+      name: contributor.name,
+      role: state.defaultSelections.cont_rolespMapping[contributor.role]
+    }));
+    const json = JSON.stringify(combinedForm);
+    console.log(json);
   },
 
   addContributor ({ commit }, form){
@@ -67,6 +115,19 @@ export default{
     }
   },
 
+  addCreator ({ commit }, form){
+    switch (form) {
+      case 'Sheet':
+        commit(types.ADD_SHEET_CREATOR)
+        break
+      case 'Collection':
+        commit(types.ADD_COLLECTION_CREATOR)
+        break
+      default:
+        return
+    }
+  },
+
   removeContributor ({ commit }, {index, form}){
     switch (form) {
       case 'User':
@@ -77,6 +138,18 @@ export default{
         break
       case 'Collection':
         commit(types.REMOVE_COLLECTION_CONTRIBUTOR, index)
+        break
+      default:
+        return
+    }
+  },
+  removeCreator ({ commit }, {index, form}){
+    switch (form) {
+      case 'Sheet':
+        commit(types.REMOVE_SHEET_CREATOR, index)
+        break
+      case 'Collection':
+        commit(types.REMOVE_COLLECTION_CREATOR, index)
         break
       default:
         return

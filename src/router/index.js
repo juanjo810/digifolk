@@ -25,7 +25,7 @@ const router =  createRouter({
             name: 'dashboard',
             component: Dashboard,
             redirect: () => {
-                return {name: 'userForm'}
+                return {name: 'collectionForm'}
             },
             children: [
                 {

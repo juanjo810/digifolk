@@ -10,33 +10,47 @@
                     <v-card-text>
                         <v-row>
                             <v-col cols="6">
-                                <v-text-field v-model="title" label="Title" :rules="rules" hint="Use ' : ', i.e. space colon space, to separate title and subtitle
-Use ' = ' i.e. space equals space, where a title is available in different languages" ></v-text-field>
+                                <v-text-field v-model="title" label="Title" :rules="rules" hint="Use ' | ', i.e. space colon space, to separate title and subtitle
+Use ' = ' i.e. space equals space, where a title is available in different languages" persistent-hint></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-select v-model="right" label="Rights" :items="rights"></v-select>
+                                <v-select v-model="right" label="Rights" :items="defaultSelections.rights" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="6">
                                 <v-date-picker
                                 v-model="this.selectedDate"
                                 @update:modelValue="formatDate"
+                                :rules="rules"
                                 ></v-date-picker>
                             </v-col>
                             <v-col cols="6">
                                 <h2>Fecha seleccionada: {{ this.date }}</h2>
                             </v-col>
 
-                            <v-col cols="12">
-                                <label>Creator</label>
+                            <v-col cols="6  ">
+                                <h2>Creators</h2>
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="creatorName" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                <v-btn @click="addFieldsCreators()">Add creator</v-btn>
                             </v-col>
-                            <v-col cols="6">
-                                <v-select v-model="creatorRole" label="Role" :items="roles" :rules="rules"></v-select>
-                            </v-col>
+
+                            <v-container v-for="(c,index) in creadores" :key="index">
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-text-field v-model="c.name" @input="updateCreator()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                    </v-col>
+                                    <v-col cols="5">
+                                        <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="defaultSelections.creator_rolesp" :rules="rules"></v-select>
+                                    </v-col>
+                                    <v-col cols="1">
+                                        <v-btn @click="removeFieldCreator(index)">
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
 
                             <v-col cols="6  ">
                                 <h2>Contributors</h2>
@@ -47,10 +61,10 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             <v-container v-for="(c,index) in contribuidores" :key="index">
                                 <v-row>
                                     <v-col cols="6">
-                                        <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
+                                        <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI"  hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="5">
-                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="['Editor', 'Arranger']" :rules="rules"></v-select>
+                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="defaultSelections.cont_roless" ></v-select>
                                     </v-col>
                                     <v-col cols="1">
                                         <v-btn @click="removeField(index)">
@@ -61,68 +75,73 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             </v-container>
                             
                             <v-col cols="6">
-                                <v-select v-model="type" label="Type" :items="types"></v-select>
+                                <v-select v-model="type" label="Type" :items="defaultSelections.types"></v-select>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="source" label="Source" :rules="rules"></v-text-field>
+                                <v-text-field v-model="source" label="Source" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="description" label="Description" :rules="rules"></v-text-field>
+                                <v-text-field v-model="description" label="Description" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="format" label="Format" :rules="rules"></v-text-field>
+                                <v-text-field v-model="format" label="Format" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="extent" label="Extent" :rules="rules"></v-text-field>
+                                <v-text-field v-model="extent" label="Extent" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="publisher" label="Publisher" :rules="rules"></v-text-field>
+                                <v-text-field v-model="publisher" label="Publisher" ></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="bibliographic" label="Bibliographic citation" :rules="rules"></v-text-field>
+                                <v-text-field v-model="subject" label="Subject"  hint="You can check the subject in https://www.vwml.org/song-subject-index. Multiple subjects must be separated by '|'" persistent-hint></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="subject" label="Subject" :rules="rules" hint="You can check the subject in https://www.vwml.org/song-subject-index. Multiple subjects must be separated by '|'" persistent-hint></v-text-field>
+                                <v-text-field v-model="language" label="Language code"  hint="You can check the code in https://www.loc.gov/standards/iso639-2/php/code_list.php" persistent-hint></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="language" label="Language code" :rules="rules" hint="You can check the code in https://www.loc.gov/standards/iso639-2/php/code_list.php" persistent-hint></v-text-field>
+                                <v-text-field v-model="relation" label="Relation"  hint=" Multiple subjects must be separated by '|'" persistent-hint=""></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-text-field v-model="relation" label="Relation" :rules="rules" hint=" Multiple subjects must be separated by '|'" persistent-hint=""></v-text-field>
+                                <v-text-field v-model="coverage" label="Coverage" ></v-text-field>
                             </v-col>
 
-                            <v-col cols="6">
-                                <v-text-field v-model="coverage" label="Coverage" :rules="rules"></v-text-field>
+                            <v-col cols="12">
+                                <h2>Spatial</h2>
                             </v-col>
-
-                            <v-col cols="6">
-                                <v-text-field v-model="spatial" label="Spatial" :rules="rules"></v-text-field>
+                            <v-col cols="4">
+                                <v-text-field v-model="spatialCountry" label="Country" ></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field v-model="spatialState" label="State" ></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field v-model="spatialLocation" label="Location" ></v-text-field>
                             </v-col>
 
                             <v-col cols="12">
                                 <h2>Temporal</h2>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="temporalCentury" label="Century" :rules="rules"></v-text-field>
+                                <v-text-field v-model="temporalCentury" label="Century" ></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="temporalDecade" label="Decade" :rules="rules"></v-text-field>
+                                <v-text-field v-model="temporalDecade" label="Decade" ></v-text-field>
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field v-model="temporalYear" label="Year" :rules="rules"></v-text-field>
+                                <v-text-field v-model="temporalYear" label="Year" ></v-text-field>
                             </v-col>
 
                             <v-col cols="12">
-                                <v-text-field v-model="rightsHolder" label="RightsHolder" :rules="rules"></v-text-field>
+                                <v-text-field v-model="rightsHolder" label="RightsHolder" ></v-text-field>
                             </v-col>
                         </v-row>
 
@@ -132,8 +151,8 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="deep-purple lighten-2" text @click="saveData()">
-                            Save data
+                        <v-btn color="deep-purple lighten-2" text @click="saveCollection()">
+                            Save collection
                         </v-btn>
                         <v-btn color="deep-purple lighten-2" text @click="importFile()">
                             Import File
@@ -157,11 +176,8 @@ export default {
     },
     data() {
         return {
-            roles:['Collector', 'Writer'],
-            rolesCont:['Sound engineer', 'Videographer', 'Typesetter'],
-            types:['Collection', 'Dataset', 'Event', 'Image', 'InteractiveResource', 'MovingImage', 'PhysicalObject', 'Service', 'Software', 'Sound', 'StillImage', 'Text'],
-            rights:['Rights statements', 'In copyright', 'In copyright – EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
             contribuidores: [],
+            creadores: [],
             selectedDate: null,
             rules: [
                 value => !!value || 'Required.'
@@ -171,7 +187,8 @@ export default {
     computed: {
         ...mapState([
             'error',
-            'collectionForm'
+            'collectionForm',
+            'defaultSelections'
         ]),
         title: {
             get () {
@@ -183,30 +200,17 @@ export default {
         },
         right: {
             get () {
-                return this.collectionForm.right
+                return this.collectionForm.rights
             },
             set (value) {
                 this.$store.commit('UPDATE_COLLECTION_RIGHT', value)
             }
         },
-        creatorName: {
-            get () {
-                return this.collectionForm.creator.name
-            },
-            set (value) {
-                this.$store.commit('UPDATE_COLLECTION_CREATORNAME', value)
-            }
-        },
-        creatorRole: {
-            get () {
-                return this.collectionForm.creator.role
-            },
-            set (value) {
-                this.$store.commit('UPDATE_COLLECTION_CREATORROLE', value)
-            }
+        creator () {
+            return this.collectionForm.creator_role
         },
         contributor () {
-            return this.collectionForm.contributor
+            return this.collectionForm.contributor_role
         },
         date () {
             return this.collectionForm.date
@@ -221,7 +225,7 @@ export default {
         },
         type: {
             get () {
-                return this.collectionForm.type
+                return this.collectionForm.source_type
             },
             set (value) {   
                 this.$store.commit('UPDATE_COLLECTION_TYPE', value)
@@ -229,7 +233,7 @@ export default {
         },
         format: {
             get () {
-                return this.collectionForm.format
+                return this.collectionForm.formatting
             },
             set (value) {   
                 this.$store.commit('UPDATE_COLLECTION_FORMAT', value)
@@ -267,12 +271,28 @@ export default {
                 this.$store.commit('UPDATE_COLLECTION_COVERAGE', value)
             }
         },
-        spatial: {
+        spatialCountry: {
             get () {
-                return this.collectionForm.spatial
+                return this.collectionForm.spatial.country
             },
             set (value) {   
-                this.$store.commit('UPDATE_COLLECTION_SPATIAL', value)
+                this.$store.commit('UPDATE_COLLECTION_SPATIALCOUNTRY', value)
+            }
+        },
+        spatialState: {
+            get () {
+                return this.collectionForm.spatial.state
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_SPATIALSTATE', value)
+            }
+        },
+        spatialLocation: {
+            get () {
+                return this.collectionForm.spatial.location
+            },
+            set (value) {   
+                this.$store.commit('UPDATE_COLLECTION_SPATIALLOCATION', value)
             }
         },
         temporalCentury: {
@@ -323,14 +343,6 @@ export default {
                 this.$store.commit('UPDATE_COLLECTION_PUBLISHER', value)
             }
         },
-        bibliographic: {
-            get () {
-                return this.collectionForm.bibliographic
-            },
-            set (value) {   
-                this.$store.commit('UPDATE_COLLECTION_BIBLIOGRAPHIC', value)
-            }
-        },
         rightsHolder: {
             get () {
                 return this.collectionForm.rightsHolder
@@ -342,13 +354,18 @@ export default {
     },
     methods: {
         ...mapActions([
-            'saveDataUserForm',
+            'saveDataCollection',
             'addContributor',
+            'addCreator',
             'formatAndSaveDate',
-            'removeContributor'
+            'removeContributor',
+            'removeCreator',
         ]),
-        saveData () {
-            this.saveDataUserForm(this.userFormData)
+        saveCollection () {
+            if (this.title != '' && this.date && this.right != '' && this.creator.length > 0)
+                this.saveDataCollection()
+            else
+                window.alert("You must fill the required fields")
         },
         importFile () {
             this.$refs.fileInput.click();
@@ -361,12 +378,23 @@ export default {
             this.addContributor('Collection')
             this.contribuidores.push({name: '', role: ''})
         },
+        addFieldsCreators ()  {
+            this.addCreator('Collection')
+            this.creadores.push({name: '', role: ''})
+        },
         removeField (index) {
             this.removeContributor({index:index, form: 'Collection'})
             this.contribuidores.splice(index, 1)
         },
+        removeFieldCreator (index) {
+            this.removeCreator({index:index, form: 'Collection'})
+            this.creadores.splice(index, 1)
+        },
         updateContributor() {
             this.$store.commit('UPDATE_COLLECTION_CONTRIBUTOR', this.contribuidores);
+        },
+        updateCreator() {
+            this.$store.commit('UPDATE_COLLECTION_CREATOR', this.creadores);
         },
         formatDate() {
             if (this.selectedDate) {   
@@ -377,6 +405,7 @@ export default {
     
     created () {
         this.contribuidores = structuredClone(this.contributor)
+        this.creadores = structuredClone(this.creator)
     }
 }
 </script>

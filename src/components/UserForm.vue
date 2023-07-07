@@ -14,12 +14,12 @@
                                 </v-col>
 
                                 <v-col cols="6">
-                                    <v-text-field v-model="this.title" label="Title" :rules="rules" hint="Use ' : ', i.e. space colon space, to separate title and subtitle
+                                    <v-text-field v-model="this.title" label="Title" :rules="rules" hint="Use ' | ', i.e. space colon space, to separate title and subtitle
 Use ' = ' i.e. space equals space, where a title is available in different languages" persistent-hint></v-text-field>
                                 </v-col>
 
                                 <v-col cols="6">
-                                <v-select v-model="this.right" label="Rights" :items="rights"></v-select>
+                                <v-select v-model="this.right" label="Rights" :items="defaultSelections.rights"></v-select>
                             </v-col>
 
                                 <v-col cols="6">
@@ -37,7 +37,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                 </v-col>
 
                                 <v-col cols="6">
-                                    <v-text-field v-model="this.type" label="Type" :rules="rules"></v-text-field>
+                                    <v-select v-model="this.type" label="Type" :items="defaultSelections.types" :rules="rules"></v-select>
                                 </v-col>
 
                                 <v-col cols="6">
@@ -56,7 +56,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                             <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                         </v-col>
                                         <v-col cols="5">
-                                            <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="['Editor', 'Arranger']" :rules="rules"></v-select>
+                                            <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="defaultSelections.cont_rolesXML" :rules="rules"></v-select>
                                         </v-col>
                                         <v-col cols="1">
                                             <v-btn @click="removeField(index)">
@@ -67,7 +67,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                 </v-container>
 
                                 <v-col cols="12">
-                                    <v-text-field v-model="this.description" @update:modelValue="updateDate()" label="Description" :rules="rules"></v-text-field>
+                                    <v-text-field v-model="this.description" label="Description"></v-text-field>
                                 </v-col>
                             </v-row>
 
@@ -102,7 +102,6 @@ export default {
     },
     data() {
         return {
-            rights:['Rights statements', 'In copyright', 'In copyright - EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
             rules: [
                 value => !!value || 'Required.'
             ],
@@ -113,7 +112,8 @@ export default {
     computed: {
         ...mapState([
             'error',
-            'userForm'
+            'userForm',
+            'defaultSelections'
         ]),
         id: {
             get () {
@@ -152,7 +152,7 @@ export default {
         },
         type: {
             get () {
-                return this.userForm.type
+                return this.userForm.type_file
             },
             set (value) {
                 this.$store.commit('UPDATE_USER_TYPE', value)
@@ -167,11 +167,11 @@ export default {
             }
         },
         contributor () {
-            return this.userForm.contributor
+            return this.userForm.contributor_role
         },
         description: {
             get () {
-                return this.userForm.description
+                return this.userForm.desc
             },
             set (value) {   
                 this.$store.commit('UPDATE_USER_DESCRIPTION', value)
@@ -180,23 +180,23 @@ export default {
     },
     methods: {
         ...mapActions([
-            'saveDataUserForm',
-            'addUserContributor',
+            'saveDataPiece',
+            'addContributor',
             'formatAndSaveDate',
             'removeContributor'
         ]),
         saveData () {
-            this.saveDataUserForm(this.userFormData)
+            this.saveDataPiece()
         },
         importFile () {
-            this.$refs.fileInput.click();
+            this.$refs.fileInput.click()
         },
         handleFileChange(event) {
-            const file = event.target.files[0];
-            console.log('Archivo seleccionado:', file);
+            const file = event.target.files[0]
+            console.log('Archivo seleccionado:', file)
         },
         addFields ()  {
-            this.addUserContributor('User')
+            this.addContributor('User')
             this.contribuidores.push({name: '', role: ''})
         },
         removeField (index) {

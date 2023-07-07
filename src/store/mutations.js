@@ -333,27 +333,43 @@ export default{
   },
 
   [types.ADD_USER_CONTRIBUTOR] (state) {
-    state.userForm.contributor.push({name: '', role: ''})
+    state.userForm.contributor_role.push({name: '', role: ''})
   },
 
   [types.ADD_SHEET_CONTRIBUTOR] (state) {
-    state.sheetForm.contributor.push({name: '', role: ''})
+    state.sheetForm.contributorp_role.push({name: '', role: ''})
   },
 
   [types.ADD_COLLECTION_CONTRIBUTOR] (state) {
-    state.userForm.contributor.push({name: '', role: ''})
+    state.collectionForm.contributor_role.push({name: '', role: ''})
+  },
+
+  [types.ADD_SHEET_CREATOR] (state) {
+    state.sheetForm.creatorp_role.push({name: '', role: '', gender: ''})
+  },
+
+  [types.ADD_COLLECTION_CREATOR] (state) {
+    state.collectionForm.creator_role.push({name: '', role: ''})
   },
 
   [types.REMOVE_USER_CONTRIBUTOR] (state, index) {
-    state.userForm.contributor.splice(index, 1)
+    state.userForm.contributor_role.splice(index, 1)
+  },
+
+  [types.REMOVE_COLLECTION_CREATOR] (state, index) {
+    state.collectionForm.creator_role.splice(index, 1)
   },
 
   [types.REMOVE_SHEET_CONTRIBUTOR] (state, index) {
-    state.sheetForm.contributor.splice(index, 1)
+    state.sheetForm.contributorp_role.splice(index, 1)
   },
 
   [types.REMOVE_COLLECTION_CONTRIBUTOR] (state, index) {
-    state.collectionForm.contributor.splice(index, 1)
+    state.collectionForm.contributor_role.splice(index, 1)
+  },
+
+  [types.REMOVE_SHEET_CREATOR] (state, index) {
+    state.sheetForm.creatorp_role.splice(index, 1)
   },
 
   [types.SAVE_COLLECTION_DATE] (state, date) {
@@ -375,7 +391,7 @@ export default{
   },
 
   ['UPDATE_USER_RIGHT'] (state, right) {
-    state.userForm.right = right
+    state.userForm.rights = right
   },
 
   ['UPDATE_USER_CREATOR'] (state, creator) {
@@ -387,7 +403,7 @@ export default{
   },
 
   ['UPDATE_USER_TYPE'] (state, type) {
-    state.userForm.type = type
+    state.userForm.type_file = type
   },
 
   ['UPDATE_USER_PUBLISHER'] (state, publisher) {
@@ -395,11 +411,11 @@ export default{
   },
 
   ['UPDATE_USER_CONTRIBUTOR'] (state, contribuidores) {
-    state.userForm.contributor = structuredClone(contribuidores)
+    state.userForm.contributor_role = structuredClone(contribuidores)
   },
 
   ['UPDATE_USER_DESCRIPTION'] (state, description) {
-    state.userForm.description = description
+    state.userForm.desc = description
   },
 
   /**
@@ -409,31 +425,23 @@ export default{
    */
 
   ['UPDATE_SHEET_RIGHT'] (state, right) {
-    state.sheetForm.right = right
+    state.sheetForm.rightsp = right
   },
 
-  ['UPDATE_SHEET_CREATORNAME'] (state, name) {
-    state.sheetForm.creator.name = name
-  },
-
-  ['UPDATE_SHEET_CREATORROLE'] (state, role) {
-    state.sheetForm.creator.role = role
-  },
-
-  ['UPDATE_SHEET_CREATORGENDER'] (state, gender) {
-    state.sheetForm.creator.gender = gender
+  ['UPDATE_SHEET_CREATOR'] (state, creators) {
+    state.sheetForm.creatorp_role = structuredClone(creators)
   },
 
   [types.SAVE_SHEET_DATE] (state, date) {
-    state.sheetForm.date = date
+    state.sheetForm.datep = date
   },
 
   ['UPDATE_SHEET_KEY'] (state, key) {
-    state.sheetForm.key = key
+    state.sheetForm.real_key = key
   },
 
   ['UPDATE_SHEET_METRE'] (state, metre) {
-    state.sheetForm.metre = metre
+    state.sheetForm.meter = metre
   },
 
   ['UPDATE_SHEET_TEMPO'] (state, tempo) {
@@ -441,7 +449,7 @@ export default{
   },
 
   ['UPDATE_SHEET_INSTRUMENT'] (state, instrument) {
-    state.sheetForm.instrument = instrument
+    state.sheetForm.instruments = instrument
   },
 
   ['UPDATE_SHEET_GENRE'] (state, genre) {
@@ -449,23 +457,23 @@ export default{
   },
 
   ['UPDATE_SHEET_CONTRIBUTOR'] (state, contributors) {
-    state.sheetForm.contributor = structuredClone(contributors)
+    state.sheetForm.contributorp_role = structuredClone(contributors)
   },
 
   ['UPDATE_SHEET_ALTTITLE'] (state, altTitle) {
-    state.sheetForm.altTitle = altTitle
+    state.sheetForm.alt_title = altTitle
   },
 
   ['UPDATE_SHEET_DESCRIPTION'] (state, description) {
-    state.sheetForm.description = description
+    state.sheetForm.descp = description
   },
 
   ['UPDATE_SHEET_TYPE'] (state, type) {
-    state.sheetForm.type = type
+    state.sheetForm.type_piece = type
   },
 
   ['UPDATE_SHEET_FORMAT'] (state, format) {
-    state.sheetForm.format = format
+    state.sheetForm.formattingp = format
   },
 
   ['UPDATE_SHEET_SUBJECT'] (state, subject) {
@@ -477,7 +485,7 @@ export default{
   },
 
   ['UPDATE_SHEET_RELATION'] (state, relation) {
-    state.sheetForm.relation = relation
+    state.sheetForm.relationp = relation
   },
 
   ['UPDATE_SHEET_HASVERSION'] (state, hasVersion) {
@@ -492,9 +500,17 @@ export default{
     state.sheetForm.coverage = coverage
   },
 
-  ['UPDATE_SHEET_SPATIAL'] (state, spatial) {
-    state.sheetForm.spatial = spatial
+  ['UPDATE_SHEET_SPATIALCOUNTRY'] (state, country) {
+    state.sheetForm.spatial.country = country
   },
+
+  ['UPDATE_SHEET_SPATIALSTATE'] (state, state2) {
+    state.sheetForm.spatial.state = state2
+  },
+
+  ['UPDATE_SHEET_SPATIALLOCATION'] (state, location) {
+    state.sheetForm.spatial.location = location
+  },  
 
   ['UPDATE_SHEET_TEMPORALCENTURY'] (state, century) {
     state.sheetForm.temporal.century = century
@@ -508,8 +524,28 @@ export default{
     state.sheetForm.temporal.year = year
   },
 
-  ['UPDATE_SHEET_SOURCE'] (state, source) {
-    state.sheetForm.source = source
+  ['UPDATE_SHEET_XML'] (state, xml) {
+    state.sheetForm.xml = xml
+  },
+
+  ['UPDATE_SHEET_MEI'] (state, mei) {
+    state.sheetForm.mei = mei
+  },
+
+  ['UPDATE_SHEET_MIDI'] (state, midi) {
+    state.sheetForm.midi = midi
+  },
+
+  ['UPDATE_SHEET_AUDIO'] (state, audio) {
+    state.sheetForm.audio = audio
+  },
+
+  ['UPDATE_SHEET_VIDEO'] (state, video) {
+    state.sheetForm.video = video
+  },
+
+  ['UPDATE_SHEET_COLID'] (state, col_id) {
+    state.sheetForm.col_id = col_id
   },
   
   /**
@@ -523,15 +559,11 @@ export default{
   },
 
   ['UPDATE_COLLECTION_RIGHT'] (state, right) {
-    state.collectionForm.right = right
+    state.collectionForm.rights = right
   },
 
-  ['UPDATE_COLLECTION_CREATORNAME'] (state, name) {
-    state.collectionForm.creator.name = name
-  },
-
-  ['UPDATE_COLLECTION_CREATORROLE'] (state, role) {
-    state.collectionForm.creator.role = role
+  ['UPDATE_COLLECTION_CREATOR'] (state, creators) {
+    state.collectionForm.creator_role = structuredClone(creators)
   },
 
   [types.SAVE_COLLECTION_DATE] (state, date) {
@@ -539,7 +571,7 @@ export default{
   },
 
   ['UPDATE_COLLECTION_CONTRIBUTOR'] (state, contributors) {
-    state.collectionForm.contributor = structuredClone(contributors)
+    state.collectionForm.contributor_role = structuredClone(contributors)
   },
 
   ['UPDATE_COLLECTION_EXTENT'] (state, extent) {
@@ -551,11 +583,11 @@ export default{
   },
 
   ['UPDATE_COLLECTION_TYPE'] (state, type) {
-    state.collectionForm.type = type
+    state.collectionForm.source_type = type
   },
 
-  ['UPDATE_COLLECTION_FORMAT'] (state, format) {
-    state.collectionForm.format = format
+  ['UPDATE_COLLECTION_FORMAT'] (state, formatting) {
+    state.collectionForm.formatting = formatting
   },
 
   ['UPDATE_COLLECTION_SUBJECT'] (state, subject) {
@@ -574,16 +606,20 @@ export default{
     state.collectionForm.publisher = publisher
   },
 
-  ['UPDATE_COLLECTION_BIBLIOGRAPHIC'] (state, bibliographic) {
-    state.collectionForm.bibliographic = bibliographic
-  },
-
   ['UPDATE_COLLECTION_COVERAGE'] (state, coverage) {
     state.collectionForm.coverage = coverage
   },
 
-  ['UPDATE_COLLECTION_SPATIAL'] (state, spatial) {
-    state.collectionForm.spatial = spatial
+  ['UPDATE_COLLECTION_SPATIALCOUNTRY'] (state, country) {
+    state.collectionForm.spatial.country = country
+  },
+
+  ['UPDATE_COLLECTION_SPATIALSTATE'] (state, state2) {
+    state.collectionForm.spatial.state = state2
+  },
+
+  ['UPDATE_COLLECTION_SPATIALLOCATION'] (state, location) {
+    state.collectionForm.spatial.location = location
   },
 
   ['UPDATE_COLLECTION_TEMPORALCENTURY'] (state, century) {
