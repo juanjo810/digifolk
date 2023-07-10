@@ -22,116 +22,6 @@ export default{
     state.error = error
   },
 
-  [types.REPORT_POST_SUCCESS] (state, {id, report}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.reporte = report
-        image.esReportado = true
-      }
-    })
-  },
-
-  [types.REPORT_POST_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.DECLINE_REPORT_SUCCESS] (state, id) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.reporte = []
-        image.esReportado = false
-      }
-    })
-  },
-
-  [types.DECLINE_REPORT_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.GIVE_LIKE_SUCCESS] (state, {id, likes}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.likes = likes
-        image.numLikes++
-      }
-    })
-  },
-
-  [types.GIVE_LIKE_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.REMOVE_LIKE_SUCCESS] (state, {id, likes}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.likes = likes
-        image.numLikes--
-      }
-    })
-  },
-
-  [types.REMOVE_LIKE_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.REMOVE_SOUND_SUCCESS] (state, id) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.esPublico = false
-        image.soundscape = ''
-      }
-    })
-  },
-
-  [types.REMOVE_SOUND_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.REMOVE_COMMENT_SUCCESS] (state, id) {
-    state.comments = state.comments.filter(comment => comment.id !== id)
-  },
-
-  [types.REMOVE_COMMENT_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.CONFIRM_REPORT_SUCCESS] (state, id) {
-    state.images = state.images.filter(image => image.id !== id)
-  },
-
-  [types.CONFIRM_REPORT_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.FOLLOW_USER_SUCCESS] (state, email) {
-    state.user.data.siguiendo.push(email)
-    // Vue.set(state.user.data.siguiendo, state.data.siguiendo.lenght - 1, email)
-  },
-
-  [types.FOLLOW_USER_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.STOP_FOLLOW_SUCCESS] (state, email) {
-    state.user.data.siguiendo = state.user.data.siguiendo.filter(user => user !== email)
-  },
-
-  [types.STOP_FOLLOW_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.EDIT_DESCRIPTION_SUCCESS] (state, {id, descripcion}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.descripcion = descripcion
-      }
-    })
-  },
-
-  [types.EDIT_DESCRIPTION_FAILURE] (state, error) {
-    state.error = error
-  },
-
   [types.REGISTER_USER_REQUEST] (state) {
     state.fetchingUser = true
     state.error = ''
@@ -274,36 +164,6 @@ export default{
     state.fetchingImages = false
   },
 
-  [types.ADD_PHOTO_SUCCESS] (state, img) {
-    var temp = [img, ...state.images]
-    state.images = temp
-  },
-
-  [types.ADD_PHOTO_FAILURE] (state, error) {
-    state.error = error
-  },
-
-  [types.ADD_COMMENT_SUCCESS] (state, com) {
-    com = {
-      autor: [state.user.data.email, state.user.data.displayName, state.user.data.photoURL, state.user.data.descripcion],
-      ...com
-    }
-    state.comments.push(com)
-    // Vue.set(state.comments, state.comments.lenght - 1, com)
-  },
-
-  [types.REMOVE_POST_SUCCESS] (state, id) {
-    state.fetchingImages = false
-    state.error = ''
-    var element = state.images.find(image => image.id === id)
-    var index = state.images.indexOf(element)
-    state.images.splice(index, 1)
-  },
-
-  [types.REMOVE_POST_FAILURE] (state, error) {
-    state.error = error
-  },
-
   [types.GEN_SOUNDSCAPE_REQUEST] (state) {
     state.generatingSoundscape = true
     state.soundscapeGenerated = false
@@ -321,14 +181,6 @@ export default{
 
   [types.GEN_SOUNDSCAPE_FAILURE] (state, {error}) {
     state.generatingSoundscape = false
-    state.error = error
-  },
-
-  [types.GET_OTHERUSER_SUCCESS] (state, user) {
-    state.otherUser = user
-  },
-
-  [types.GET_OTHERUSER_FAILURE] (state, error) {
     state.error = error
   },
 
@@ -641,5 +493,41 @@ export default{
   ['UPDATE_COLLECTION_RIGHTSHOLDER'] (state, rightsHolder) {
     state.collectionForm.rightsHolder = rightsHolder
   },
+
+
+  ['RESET_ERROR'] (state, error) {
+    state.error = error
+  },
+
+  /**
+   * Uploading data mutations: piece and collections
+   */
+
+  [types.UPLOAD_COLLECTION_REQUEST] (state) {
+    state.fetchingCollection = true
+  },
+
+  [types.UPLOAD_COLLECTION_SUCCESS] (state, res) {
+    state.fetchingCollection = false
+    state.defaultSelections.collectionsIDs.push(res)
+  },
+
+  [types.UPLOAD_COLLECTION_FAILURE] (state, error) {
+    state.fetchingCollection = false
+    state.error = error
+  },
+
+  [types.UPLOAD_PIECE_REQUEST] (state) {
+    state.fetchingPiece = true
+  },
+
+  [types.UPLOAD_PIECE_SUCCESS] (state) {
+    state.fetchingPiece = false
+  },
+
+  [types.UPLOAD_PIECE_FAILURE] (state, error) {
+    state.fetchingPiece = false
+    state.error = error
+  }
   
 }

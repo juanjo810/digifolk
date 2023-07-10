@@ -15,11 +15,13 @@ export default{
       return new Promise((resolve, reject)=>{
         commit(types.LOGIN_USER_REQUEST)
         API.logIn(user, password)
-          .then(()=>{
+          .then((res)=>{
+            console.log(res)
             commit(types.LOGIN_USER_SUCCESS)
             resolve()
           })
-          .catch(() => {
+          .catch((err) => {
+            console.log(err)
             commit(types.LOGIN_USER_FAILURE, { error: 'Usuario o contraseña incorrectos'})
             reject()
           })
@@ -27,14 +29,14 @@ export default{
     )},
 
   
-  registerUser ({ commit }, { email, password, name, username, password2, institution }) {
+  registerUser ({ commit }, { email, password, name, surname, username, password2, institution }) {
     return new Promise((resolve, reject) => {
       commit(types.REGISTER_USER_REQUEST)
       if (password !== password2) {
         commit(types.REGISTER_USER_FAILURE, { error: 'Las contraseñas no coinciden' })
         reject()
       } else {
-        API.register(email, password, name, username, institution)
+        API.register(email, name, surname, username, password, institution)
           .then(() => {
             commit(types.REGISTER_USER_SUCCESS)
             resolve()
@@ -47,7 +49,7 @@ export default{
     })
   },
 
-  saveDataCollection ({state}) {
+  saveDataCollection ({state, commit}) {
     var collectionTemp = structuredClone(state.collectionForm)
     collectionTemp.relation = state.collectionForm.relation.split(state.separator)
     collectionTemp.subject = state.collectionForm.subject.split(state.separator)
@@ -63,10 +65,21 @@ export default{
       role: state.defaultSelections.creator_rolessMapping[creator.role]
     }));
     const json = JSON.stringify(collectionTemp)
-    console.log(json)
+    return new Promise((resolve, reject) => {
+      commit(types.UPLOAD_COLLECTION_REQUEST)
+      API.uploadCollection(json)
+        .then((res) => {
+          commit(types.UPLOAD_COLLECTION_SUCCESS, res)
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.UPLOAD_COLLECTION_FAILURE, {error: error.msg})
+          reject()
+        })
+    })  
   },
 
-  saveDataPiece ({state}) {
+  saveDataPiece ({state, commit}) {
     var userTemp = structuredClone(state.userForm)
     var sheetTemp = structuredClone(state.sheetForm)
     const combinedForm = {
@@ -97,6 +110,18 @@ export default{
     }));
     const json = JSON.stringify(combinedForm);
     console.log(json);
+    return new Promise((resolve, reject) => {
+      commit(types.UPLOAD_PIECE_REQUEST)
+      API.uploadCollection(json)
+        .then(() => {
+          commit(types.UPLOAD_PIECE_SUCCESS)
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.UPLOAD_PIECE_FAILURE, {error: error.msg})
+          reject()
+        })
+    })  
   },
 
   addContributor ({ commit }, form){

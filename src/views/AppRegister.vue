@@ -50,6 +50,16 @@
               cols="12"
           >
             <v-text-field
+                v-model="surname"
+                label="Surname"
+                :rules="rules"
+            ></v-text-field>
+          </v-col>
+
+          <v-col
+              cols="12"
+          >
+            <v-text-field
                 v-model="email"
                 label="Email"
                 :rules="rulesEmail"
@@ -160,12 +170,13 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data () {
     return {
-      user: '',
-      name: '',
-      email: '',
-      institution: '',
-      password: '',
-      password2: '',
+      user: 'juanjo_810',
+      name: 'Juanjo',
+      surname: 'Navarro',
+      email: 'juanjo_810@usal.es',
+      institution: 'USAL',
+      password: 'juanjo',
+      password2: 'juanjo',
       visible1: false,
       visible2: false,
       visibility: false,
@@ -192,12 +203,13 @@ export default {
       'registerUser'
     ]),
     register () {
-      if (this.name !== '' && this.surname !== '' && this.email !== '' && this.password !== '' && this.password2 !== '') {
-        this.registerUser({ email: this.email, password: this.password, name: this.name, username: this.user, password2: this.password2, institution: this.institution })
+      if (this.user !== '' && this.name !== '' && this.surname !== '' && this.email !== '' && this.password !== '' && this.password2 !== '') {
+        this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, username: this.user, password2: this.password2, institution: this.institution })
           .then(() => {
             if (this.error === '') {
               this.user = ''
               this.name = ''
+              this.surname = ''
               this.email = ''
               this.institution = ''
               this.password = ''

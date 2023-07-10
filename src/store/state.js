@@ -1,5 +1,7 @@
 export default{
   error: '',
+  fetchingCollection: false,
+  fetchingPiece: false,
   separator: '|',
   defaultSelections: {
     rights:['Rights statements', 'In copyright', 'In copyright - EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
@@ -71,7 +73,8 @@ export default{
       'Sound': 710,
       'StillImage': 711,
       'Text': 712
-    }
+    },
+    collectionsIDs: []
   },
   userForm: {
     identifier: 'XX-XXXX-XX-XX-X',

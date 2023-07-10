@@ -24,13 +24,13 @@
 
     </v-app-bar>
     <v-dialog
-    v-if="error!==''"
-    v-model="error"
+    v-if="otroError!==''"
+    v-model="otroError"
     max-width="400">
     <v-alert
       type="error"
-      v-if="error!==''"
-    >{{error}}</v-alert>
+      v-if="otroError!==''"
+    >{{otroError}}</v-alert>
     </v-dialog>
     <v-main style="background-color: #456">
       <router-view/>
@@ -50,7 +50,15 @@ export default {
   computed: {
     ...mapState([
       'error'
-    ])
+    ]),
+    otroError: {
+      get () {
+        return this.error
+      },
+      set (value) {
+        this.$store.commit('RESET_ERROR', value)
+      }
+    }
   }
 };
 </script>
