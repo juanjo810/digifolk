@@ -1,4 +1,4 @@
-FROM node:18.16.1
+FROM node:18.16.1 AS build-stage
 
 ADD package.json /package.json
 
