@@ -12,8 +12,9 @@ export default{
     state.error = ''
   },
 
-  [types.LOGIN_USER_SUCCESS] (state) {
+  [types.LOGIN_USER_SUCCESS] (state, token) {
     state.fetchingUser = false
+    state.user.tokenSession = token
     state.error = ''
   },
 

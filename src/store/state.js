@@ -1,9 +1,14 @@
 export default{
+  user:{
+    tokenSession: '',
+    id: -1
+  },
   error: '',
   fetchingCollection: false,
   fetchingPiece: false,
   separator: '|',
   defaultSelections: {
+    itemsIDs:['1-Rights', '2-XML Contributor Roles', '3-Creator Pieces Roles', '4-Contributor Pieces Roles', '5-Creator Sources Roles', '6-Contributor Sources Roles', '7-Types'],
     rights:['Rights statements', 'In copyright', 'In copyright - EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
     rightsMapping: {
       'Rights statements': 11,
@@ -56,7 +61,7 @@ export default{
     keys:['C', 'G', 'F', 'D', 'Bb', 'Eb', 'A'],
     metres:['2/4', '3/4', '4/4', '6/8', '9/8', '12/8'],
     tempos:['Slow', 'Medium', 'Fast'],
-    instruments:['Singer', 'Harmonium', 'Harmonica', 'Banjo', '5-String Banjo', 'Irish Bouzouki', 'Bodhrán', 'Accordion', 'Piano Accordion', 'Bass Clarinet', 'Early Irish Harp', 'Pedal Harp', 'Percussion Instrument', 'Bones', 'Concertina', 'English Concertina', 'Irish Harp', 'Harpsichord', 'Pedal Harp', 'Percussive Dance', 'Bass Guitar', 'Cello', 'Lambeg Drum', 'Low Whistle', 'Flute', 'Tin Whistle', 'Reed Instrument', 'Fiddle', 'Fife', 'Piccolo', 'Metal Flute', 'Drum Set', 'Wind Instrument', 'Woodwind Instrument', 'Guitar', 'Electric Guitar', 'Mandolin', 'Mandola', 'Melodeon', 'Oboe', 'Double Bass', 'Piano', 'Bagpipes', 'War Pipes', 'Pipe Organ', 'Uilleann Pipes', 'Lilting', 'Saxophone', 'Synthesizer', 'Spoons', 'Snare Drum', 'Appalachian Dulcimer', 'Hammered Dulcimer', 'String Instrument', 'Jaw Harp', 'Vocal Instrument', 'Keyboard Instrument', 'Viola'],
+    instruments:['Singer', 'Harmonium', 'Ha rmonica', 'Banjo', '5-String Banjo', 'Irish Bouzouki', 'Bodhrán', 'Accordion', 'Piano Accordion', 'Bass Clarinet', 'Early Irish Harp', 'Pedal Harp', 'Percussion Instrument', 'Bones', 'Concertina', 'English Concertina', 'Irish Harp', 'Harpsichord', 'Pedal Harp', 'Percussive Dance', 'Bass Guitar', 'Cello', 'Lambeg Drum', 'Low Whistle', 'Flute', 'Tin Whistle', 'Reed Instrument', 'Fiddle', 'Fife', 'Piccolo', 'Metal Flute', 'Drum Set', 'Wind Instrument', 'Woodwind Instrument', 'Guitar', 'Electric Guitar', 'Mandolin', 'Mandola', 'Melodeon', 'Oboe', 'Double Bass', 'Piano', 'Bagpipes', 'War Pipes', 'Pipe Organ', 'Uilleann Pipes', 'Lilting', 'Saxophone', 'Synthesizer', 'Spoons', 'Snare Drum', 'Appalachian Dulcimer', 'Hammered Dulcimer', 'String Instrument', 'Jaw Harp', 'Vocal Instrument', 'Keyboard Instrument', 'Viola'],
     genres:['Sons', 'Children piece', 'Work piece', 'Lullaby piece', 'Pieces of youth', 'Wedding piece', 'Funeral piece', 'Dance', 'Accompanying songs', 'Religious songs'],
     genders: ['Male', 'Female', 'Other'],
     types:['Collection', 'Dataset', 'Event', 'Image', 'InteractiveResource', 'MovingImage', 'PhysicalObject', 'Service', 'Software', 'Sound', 'StillImage', 'Text'],

@@ -16,8 +16,7 @@ export default{
         commit(types.LOGIN_USER_REQUEST)
         API.logIn(user, password)
           .then((res)=>{
-            console.log(res)
-            commit(types.LOGIN_USER_SUCCESS)
+            commit(types.LOGIN_USER_SUCCESS, res)
             resolve()
           })
           .catch((err) => {

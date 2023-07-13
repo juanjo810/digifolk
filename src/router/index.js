@@ -1,5 +1,6 @@
 
 import { createRouter, createWebHashHistory } from 'vue-router'
+import store from '@/store'
 import Login from '@/views/AppLogin.vue'
 import Dashboard from '@/views/AppDashboard.vue'
 import Register from '@/views/AppRegister.vue'
@@ -24,6 +25,9 @@ const router =  createRouter({
             path: '/dashboard',
             name: 'dashboard',
             component: Dashboard,
+            meta: {
+                requiresAuth: true
+            },
             redirect: () => {
                 return {name: 'collectionForm'}
             },
@@ -32,23 +36,34 @@ const router =  createRouter({
                      path: 'userForm',
                      name: 'userForm',
                      component: () => import('@/components/UserForm.vue'),
+                     meta: {
+                         requiresAuth: true
+                     },
 
                 },
                 {
                     path: 'sheetForm',
                     name: 'sheetForm',
                     component: () => import('@/components/SheetForm.vue'),
-                //    meta: {
-                //        requiresAuth: true
-                //    },
+                    meta: {
+                        requiresAuth: true
+                    },
                 },
                 {
                     path: 'collectionForm',
                     name: 'collectionForm',
                     component: () => import('@/components/CollectionForm.vue'),
-                //    meta: {
-                //        requiresAuth: true
-                //    },
+                    meta: {
+                        requiresAuth: true
+                    },
+                },
+                {
+                    path: 'modifyItems',
+                    name: 'modifyItems',
+                    component: () => import('@/components/ModifyItems.vue'),
+                    meta: {
+                        requiresAuth: true
+                    },
                 },
                 // {
                 //     path: 'reports',
@@ -119,17 +134,18 @@ const router =  createRouter({
 
 export default router
 
-// router.beforeEach((to, from , next) => {
-//     // instead of having to check every route record with
-//     // to.matched.some(record => record.meta.requiresAuth)
-//     if (to.meta.requiresAuth && !store.state.user.loggedIn)
-//     {
-//         next({name:'login'})
-//     }else{
-//         if(!to.meta.requiresAuth && store.state.user.loggedIn){
-//             next({name:'dashboard'})
-//         }
-//         next()
-//     }
-// })
+router.beforeEach((to, from , next) => {
+    // instead of having to check every route record with
+    // to.matched.some(record => record.meta.requiresAuth)
+    if (to.meta.requiresAuth && store.state.user.tokenSession === '')
+    {
+        next({name:'login'})
+    }else{
+        if(!to.meta.requiresAuth && store.state.user.tokenSession !== ''){
+            next({name:'dashboard'})
+        } else {
+            next()
+        }
+    }
+})
 

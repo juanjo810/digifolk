@@ -17,7 +17,6 @@
           @click="$router.push({name: 'dashboard'})"
         />
         <h1>Digifolk</h1>
-        
       </div>
 
       <v-spacer></v-spacer>

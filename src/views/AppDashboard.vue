@@ -18,6 +18,11 @@
             <span>XML user data</span>
             <v-icon>mdi-account</v-icon>
           </v-btn>
+
+          <v-btn value="items" @click="$router.push({name: 'modifyItems'})">
+            <span>Modify items</span>
+            <v-icon>mdi-format-list-bulleted</v-icon>
+          </v-btn>
         </v-bottom-navigation>
 
         <router-view></router-view>
