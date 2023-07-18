@@ -90,8 +90,29 @@ export default {
     }
     const param = JSON.stringify(obj)
     console.log(param)
+    return new Promise((resolve,reject) => {
+      axios.post('http://100.127.151.18:8000/api/createItem', param, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => {
+        resolve();
+      })
+      .catch(error => {
+        reject(error);
+      });
+    })
+  },
+  removeItem(id,typeId) {
+    const param = {
+      "id": id,
+      "type_item": typeId
+    }
+    console.log(param)
     // return new Promise((resolve,reject) => {
-    //   axios.post('http://100.127.151.18:8000/api/createItem', param, {
+    //   axios.delete('http://100.127.151.18:8000/api/removeCol', param, {
     //     headers: {
     //       'Access-Control-Allow-Origin': '*',
     //       'Content-Type': 'application/json'

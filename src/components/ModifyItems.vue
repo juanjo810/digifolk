@@ -85,7 +85,7 @@ export default {
             'addContributor',
             'formatAndSaveDate',
             'addNewItem',
-            'removeItem'
+            'removeOneItem'
         ]),
         addItem() {
             const firstCharacter = this.idItem.charAt(0);
@@ -93,9 +93,9 @@ export default {
             this.addNewItem({id: id, items: this.filteredItems, newItem: this.newItemName})
         },
         removeItem(index) {
-            const firstCharacter = this.idItem.charAt(0);
+            const firstCharacter = this.idItem.charAt();
             const id = parseInt(firstCharacter, 10);
-            this.removeItem({id: id, items: this.filteredItems, newItem: this.newItemName})
+            this.removeOneItem({id: id, items: this.filteredItems, index: index})
         },
         saveData () {
             this.saveDataPiece()

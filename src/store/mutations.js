@@ -532,7 +532,7 @@ export default{
   },
 
   /**
-   * ADD ITEMS MUTATIONS
+   * ADD AND REMOVE ITEMS MUTATIONS
    */
 
   [types.ADD_NEW_ITEM_REQUEST] ({state}, {items, newItem}) {
@@ -541,6 +541,16 @@ export default{
   },
 
   [types.ADD_NEW_ITEM_FAILURE] ({state}, {items, error}) {
+    state.error = error
+    items.splice(items.length - 1, 1)
+  },
+
+  [types.REMOVE_ITEM_REQUEST] ({state}, {items, index}) {
+    items.splice(index, 1)
+    console.log(state)
+  },
+
+  [types.REMOVE_ITEM_FAILURE] ({state}, {items, error}) {
     state.error = error
     items.splice(items.length - 1, 1)
   },

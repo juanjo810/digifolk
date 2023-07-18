@@ -200,11 +200,22 @@ export default{
   addNewItem ({commit}, {id, items, newItem}) {
     commit(types.ADD_NEW_ITEM_REQUEST, {items: items, newItem: newItem})
     API.addItem(items.length, id, newItem)
+    .then(() => {
+      commit(types.ADD_NEW_ITEM_SUCCESS)
+    })
+    .catch((err) => {
+      commit(types.ADD_NEW_ITEM_FAILURE, {items: items, error: err})
+    })
+  },
+
+  removeOneItem ({commit}, {id, items, index}) {
+    commit(types.REMOVE_ITEM_REQUEST, {items: items, index: index})
+    API.removeItem(items.length, id)
     // .then(() => {
-    //   commit(types.ADD_NEW_ITEM_SUCCESS)
+    //   commit(types.REMOVE_NEW_ITEM_SUCCESS)
     // })
     // .catch((err) => {
-    //   commit(types.ADD_NEW_ITEM_FAILURE, {items: items, error: err})
+    //   commit(types.REMOVE_NEW_ITEM_FAILURE, {items: items, error: err})
     // })
   }
 
