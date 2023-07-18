@@ -49,12 +49,6 @@ export default {
     data () {
         return{
             idItem: null,
-            items: [
-                { id: 1, name: 'Item 1' },
-                { id: 1, name: 'Item 2' },
-                { id: 2, name: 'Item 3' },
-                { id: 3, name: 'Item 4' }
-            ],
             newItemName: ''
         }
     },
@@ -90,13 +84,18 @@ export default {
             'saveDataPiece',
             'addContributor',
             'formatAndSaveDate',
-            'removeContributor'
+            'addNewItem',
+            'removeItem'
         ]),
         addItem() {
-            this.filteredItems.push(this.newItemName);
+            const firstCharacter = this.idItem.charAt(0);
+            const id = parseInt(firstCharacter, 10);
+            this.addNewItem({id: id, items: this.filteredItems, newItem: this.newItemName})
         },
         removeItem(index) {
-            this.items.splice(index, 1);
+            const firstCharacter = this.idItem.charAt(0);
+            const id = parseInt(firstCharacter, 10);
+            this.removeItem({id: id, items: this.filteredItems, newItem: this.newItemName})
         },
         saveData () {
             this.saveDataPiece()

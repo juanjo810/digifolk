@@ -529,6 +529,19 @@ export default{
   [types.UPLOAD_PIECE_FAILURE] (state, error) {
     state.fetchingPiece = false
     state.error = error
-  }
-  
+  },
+
+  /**
+   * ADD ITEMS MUTATIONS
+   */
+
+  [types.ADD_NEW_ITEM_REQUEST] ({state}, {items, newItem}) {
+    items.push(newItem)
+    console.log(state)
+  },
+
+  [types.ADD_NEW_ITEM_FAILURE] ({state}, {items, error}) {
+    state.error = error
+    items.splice(items.length - 1, 1)
+  },
 }

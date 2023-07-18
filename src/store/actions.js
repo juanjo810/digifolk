@@ -195,6 +195,17 @@ export default{
       default:
         return
     }
+  },
+
+  addNewItem ({commit}, {id, items, newItem}) {
+    commit(types.ADD_NEW_ITEM_REQUEST, {items: items, newItem: newItem})
+    API.addItem(items.length, id, newItem)
+    // .then(() => {
+    //   commit(types.ADD_NEW_ITEM_SUCCESS)
+    // })
+    // .catch((err) => {
+    //   commit(types.ADD_NEW_ITEM_FAILURE, {items: items, error: err})
+    // })
   }
 
   

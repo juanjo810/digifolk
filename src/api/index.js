@@ -81,5 +81,28 @@ export default {
           reject(error);
         });
     });
+  },
+  addItem(id,typeId, newItem) {
+    const obj = {
+      "id": id,
+      "type_item": typeId,
+      "name": newItem
+    }
+    const param = JSON.stringify(obj)
+    console.log(param)
+    // return new Promise((resolve,reject) => {
+    //   axios.post('http://100.127.151.18:8000/api/createItem', param, {
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //       'Content-Type': 'application/json'
+    //     }
+    //   })
+    //   .then(() => {
+    //     resolve();
+    //   })
+    //   .catch(error => {
+    //     reject(error);
+    //   });
+    // })
   }
 }
