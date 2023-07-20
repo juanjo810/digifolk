@@ -3,6 +3,18 @@
  * @description En este fichero se muestran los diferentes getters que se tienen del estado local del sistema.
  */
 export default{
+    getItemsByType: (state) => (typeId) => {
+      return state.defaultSelections.items.filter(item => item.type_item === typeId)
+    },
+    getItemsNameByType: (state) => (typeId) => {
+      const items = state.defaultSelections.items.filter(item => item.type_item === typeId)
+      return items.map(item => item.name)
+    },
+    getMaxItemIdInType: (state) => (typeId) => {
+      const filteredItems = state.defaultSelections.items.filter(item => item.type_item === typeId);
+      const maxId = filteredItems.reduce((max, item) => (item.id > max ? item.id : max), 0);
+      return maxId;
+    },
     getImageById: (state) => (id) => { return state.images.find(image => image.id === id) },
     getImagesByUser: (state) => (email) => {
       return state.images.filter(image => image.owner[0] === email)

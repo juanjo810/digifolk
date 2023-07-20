@@ -89,11 +89,47 @@ export default {
       "name": newItem
     }
     const param = JSON.stringify(obj)
-    console.log(param)
     return new Promise((resolve,reject) => {
       axios.post('http://100.127.151.18:8000/api/createItem', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => {
+        resolve(obj);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    })
+  },
+  removeItem(id,typeId) {
+    return new Promise((resolve,reject) => {
+      axios.delete('http://100.127.151.18:8000/api/removeItem', {
+        params: {
+          id: id,
+          type_item: typeId
+        }})        
+      .then(() => {
+        resolve();
+      })
+      .catch(error => {
+        reject(error);
+      });
+    })
+  },
+  editOneItem(id, id_type, newName) {
+    const obj = {
+      "id": id,
+      "type_item": id_type,
+      "name": newName
+    }
+    debugger
+    const param = JSON.stringify(obj)
+    return new Promise((resolve,reject) => {
+      axios.post('http://100.127.151.18:8000/api/editItem', param, {
+        headers: {
           'Content-Type': 'application/json'
         }
       })
@@ -105,25 +141,15 @@ export default {
       });
     })
   },
-  removeItem(id,typeId) {
-    const param = {
-      "id": id,
-      "type_item": typeId
-    }
-    console.log(param)
-    // return new Promise((resolve,reject) => {
-    //   axios.delete('http://100.127.151.18:8000/api/removeCol', param, {
-    //     headers: {
-    //       'Access-Control-Allow-Origin': '*',
-    //       'Content-Type': 'application/json'
-    //     }
-    //   })
-    //   .then(() => {
-    //     resolve();
-    //   })
-    //   .catch(error => {
-    //     reject(error);
-    //   });
-    // })
+  fetchAllItems() {
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getListItems')
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
   }
 }

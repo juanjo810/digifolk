@@ -197,26 +197,41 @@ export default{
     }
   },
 
-  addNewItem ({commit}, {id, items, newItem}) {
-    commit(types.ADD_NEW_ITEM_REQUEST, {items: items, newItem: newItem})
-    API.addItem(items.length, id, newItem)
-    .then(() => {
-      commit(types.ADD_NEW_ITEM_SUCCESS)
+  addNewItem ({commit}, {id, id_type, newItem}) {
+    API.addItem(id, id_type, newItem)
+    .then((res) => {
+      commit(types.ADD_NEW_ITEM_SUCCESS, res)
     })
     .catch((err) => {
-      commit(types.ADD_NEW_ITEM_FAILURE, {items: items, error: err})
+      commit(types.ADD_NEW_ITEM_FAILURE, err)
     })
   },
 
-  removeOneItem ({commit}, {id, items, index}) {
-    commit(types.REMOVE_ITEM_REQUEST, {items: items, index: index})
-    API.removeItem(items.length, id)
-    // .then(() => {
-    //   commit(types.REMOVE_NEW_ITEM_SUCCESS)
-    // })
-    // .catch((err) => {
-    //   commit(types.REMOVE_NEW_ITEM_FAILURE, {items: items, error: err})
-    // })
+  removeOneItem ({commit}, {item, id_type}) {
+    API.removeItem(item.id, id_type)
+    .then(() => {
+      commit(types.REMOVE_ITEM_SUCCESS, item)
+    })
+    .catch((err) => {
+      commit(types.REMOVE_ITEM_FAILURE, err)
+    })
+  },
+
+  editItem ({commit}, {id, id_type, newName}) {
+    API.editOneItem(id, id_type, newName)
+    .then(() => {
+      commit(types.EDIT_ITEM_SUCCESS, {id: id, id_type: id_type, newName: newName})
+    })
+    .catch((err) => {
+      commit(types.EDIT_ITEM_FAILURE, err)
+    })
+  },
+
+  fetchItems({commit}) {
+    API.fetchAllItems()
+    .then((res)=>{
+      commit(types.FETCH_ITEMS, res)
+    })
   }
 
   

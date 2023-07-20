@@ -19,7 +19,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                 </v-col>
 
                                 <v-col cols="6">
-                                <v-select v-model="this.right" label="Rights" :items="defaultSelections.rights"></v-select>
+                                <v-select v-model="this.right" label="Rights" :items="getItemsNameByType(1)"></v-select>
                             </v-col>
 
                                 <v-col cols="6">
@@ -37,7 +37,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                 </v-col>
 
                                 <v-col cols="6">
-                                    <v-select v-model="this.type" label="Type" :items="defaultSelections.types" :rules="rules"></v-select>
+                                    <v-select v-model="this.type" label="Type" :items="getItemsNameByType(7)" :rules="rules"></v-select>
                                 </v-col>
 
                                 <v-col cols="6">
@@ -56,7 +56,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                             <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                         </v-col>
                                         <v-col cols="5">
-                                            <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="defaultSelections.cont_rolesXML" :rules="rules"></v-select>
+                                            <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="getItemsNameByType(2)" :rules="rules"></v-select>
                                         </v-col>
                                         <v-col cols="1">
                                             <v-btn @click="removeField(index)">
@@ -93,7 +93,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import {VDatePicker} from 'vuetify/labs/VDatePicker'
 
 export default {
@@ -114,6 +114,9 @@ export default {
             'error',
             'userForm',
             'defaultSelections'
+        ]),
+        ...mapGetters([
+          'getItemsNameByType'
         ]),
         id: {
             get () {

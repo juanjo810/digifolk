@@ -535,23 +535,36 @@ export default{
    * ADD AND REMOVE ITEMS MUTATIONS
    */
 
-  [types.ADD_NEW_ITEM_REQUEST] ({state}, {items, newItem}) {
-    items.push(newItem)
-    console.log(state)
+  [types.ADD_NEW_ITEM_SUCCESS] (state, item) {
+    state.defaultSelections.items.push(item)
   },
 
-  [types.ADD_NEW_ITEM_FAILURE] ({state}, {items, error}) {
+  [types.ADD_NEW_ITEM_FAILURE] (state, error) {
     state.error = error
-    items.splice(items.length - 1, 1)
   },
 
-  [types.REMOVE_ITEM_REQUEST] ({state}, {items, index}) {
-    items.splice(index, 1)
-    console.log(state)
+  [types.REMOVE_ITEM_SUCCESS] (state, item) {
+    state.defaultSelections.items = state.defaultSelections.items.filter(it => it !== item);
   },
 
-  [types.REMOVE_ITEM_FAILURE] ({state}, {items, error}) {
+  [types.REMOVE_ITEM_FAILURE] (state, error) {
     state.error = error
-    items.splice(items.length - 1, 1)
   },
+
+  [types.EDIT_ITEM_SUCCESS] (state, {id, id_type, newName}) {
+    debugger
+    const editedItemIndex = state.defaultSelections.items.findIndex(
+      (item) =>
+        item.id === id && item.type_item === id_type
+    )
+    state.defaultSelections.items[editedItemIndex].name = newName
+  },
+
+  [types.EDIT_ITEM_FAILURE] (state, error) {
+    state.error = error
+  },
+
+  [types.FETCH_ITEMS] (state, items) {
+    state.defaultSelections.items = items
+  }
 }

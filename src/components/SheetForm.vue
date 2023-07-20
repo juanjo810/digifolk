@@ -10,7 +10,7 @@
                     <v-card-text>
                         <v-row>
                             <v-col cols="12">
-                                <v-select v-model="this.right" label="Rights" :items="defaultSelections.rights" :rules="rules"></v-select>
+                                <v-select v-model="this.right" label="Rights" :items="getItemsNameByType(1)" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="6  ">
@@ -26,7 +26,7 @@
                                         <v-text-field v-model="c.name" @input="updateCreator()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="4">
-                                        <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="defaultSelections.creator_rolesp" :rules="rules"></v-select>
+                                        <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="getItemsNameByType(3)" :rules="rules"></v-select>
                                     </v-col>
                                     <v-col cols="3">
                                         <v-select v-model="c.gender" @update:modelValue="updateCreator()"  label="Gender" :items="defaultSelections.genders"></v-select>
@@ -80,7 +80,7 @@
                                         <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="5">
-                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="defaultSelections.cont_rolesp" :rules="rules"></v-select>
+                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="getItemsNameByType(4)" :rules="rules"></v-select>
                                     </v-col>
                                     <v-col cols="1">
                                         <v-btn @click="removeField(index)">
@@ -201,7 +201,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
 export default {
@@ -224,6 +224,9 @@ export default {
             'error',
             'sheetForm',
             'defaultSelections'
+        ]),
+        ...mapGetters([
+          'getItemsNameByType'
         ]),
         right: {
             get () {

@@ -15,7 +15,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             </v-col>
 
                             <v-col cols="6">
-                                <v-select v-model="right" label="Rights" :items="defaultSelections.rights" :rules="rules"></v-select>
+                                <v-select v-model="right" label="Rights" :items="this.getItemsNameByType(1)" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="6">
@@ -42,7 +42,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                         <v-text-field v-model="c.name" @input="updateCreator()" label="Name or URI" :rules="rules" hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="5">
-                                        <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="defaultSelections.creator_rolesp" :rules="rules"></v-select>
+                                        <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="getItemsNameByType(5)" :rules="rules"></v-select>
                                     </v-col>
                                     <v-col cols="1">
                                         <v-btn @click="removeFieldCreator(index)">
@@ -64,7 +64,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                         <v-text-field v-model="c.name" @input="updateContributor()" label="Name or URI"  hint="URI example in http://www.dib.ie" persistent-hint></v-text-field>
                                     </v-col>
                                     <v-col cols="5">
-                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="defaultSelections.cont_roless" ></v-select>
+                                        <v-select  v-model="c.role" @update:modelValue="updateContributor()" label="Role" :items="getItemsNameByType(6)" ></v-select>
                                     </v-col>
                                     <v-col cols="1">
                                         <v-btn @click="removeField(index)">
@@ -75,7 +75,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             </v-container>
                             
                             <v-col cols="6">
-                                <v-select v-model="type" label="Type" :items="defaultSelections.types"></v-select>
+                                <v-select v-model="type" label="Type" :items="getItemsNameByType(7)"></v-select>
                             </v-col>
 
                             <v-col cols="6">
@@ -144,9 +144,6 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                                 <v-text-field v-model="rightsHolder" label="RightsHolder" ></v-text-field>
                             </v-col>
                         </v-row>
-
-
-
                     </v-card-text>
 
                     <v-card-actions>
@@ -167,7 +164,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
 export default {
@@ -189,6 +186,9 @@ export default {
             'error',
             'collectionForm',
             'defaultSelections'
+        ]),
+        ...mapGetters([
+          'getItemsNameByType'
         ]),
         title: {
             get () {
