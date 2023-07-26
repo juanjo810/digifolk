@@ -35,13 +35,6 @@
                             </v-col>
                         </v-row> 
                     </v-card-text>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="deep-purple lighten-2" text @click="saveData()">
-                            Save Data
-                        </v-btn>
-                    </v-card-actions>
                 </div>
             </v-col>
         </v-row>
@@ -106,15 +99,6 @@ export default {
           const id_type = this.defaultSelections.itemsIDs[this.idItem]
           this.editItem({id: item.id, id_type: id_type, newName: this.nameEditing})
           this.editingIndex = -1
-        },
-        async saveData() {
-          for (const item of this.defaultSelections.genders) {
-            const id_type = 13
-            const lastId = this.getMaxItemIdInType(id_type)
-            const newId = `${id_type}${lastId + 1}`
-            const id = parseInt(newId)
-            await this.addNewItem({id: id, id_type: id_type, newItem: item})
-          }
         }
     },
     created () {
