@@ -170,13 +170,13 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data () {
     return {
-      user: 'juanjo_810',
-      name: 'Juanjo',
-      surname: 'Navarro',
-      email: 'juanjo_810@usal.es',
-      institution: 'USAL',
-      password: 'juanjo',
-      password2: 'juanjo',
+      user: '',
+      name: '',
+      surname: '',
+      email: '',
+      institution: '',
+      password: '',
+      password2: '',
       visible1: false,
       visible2: false,
       visibility: false,

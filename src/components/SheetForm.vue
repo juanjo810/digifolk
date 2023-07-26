@@ -29,7 +29,7 @@
                                         <v-select  v-model="c.role" @update:modelValue="updateCreator()" label="Role" :items="getItemsNameByType(3)" :rules="rules"></v-select>
                                     </v-col>
                                     <v-col cols="3">
-                                        <v-select v-model="c.gender" @update:modelValue="updateCreator()"  label="Gender" :items="defaultSelections.genders"></v-select>
+                                        <v-select v-model="c.gender" @update:modelValue="updateCreator()"  label="Gender" :items="getItemsNameByType(13)"></v-select>
                                     </v-col>
                                     <v-col cols="1">
                                         <v-btn @click="removeFieldCreator(index)">
@@ -50,23 +50,23 @@
                             </v-col>
 
                             <v-col cols="4">
-                                <v-select v-model="key" label="Key" :items="defaultSelections.keys" :rules="rules"></v-select>
+                                <v-select v-model="key" label="Key" :items="getItemsNameByType(8)" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="4">
-                                <v-select v-model="metre" label="Metre" :items="defaultSelections.metres" :rules="rules"></v-select>
+                                <v-select v-model="metre" label="Metre" :items="getItemsNameByType(9)" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="4">
-                                <v-select v-model="tempo" label="Tempo" :items="defaultSelections.tempos" :rules="rules"></v-select>
+                                <v-select v-model="tempo" label="Tempo" :items="getItemsNameByType(10)" :rules="rules"></v-select>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-select v-model="instrument" label="Instruments" :items="defaultSelections.instruments" multiple></v-select>
+                                <v-select v-model="instrument" label="Instruments" :items="getItemsNameByType(11)" multiple></v-select>
                             </v-col>
 
                             <v-col cols="6">
-                                <v-select v-model="genre" label="Genre" :items="defaultSelections.genres" :rules="rules" multiple></v-select>
+                                <v-select v-model="genre" label="Genre" :items="getItemsNameByType(12)" :rules="rules" multiple></v-select>
                             </v-col>
                             <v-col cols="6  ">
                                 <h2>Contributors</h2>

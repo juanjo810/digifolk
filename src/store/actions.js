@@ -16,12 +16,16 @@ export default{
         commit(types.LOGIN_USER_REQUEST)
         API.logIn(user, password)
           .then((res)=>{
-            commit(types.LOGIN_USER_SUCCESS, res)
+            if (Array.isArray(res)) {
+              commit(types.LOGIN_USER_SUCCESS, {userInfo: res[0], token: res[1]})
+            } else {
+              commit(types.LOGIN_USER_FAILURE, { error: 'Wrong user or password.'})
+            }
             resolve()
           })
           .catch((err) => {
             console.log(err)
-            commit(types.LOGIN_USER_FAILURE, { error: 'Usuario o contraseña incorrectos'})
+            commit(types.LOGIN_USER_FAILURE, { error: 'Failed connection with server.'})
             reject()
           })
       } 
@@ -48,20 +52,24 @@ export default{
     })
   },
 
-  saveDataCollection ({state, commit}) {
+  saveDataCollection ({state, commit, getters}) {
     var collectionTemp = structuredClone(state.collectionForm)
     collectionTemp.relation = state.collectionForm.relation.split(state.separator)
     collectionTemp.subject = state.collectionForm.subject.split(state.separator)
     collectionTemp.title = state.collectionForm.title.split(state.separator)
-    collectionTemp.rights = state.defaultSelections.rightsMapping[state.collectionForm.rights]
-    collectionTemp.source_type = state.defaultSelections.typesMapping[state.collectionForm.source_type]
+    var type = state.defaultSelections.itemIDs["Rights"]
+    collectionTemp.rights = getters.getItemID(type, state.collectionForm.rights)
+    type = state.defaultSelections.itemIDs["Type"]
+    collectionTemp.source_type = getters.getItemID(type, state.collectionForm.source_type)
+    type = state.defaultSelections.itemIDs["Contributor Sources Roles"]
     collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
       name: contributor.name,
-      role: state.defaultSelections.cont_rolessMapping[contributor.role]
+      role: getters.getItemID(type, contributor.role)
     }));
+    type = state.defaultSelections.itemIDs["Creator Sources Roles"]
     collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
       name: creator.name,
-      role: state.defaultSelections.creator_rolessMapping[creator.role]
+      role: getters.getItemID(type, creator.role)
     }));
     const json = JSON.stringify(collectionTemp)
     return new Promise((resolve, reject) => {
@@ -78,7 +86,7 @@ export default{
     })  
   },
 
-  saveDataPiece ({state, commit}) {
+  saveDataPiece ({state, commit, getters}) {
     var userTemp = structuredClone(state.userForm)
     var sheetTemp = structuredClone(state.sheetForm)
     const combinedForm = {
@@ -91,21 +99,28 @@ export default{
     combinedForm.relationp = sheetTemp.relationp.split(state.separator)
     combinedForm.hasVersion = sheetTemp.hasVersion.split(state.separator)
     combinedForm.isVersionOf = sheetTemp.isVersionOf.split(state.separator)
-    combinedForm.rights = state.defaultSelections.rightsMapping[state.userForm.rights]
-    combinedForm.type_file = state.defaultSelections.typesMapping[state.userForm.type_file]
-    combinedForm.rightsp = state.defaultSelections.rightsMapping[state.sheetForm.rightsp]
-    combinedForm.type_piece = state.defaultSelections.typesMapping[state.sheetForm.type_piece]
+    var type = state.defaultSelections.itemIDs["Rights"]
+    combinedForm.rights = getters.getItemID(type,state.userForm.rights)
+    type = state.defaultSelections.itemIDs["Type"]
+    combinedForm.type_file = getters.getItemID(type, state.userForm.type_file)
+    type = state.defaultSelections.itemIDs["Rights"]
+    combinedForm.rightsp = getters.getItemID(type, state.sheetForm.rightsp)
+    type = state.defaultSelections.itemIDs["Type"]
+    combinedForm.type_piece = getters.getItemID(type, state.sheetForm.type_piece)
+    type = state.defaultSelections.itemIDs["XML Contributor Roles"]
     combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
       name: contributor.name,
-      role: state.defaultSelections.cont_rolesXMLMapping[contributor.role]
+      role: getters.getItemID(type, contributor.role)
     }));
+    type = state.defaultSelections.itemIDs["Creator Pieces Roles"]
     combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
       name: creator.name,
-      role: state.defaultSelections.creator_rolespMapping[creator.role]
+      role: getters.getItemID(type, creator.role)
     }));
+    type = state.defaultSelections.itemIDs["Contributor Pieces Roles"]
     combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
       name: contributor.name,
-      role: state.defaultSelections.cont_rolespMapping[contributor.role]
+      role: getters.getItemID(type, contributor.role)
     }));
     const json = JSON.stringify(combinedForm);
     console.log(json);
@@ -167,6 +182,7 @@ export default{
         return
     }
   },
+
   removeCreator ({ commit }, {index, form}){
     switch (form) {
       case 'Sheet':
@@ -198,12 +214,16 @@ export default{
   },
 
   addNewItem ({commit}, {id, id_type, newItem}) {
-    API.addItem(id, id_type, newItem)
-    .then((res) => {
-      commit(types.ADD_NEW_ITEM_SUCCESS, res)
-    })
-    .catch((err) => {
-      commit(types.ADD_NEW_ITEM_FAILURE, err)
+    return new Promise((resolve, reject) => {
+      API.addItem(id, id_type, newItem)
+      .then((res) => {
+        commit(types.ADD_NEW_ITEM_SUCCESS, res)
+        resolve()
+      })
+      .catch((err) => {
+        commit(types.ADD_NEW_ITEM_FAILURE, err)
+        reject()
+      })
     })
   },
 

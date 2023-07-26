@@ -70,26 +70,10 @@ export default {
           'getMaxItemIdInType'
         ]),
         itemsIDs() {
-            return this.defaultSelections.itemsIDs
+            return Object.keys(this.defaultSelections.itemsIDs)
         },
         filteredItems() {
-            switch (this.idItem) {
-                case '1-Rights':
-                    return this.getItemsByType(1)
-                case '2-XML Contributor Roles':
-                    return this.getItemsByType(2)
-                case '3-Creator Pieces Roles':
-                    return this.getItemsByType(3)
-                case '4-Contributor Pieces Roles':
-                    return this.getItemsByType(4)
-                case '5-Creator Sources Roles':
-                    return this.getItemsByType(5)
-                case '6-Contributor Sources Roles':
-                    return this.getItemsByType(6)
-                case '7-Types':
-                    return this.getItemsByType(7)
-            }
-            return ['No data']
+          return this.getItemsByType(this.defaultSelections.itemsIDs[this.idItem])
         }
     },
     methods: {
@@ -103,26 +87,34 @@ export default {
             'editItem'
         ]),
         addItem() {
-            const firstCharacter = this.idItem.charAt(0);
-            const id_type = parseInt(firstCharacter, 10);
-            const id = this.getMaxItemIdInType(id_type)
-            this.addNewItem({id: id+1, id_type: id_type, newItem: this.newItemName})
-            this.newItemName = ''
+          const id_type = this.defaultSelections.itemsIDs[this.idItem]
+          const lastId = this.getMaxItemIdInType(id_type)
+          const newId = `${id_type}${lastId + 1}`
+          const id = parseInt(newId)
+          this.addNewItem({id: id, id_type: id_type, newItem: this.newItemName})
+          this.newItemName = ''
         },
         removeItem(item) {
-            const firstCharacter = this.idItem.charAt();
-            const id_type = parseInt(firstCharacter, 10);
-            this.removeOneItem({item: item, id_type: id_type})
+          const id_type = this.defaultSelections.itemsIDs[this.idItem]
+          this.removeOneItem({item: item, id_type: id_type})
         },
         startEditing(index, name) {
           this.editingIndex = index
           this.nameEditing = name
         },
         endEditing(item) {
-          const firstCharacter = this.idItem.charAt();
-          const id_type = parseInt(firstCharacter, 10);
+          const id_type = this.defaultSelections.itemsIDs[this.idItem]
           this.editItem({id: item.id, id_type: id_type, newName: this.nameEditing})
           this.editingIndex = -1
+        },
+        async saveData() {
+          for (const item of this.defaultSelections.genders) {
+            const id_type = 13
+            const lastId = this.getMaxItemIdInType(id_type)
+            const newId = `${id_type}${lastId + 1}`
+            const id = parseInt(newId)
+            await this.addNewItem({id: id, id_type: id_type, newItem: item})
+          }
         }
     },
     created () {

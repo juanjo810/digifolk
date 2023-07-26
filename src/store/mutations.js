@@ -12,9 +12,10 @@ export default{
     state.error = ''
   },
 
-  [types.LOGIN_USER_SUCCESS] (state, token) {
+  [types.LOGIN_USER_SUCCESS] (state, {userInfo, token}) {
     state.fetchingUser = false
     state.user.tokenSession = token
+    state.user.userInfo = userInfo
     state.error = ''
   },
 
@@ -552,7 +553,6 @@ export default{
   },
 
   [types.EDIT_ITEM_SUCCESS] (state, {id, id_type, newName}) {
-    debugger
     const editedItemIndex = state.defaultSelections.items.findIndex(
       (item) =>
         item.id === id && item.type_item === id_type

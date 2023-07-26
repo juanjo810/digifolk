@@ -125,7 +125,6 @@ export default {
       "type_item": id_type,
       "name": newName
     }
-    debugger
     const param = JSON.stringify(obj)
     return new Promise((resolve,reject) => {
       axios.post('http://100.127.151.18:8000/api/editItem', param, {
