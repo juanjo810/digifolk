@@ -20,21 +20,27 @@ export default{
     },
     getItemId: (state) => (typeId, name) => {
       const filteredItems = state.defaultSelections.items.filter(item => item.type_item === typeId)
-      return filteredItems.find(item => item.name === name)
+      const tmp = filteredItems.find(item => item.name === name)
+      if (tmp)
+        return tmp.id
+      else
+        return -1
     },
-    getImageById: (state) => (id) => { return state.images.find(image => image.id === id) },
-    getImagesByUser: (state) => (email) => {
-      return state.images.filter(image => image.owner[0] === email)
+    getNamePieces: (state) => {
+      return state.pieces.map(piece => `${piece.id}-${piece.title}`)
     },
-    getUser: (state) => { return state.user },
-    getPosts: (state) => {
-      return state.images.filter(image => image.esPublico === true)
+    getNamePiecesWithMei: (state) => {
+      return state.pieces.filter(piece => piece.mei !== '').map(piece => `${piece.id}-${piece.title}`)
     },
-    getPostsFollowing: (state) => {
-      return state.images.filter(image => state.user.data.siguiendo.includes(image.owner[0]) && image.esPublico)
+    getMei: (state) => (pieceId) => {
+      const piece = state.pieces.find(piece => piece.id === pieceId)
+      if (piece)
+        return piece.mei
+      else
+        return ''
     },
-    getPostsNotFollowing: (state) => {
-      return state.images.filter(image => !state.user.data.siguiendo.includes(image.owner[0]) && image.esPublico)
+    getNameCollections: (state) => {
+      return state.collections.map(collection => `${collection.col_id}-${collection.title}`)
     },
     getFivePosts: (state) => {
       var count = 0
@@ -47,11 +53,5 @@ export default{
       }).sort(function (x, y) {
         return y.fecha.seconds - x.fecha.seconds
       })
-    },
-    getReports: (state) => {
-      return state.images.filter(image => image.esReportada === true)
-    },
-    getPostsByUser: (state) => (id) => {
-      return state.images.filter(image => image.esPublico === true && image.owner[4] === id)
     }
 }

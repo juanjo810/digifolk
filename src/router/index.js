@@ -29,38 +29,90 @@ const router =  createRouter({
                 requiresAuth: true
             },
             redirect: () => {
-                return {name: 'collectionForm'}
+                return {name: 'viewPiece'}
             },
             children: [
                 {
-                     path: 'userForm',
-                     name: 'userForm',
-                     component: () => import('@/components/UserForm.vue'),
-                     meta: {
-                         requiresAuth: true
-                     },
+                    path:'pieces',
+                    name:'pieces',
+                    children: [
+                      {
+                        path: 'viewPiece',
+                        name: 'viewPiece',
+                        component: () => import('@/views/ViewPiece.vue'),
+                        meta: {
+                          requiresAuth: true
+                        }
+                      },
+                      {
+                        path: 'sheetpiece',
+                        name: 'sheetpiece',
+                        component: () => import('@/views/SheetPiece.vue'),
+                        meta: {
+                          requiresAuth: true
+                        }
+                      },
+                      {
+                        path: 'uploadPiece',
+                        name: 'uploadPiece',
+                        component: () => import('@/views/UploadPiece.vue'),
+                        meta: {
+                          requiresAuth: true
+                        },
+                        children: [
+                          {
+                            path: 'userForm',
+                            name: 'userForm',
+                            component: () => import('@/views/UserForm.vue'),
+                            meta: {
+                                requiresAuth: true
+                            },
+       
+                          },
+                          {
+                              path: 'sheetForm',
+                              name: 'sheetForm',
+                              component: () => import('@/views/SheetForm.vue'),
+                              meta: {
+                                  requiresAuth: true
+                              },
+                          },
+                        ],
+                        redirect: () => {
+                            return {name: 'userForm'}
+                        },
+                      },
+                      
+                    ]
+                },
+                {
+                  path:'collections',
+                  name:'collections',
+                  children: [
+                    {
+                      path: 'viewCollection',
+                      name: 'viewCollection',
+                      component: () => import('@/views/ViewCollection.vue'),
+                      meta: {
+                        requiresAuth: true
+                      }
+                    },
+                    {
+                      path: 'collectionForm',
+                      name: 'collectionForm',
+                      component: () => import('@/views/CollectionForm.vue'),
+                      meta: {
+                          requiresAuth: true
+                      },
+ 
+                    },
+                  ]
 
-                },
-                {
-                    path: 'sheetForm',
-                    name: 'sheetForm',
-                    component: () => import('@/components/SheetForm.vue'),
-                    meta: {
-                        requiresAuth: true
-                    },
-                },
-                {
-                    path: 'collectionForm',
-                    name: 'collectionForm',
-                    component: () => import('@/components/CollectionForm.vue'),
-                    meta: {
-                        requiresAuth: true
-                    },
                 },
                 {
                     path: 'modifyItems',
                     name: 'modifyItems',
-                    component: () => import('@/components/ModifyItems.vue'),
+                    component: () => import('@/views/ModifyItems.vue'),
                     meta: {
                         requiresAuth: true
                     },

@@ -22,10 +22,10 @@ export default{
       "Tempos": 10,
       "Instruments": 11,
       "Genres": 12,
-      "Genders": 13
-    }
-    ,
-    rights:['Rights statements', 'In copyright', 'In copyright - EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
+      "Genders": 13,
+      "Modes": 14
+    },
+    /*rights:['Rights statements', 'In copyright', 'In copyright - EU Orphan Work', 'In copyright - Educational Use Permitted', 'In copyright - Non-commercial Use Permitted', 'In Copyright – Rights Holder(s) Unlocatable or Unidentifiable', 'No Copyright – Contractual Restrictions', 'No Copyright – Non-commercial Use Only', 'No Copyright – Other Known Legal Restrictions', 'CC-BY (Creative Commons – Attribution', 'CC-BY-SA (Creative Commons – Attribution – Share Alike)', 'CC-BY-NC (Creative Commons – Attribution – Non-commercial)', 'CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)', 'CC-BY-ND (Creative Commons – Attribution – No Derivatives)', 'CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)', 'CC-0 (CC Zero)', 'Public domain mark'],
     rightsMapping: {
       'Rights statements': 11,
       'In copyright': 12,
@@ -95,10 +95,9 @@ export default{
       'StillImage': 711,
       'Text': 712
     },
-    collectionsIDs: []
+    collectionsIDs: []*/
   },
-  userForm: {
-    identifier: 'XX-XXXX-XX-XX-X',
+  pieceForm: {
     title: '', 
     rights: '',
     creator: '',
@@ -106,9 +105,7 @@ export default{
     type_file: '',
     publisher: '',
     contributor_role: [],
-    desc:''
-  },
-  sheetForm: {
+    desc:'',
     rightsp: '', //rightsp
     creatorp_role: [],
     datep: null, // datep
@@ -119,6 +116,7 @@ export default{
     genre: [], 
     contributorp_role: [], // contributorp_role
     alt_title: '', // alt_title
+    mode: '',
     descp: '', // descp
     type_piece: '', // type_piece
     formattingp: '', // formattingp
@@ -174,7 +172,72 @@ export default{
       decade: '',
       year: ''
     },
-    rightsHolder: '',
+    rights_holder: '',
     piece_col: []
-  }
+  },
+  pieces: [{id: 1, title: "Ejemplo"}],
+  collections: [],
+  pieceSelected: {
+    title: ["Titulo"],
+    rights: 17,
+    creator: "Creator",
+    date: "5 August 2023",
+    type_file: 74,
+    publisher: "Publisher",
+    contributor_role: [
+      {
+        name: "Contributor",
+        role: 22
+      }
+    ],
+    desc: "Description",
+    rightsp: 111,
+    creatorp_role: [
+      {
+        name: "Creador1",
+        role: 34
+      }
+    ],
+    datep: "5 August 2023",
+    real_key: "D",
+    meter: "9/8",
+    tempo: "Fast",
+    instruments: ["Banjo", "5-String Banjo", "Irish Bouzouki"],
+    genre: ["Work piece", "Sons"],
+    contributorp_role: [
+      {
+        name: "Contributor",
+        role: 42
+      }
+    ],
+    alt_title: "AltTitle",
+    mode: "Mode",
+    descp: "Decription",
+    type_piece: 75,
+    formattingp: "Format",
+    subject: ["Subject"],
+    language: "IE",
+    relationp: ["Relation1", "Relation2"],
+    hasVersion: ["Version"],
+    isVersionOf: ["Is", "2"],
+    coverage: "Coverage",
+    spatial: {
+      country: "Ireland",
+      state: "Dublin",
+      location: "Dublin"
+    },
+    temporal: {
+      century: "20th",
+      decade: "10s",
+      year: "1914"
+    },
+    xml: "",
+    mei: "",
+    midi: "",
+    audio: "Audio1",
+    video: "Video1",
+    user_id: 1,
+    col_id: 1
+  },
+  collectionSelected: {}
 }

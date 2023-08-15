@@ -187,11 +187,11 @@ export default{
   },
 
   [types.ADD_USER_CONTRIBUTOR] (state) {
-    state.userForm.contributor_role.push({name: '', role: ''})
+    state.pieceForm.contributor_role.push({name: '', role: ''})
   },
 
   [types.ADD_SHEET_CONTRIBUTOR] (state) {
-    state.sheetForm.contributorp_role.push({name: '', role: ''})
+    state.pieceForm.contributorp_role.push({name: '', role: ''})
   },
 
   [types.ADD_COLLECTION_CONTRIBUTOR] (state) {
@@ -199,7 +199,7 @@ export default{
   },
 
   [types.ADD_SHEET_CREATOR] (state) {
-    state.sheetForm.creatorp_role.push({name: '', role: '', gender: ''})
+    state.pieceForm.creatorp_role.push({name: '', role: '', gender: ''})
   },
 
   [types.ADD_COLLECTION_CREATOR] (state) {
@@ -207,7 +207,7 @@ export default{
   },
 
   [types.REMOVE_USER_CONTRIBUTOR] (state, index) {
-    state.userForm.contributor_role.splice(index, 1)
+    state.pieceForm.contributor_role.splice(index, 1)
   },
 
   [types.REMOVE_COLLECTION_CREATOR] (state, index) {
@@ -215,7 +215,7 @@ export default{
   },
 
   [types.REMOVE_SHEET_CONTRIBUTOR] (state, index) {
-    state.sheetForm.contributorp_role.splice(index, 1)
+    state.pieceForm.contributorp_role.splice(index, 1)
   },
 
   [types.REMOVE_COLLECTION_CONTRIBUTOR] (state, index) {
@@ -223,7 +223,7 @@ export default{
   },
 
   [types.REMOVE_SHEET_CREATOR] (state, index) {
-    state.sheetForm.creatorp_role.splice(index, 1)
+    state.pieceForm.creatorp_role.splice(index, 1)
   },
 
   [types.SAVE_COLLECTION_DATE] (state, date) {
@@ -237,39 +237,39 @@ export default{
  */
 
   ['UPDATE_USER_ID'] (state, id) {
-    state.userForm.identifier = id
+    state.pieceForm.identifier = id
   },
 
   ['UPDATE_USER_TITLE'] (state, title) {
-    state.userForm.title = title
+    state.pieceForm.title = title
   },
 
   ['UPDATE_USER_RIGHT'] (state, right) {
-    state.userForm.rights = right
+    state.pieceForm.rights = right
   },
 
   ['UPDATE_USER_CREATOR'] (state, creator) {
-    state.userForm.creator = creator
+    state.pieceForm.creator = creator
   },
 
   [types.SAVE_USER_DATE] (state, date) {
-    state.userForm.date = date
+    state.pieceForm.date = date
   },
 
   ['UPDATE_USER_TYPE'] (state, type) {
-    state.userForm.type_file = type
+    state.pieceForm.type_file = type
   },
 
   ['UPDATE_USER_PUBLISHER'] (state, publisher) {
-    state.userForm.publisher = publisher
+    state.pieceForm.publisher = publisher
   },
 
   ['UPDATE_USER_CONTRIBUTOR'] (state, contribuidores) {
-    state.userForm.contributor_role = structuredClone(contribuidores)
+    state.pieceForm.contributor_role = structuredClone(contribuidores)
   },
 
   ['UPDATE_USER_DESCRIPTION'] (state, description) {
-    state.userForm.desc = description
+    state.pieceForm.desc = description
   },
 
   /**
@@ -279,127 +279,131 @@ export default{
    */
 
   ['UPDATE_SHEET_RIGHT'] (state, right) {
-    state.sheetForm.rightsp = right
+    state.pieceForm.rightsp = right
   },
 
   ['UPDATE_SHEET_CREATOR'] (state, creators) {
-    state.sheetForm.creatorp_role = structuredClone(creators)
+    state.pieceForm.creatorp_role = structuredClone(creators)
   },
 
   [types.SAVE_SHEET_DATE] (state, date) {
-    state.sheetForm.datep = date
+    state.pieceForm.datep = date
   },
 
   ['UPDATE_SHEET_KEY'] (state, key) {
-    state.sheetForm.real_key = key
+    state.pieceForm.real_key = key
   },
 
   ['UPDATE_SHEET_METRE'] (state, metre) {
-    state.sheetForm.meter = metre
+    state.pieceForm.meter = metre
   },
 
   ['UPDATE_SHEET_TEMPO'] (state, tempo) {
-    state.sheetForm.tempo = tempo
+    state.pieceForm.tempo = tempo
   },
 
   ['UPDATE_SHEET_INSTRUMENT'] (state, instrument) {
-    state.sheetForm.instruments = instrument
+    state.pieceForm.instruments = instrument
   },
 
   ['UPDATE_SHEET_GENRE'] (state, genre) {
-    state.sheetForm.genre = genre
+    state.pieceForm.genre = genre
   },
 
   ['UPDATE_SHEET_CONTRIBUTOR'] (state, contributors) {
-    state.sheetForm.contributorp_role = structuredClone(contributors)
+    state.pieceForm.contributorp_role = structuredClone(contributors)
   },
 
   ['UPDATE_SHEET_ALTTITLE'] (state, altTitle) {
-    state.sheetForm.alt_title = altTitle
+    state.pieceForm.alt_title = altTitle
+  },
+
+  ['UPDATE_SHEET_MODE'] (state, mode) {
+    state.pieceForm.mode = mode
   },
 
   ['UPDATE_SHEET_DESCRIPTION'] (state, description) {
-    state.sheetForm.descp = description
+    state.pieceForm.descp = description
   },
 
   ['UPDATE_SHEET_TYPE'] (state, type) {
-    state.sheetForm.type_piece = type
+    state.pieceForm.type_piece = type
   },
 
   ['UPDATE_SHEET_FORMAT'] (state, format) {
-    state.sheetForm.formattingp = format
+    state.pieceForm.formattingp = format
   },
 
   ['UPDATE_SHEET_SUBJECT'] (state, subject) {
-    state.sheetForm.subject = subject
+    state.pieceForm.subject = subject
   },
 
   ['UPDATE_SHEET_LANGUAGE'] (state, language) {
-    state.sheetForm.language = language
+    state.pieceForm.language = language
   },
 
   ['UPDATE_SHEET_RELATION'] (state, relation) {
-    state.sheetForm.relationp = relation
+    state.pieceForm.relationp = relation
   },
 
   ['UPDATE_SHEET_HASVERSION'] (state, hasVersion) {
-    state.sheetForm.hasVersion = hasVersion
+    state.pieceForm.hasVersion = hasVersion
   },
 
   ['UPDATE_SHEET_ISVERSIONOF'] (state, isVersionOf) {
-    state.sheetForm.isVersionOf = isVersionOf
+    state.pieceForm.isVersionOf = isVersionOf
   },
 
   ['UPDATE_SHEET_COVERAGE'] (state, coverage) {
-    state.sheetForm.coverage = coverage
+    state.pieceForm.coverage = coverage
   },
 
   ['UPDATE_SHEET_SPATIALCOUNTRY'] (state, country) {
-    state.sheetForm.spatial.country = country
+    state.pieceForm.spatial.country = country
   },
 
   ['UPDATE_SHEET_SPATIALSTATE'] (state, state2) {
-    state.sheetForm.spatial.state = state2
+    state.pieceForm.spatial.state = state2
   },
 
   ['UPDATE_SHEET_SPATIALLOCATION'] (state, location) {
-    state.sheetForm.spatial.location = location
+    state.pieceForm.spatial.location = location
   },  
 
   ['UPDATE_SHEET_TEMPORALCENTURY'] (state, century) {
-    state.sheetForm.temporal.century = century
+    state.pieceForm.temporal.century = century
   },
 
   ['UPDATE_SHEET_TEMPORALDECADE'] (state, decade) {
-    state.sheetForm.temporal.decade = decade
+    state.pieceForm.temporal.decade = decade
   },
 
   ['UPDATE_SHEET_TEMPORALYEAR'] (state, year) {
-    state.sheetForm.temporal.year = year
+    state.pieceForm.temporal.year = year
   },
 
   ['UPDATE_SHEET_XML'] (state, xml) {
-    state.sheetForm.xml = xml
+    state.pieceForm.xml = xml
   },
 
   ['UPDATE_SHEET_MEI'] (state, mei) {
-    state.sheetForm.mei = mei
+    state.pieceForm.mei = mei
   },
 
   ['UPDATE_SHEET_MIDI'] (state, midi) {
-    state.sheetForm.midi = midi
+    state.pieceForm.midi = midi
   },
 
   ['UPDATE_SHEET_AUDIO'] (state, audio) {
-    state.sheetForm.audio = audio
+    state.pieceForm.audio = audio
   },
 
   ['UPDATE_SHEET_VIDEO'] (state, video) {
-    state.sheetForm.video = video
+    state.pieceForm.video = video
   },
 
   ['UPDATE_SHEET_COLID'] (state, col_id) {
-    state.sheetForm.col_id = col_id
+    state.pieceForm.col_id = col_id
   },
   
   /**
@@ -492,8 +496,8 @@ export default{
     state.collectionForm.source = source
   },
 
-  ['UPDATE_COLLECTION_RIGHTSHOLDER'] (state, rightsHolder) {
-    state.collectionForm.rightsHolder = rightsHolder
+  ['UPDATE_COLLECTION_rights_holder'] (state, rights_holder) {
+    state.collectionForm.rights_holder = rights_holder
   },
 
 
@@ -566,5 +570,113 @@ export default{
 
   [types.FETCH_ITEMS] (state, items) {
     state.defaultSelections.items = items
+  },
+
+  [types.FETCH_COLLECTIONS] (state, colls) {
+    state.collections = colls
+  },
+
+  [types.FETCH_PIECES] (state, pieces) {
+    state.pieces = pieces
+  },
+
+  [types.GET_PIECE_SUCCESS] (state, piece) {
+    state.pieceForm = piece
+  },
+  
+  [types.GET_PIECE_FAILURE] (state, err) {
+    state.error = err
+  },
+
+  [types.GET_COLLECTION_SUCCESS] (state, collection) {
+    state.collectionForm = collection
+  },
+
+  [types.GET_COLLECTION_FAILURE] (state, err) {
+    state.error = err
+  },
+
+  [types.RESET_PIECE_FORM] (state) {
+    state.pieceForm = {
+      title: '', 
+      rights: '',
+      creator: '',
+      date: null,
+      type_file: '',
+      publisher: '',
+      contributor_role: [],
+      desc:'',
+      rightsp: '', //rightsp
+      creatorp_role: [],
+      datep: null, // datep
+      real_key: '', // real_key
+      meter: '', // meter
+      tempo: '',
+      instruments: [], // instruments
+      genre: [], 
+      contributorp_role: [], // contributorp_role
+      alt_title: '', // alt_title
+      mode: '',
+      descp: '', // descp
+      type_piece: '', // type_piece
+      formattingp: '', // formattingp
+      subject: '', 
+      language: '', 
+      relationp: '', // relationp
+      hasVersion: '', 
+      isVersionOf: '',
+      coverage: '',
+      spatial: {
+        country: '',
+        state: '',
+        location: ''
+      },
+      temporal: {
+        century: '',
+        decade: '',
+        year: ''
+      },
+      // Estos se mandan como un flujo de bytes
+      xml: '',
+      mei: '',
+      midi: '',
+      // Estos se mandan como URL a youtube, drive, ...
+      audio: '',
+      video: '',
+      user_id: '',
+      col_id: '' // ID de la colección. Por tanto, primero tiene que crear la colección y después meter los otros formularios.
+    }
+  },
+
+  [types.RESET_COLLECTION_FORM] (state) {
+    state.collectionForm = {
+      title: '',
+      rights: '', // rights
+      date: null, 
+      creator_role: [],
+      contributor_role: [], // contributor_role
+      source_type: '', // source_type
+      source: '',
+      description: '',
+      formatting: '', // formatting
+      extent: '', 
+      publisher: '',
+      subject: '', 
+      language: '',
+      relation: '',
+      coverage: '',
+      spatial: {
+        country: '',
+        state: '',
+        location: ''
+      },
+      temporal: {
+        century: '',
+        decade: '',
+        year: ''
+      },
+      rights_holder: '',
+      piece_col: []
+    }
   }
 }

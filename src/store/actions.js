@@ -7,7 +7,8 @@
 
 import * as types from './mutations-types'
 import API from '@/api'
-import { format } from 'date-fns';
+import { format } from 'date-fns'
+import utils from '@/utils/utils'
 
 export default{
   
@@ -57,19 +58,19 @@ export default{
     collectionTemp.relation = state.collectionForm.relation.split(state.separator)
     collectionTemp.subject = state.collectionForm.subject.split(state.separator)
     collectionTemp.title = state.collectionForm.title.split(state.separator)
-    var type = state.defaultSelections.itemIDs["Rights"]
-    collectionTemp.rights = getters.getItemID(type, state.collectionForm.rights)
-    type = state.defaultSelections.itemIDs["Type"]
-    collectionTemp.source_type = getters.getItemID(type, state.collectionForm.source_type)
-    type = state.defaultSelections.itemIDs["Contributor Sources Roles"]
+    var type = state.defaultSelections.itemsIDs["Rights"]
+    collectionTemp.rights = getters.getItemId(type, state.collectionForm.rights)
+    type = state.defaultSelections.itemsIDs["Types"]
+    collectionTemp.source_type = getters.getItemId(type, state.collectionForm.source_type)
+    type = state.defaultSelections.itemsIDs["Contributor Sources Roles"]
     collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
       name: contributor.name,
-      role: getters.getItemID(type, contributor.role)
+      role: getters.getItemId(type, contributor.role)
     }));
-    type = state.defaultSelections.itemIDs["Creator Sources Roles"]
+    type = state.defaultSelections.itemsIDs["Creator Sources Roles"]
     collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
       name: creator.name,
-      role: getters.getItemID(type, creator.role)
+      role: getters.getItemId(type, creator.role)
     }));
     const json = JSON.stringify(collectionTemp)
     return new Promise((resolve, reject) => {
@@ -85,48 +86,52 @@ export default{
         })
     })  
   },
-
+  
   saveDataPiece ({state, commit, getters}) {
-    var userTemp = structuredClone(state.userForm)
-    var sheetTemp = structuredClone(state.sheetForm)
-    const combinedForm = {
-      ...userTemp,
-      ...sheetTemp
-    };
-    
-    combinedForm.title = userTemp.title.split(state.separator)
-    combinedForm.subject = sheetTemp.subject.split(state.separator)
-    combinedForm.relationp = sheetTemp.relationp.split(state.separator)
-    combinedForm.hasVersion = sheetTemp.hasVersion.split(state.separator)
-    combinedForm.isVersionOf = sheetTemp.isVersionOf.split(state.separator)
-    var type = state.defaultSelections.itemIDs["Rights"]
-    combinedForm.rights = getters.getItemID(type,state.userForm.rights)
-    type = state.defaultSelections.itemIDs["Type"]
-    combinedForm.type_file = getters.getItemID(type, state.userForm.type_file)
-    type = state.defaultSelections.itemIDs["Rights"]
-    combinedForm.rightsp = getters.getItemID(type, state.sheetForm.rightsp)
-    type = state.defaultSelections.itemIDs["Type"]
-    combinedForm.type_piece = getters.getItemID(type, state.sheetForm.type_piece)
-    type = state.defaultSelections.itemIDs["XML Contributor Roles"]
+    debugger
+    var temp = structuredClone(state.pieceForm)
+    const combinedForm = structuredClone(state.pieceForm)
+    combinedForm.title = temp.title.split(state.separator)
+    combinedForm.subject = temp.subject.split(state.separator)
+    combinedForm.relationp = temp.relationp.split(state.separator)
+    combinedForm.hasVersion = temp.hasVersion.split(state.separator)
+    combinedForm.isVersionOf = temp.isVersionOf.split(state.separator)
+    var type = state.defaultSelections.itemsIDs["Rights"]
+    combinedForm.rights = getters.getItemId(type,state.pieceForm.rights)
+    type = state.defaultSelections.itemsIDs["Types"]
+    combinedForm.type_file = getters.getItemId(type, state.pieceForm.type_file)
+    type = state.defaultSelections.itemsIDs["Rights"]
+    combinedForm.rightsp = getters.getItemId(type, state.pieceForm.rightsp)
+    type = state.defaultSelections.itemsIDs["Types"]
+    combinedForm.type_piece = getters.getItemId(type, state.pieceForm.type_piece)
+    type = state.defaultSelections.itemsIDs["Mode"]
+    combinedForm.mode = getters.getItemId(type, state.pieceForm.mode)
+    type = state.defaultSelections.itemsIDs["XML Contributor Roles"]
     combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
       name: contributor.name,
-      role: getters.getItemID(type, contributor.role)
+      role: getters.getItemId(type, contributor.role)
     }));
-    type = state.defaultSelections.itemIDs["Creator Pieces Roles"]
+    type = state.defaultSelections.itemsIDs["Creator Pieces Roles"]
     combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
       name: creator.name,
-      role: getters.getItemID(type, creator.role)
+      role: getters.getItemId(type, creator.role)
     }));
-    type = state.defaultSelections.itemIDs["Contributor Pieces Roles"]
+    type = state.defaultSelections.itemsIDs["Contributor Pieces Roles"]
     combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
       name: contributor.name,
-      role: getters.getItemID(type, contributor.role)
+      role: getters.getItemId(type, contributor.role)
     }));
+    combinedForm.xml = utils.parseFileToString(state.xml)
+    combinedForm.mei = utils.parseFileToString(state.mei)
+    combinedForm.midi = utils.parseFileToBinaryString(state.midi)
+    combinedForm.user_id = state.user.userInfo.user_id
+    combinedForm.col_id = 1
     const json = JSON.stringify(combinedForm);
     console.log(json);
+    console.log(combinedForm)
     return new Promise((resolve, reject) => {
       commit(types.UPLOAD_PIECE_REQUEST)
-      API.uploadCollection(json)
+      API.uploadPiece(combinedForm)
         .then(() => {
           commit(types.UPLOAD_PIECE_SUCCESS)
           resolve()
@@ -138,6 +143,102 @@ export default{
     })  
   },
 
+  editPiece ({commit, getters, state}) {
+    var temp = structuredClone(state.pieceForm)
+    const combinedForm = structuredClone(state.pieceForm)
+    
+    combinedForm.title = temp.title.split(state.separator)
+    combinedForm.subject = temp.subject.split(state.separator)
+    combinedForm.relationp = temp.relationp.split(state.separator)
+    combinedForm.hasVersion = temp.hasVersion.split(state.separator)
+    combinedForm.isVersionOf = temp.isVersionOf.split(state.separator)
+    var type = state.defaultSelections.itemsIDs["Rights"]
+    combinedForm.rights = getters.getItemId(type,state.pieceForm.rights)
+    type = state.defaultSelections.itemsIDs["Types"]
+    combinedForm.type_file = getters.getItemId(type, state.pieceForm.type_file)
+    type = state.defaultSelections.itemsIDs["Rights"]
+    combinedForm.rightsp = getters.getItemId(type, state.pieceForm.rightsp)
+    type = state.defaultSelections.itemsIDs["Types"]
+    combinedForm.type_piece = getters.getItemId(type, state.pieceForm.type_piece)
+    type = state.defaultSelections.itemsIDs["XML Contributor Roles"]
+    combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
+      name: contributor.name,
+      role: getters.getItemId(type, contributor.role)
+    }));
+    type = state.defaultSelections.itemsIDs["Creator Pieces Roles"]
+    combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
+      name: creator.name,
+      role: getters.getItemId(type, creator.role)
+    }));
+    type = state.defaultSelections.itemsIDs["Contributor Pieces Roles"]
+    combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
+      name: contributor.name,
+      role: getters.getItemId(type, contributor.role)
+    }));
+    combinedForm.user_id = state.user.userInfo.user_id
+    combinedForm.col_id = parseInt(state.pieceForm.col_id.split(state.separator)[0])
+    const json = JSON.stringify(combinedForm);
+    console.log(json);
+    return new Promise((resolve, reject) => {
+      commit(types.UPLOAD_PIECE_REQUEST)
+      API.editPiece(combinedForm)
+        .then(() => {
+          commit(types.UPLOAD_PIECE_SUCCESS)
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.UPLOAD_PIECE_FAILURE, {error: error.msg})
+          reject()
+        })
+    })  
+  },
+
+  // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
+  editCollection ({commit, getters, state}) {
+    debugger
+    var collectionTemp = structuredClone(state.collectionForm)
+    collectionTemp.relation = collectionTemp.relation.split(state.separator)
+    collectionTemp.subject = collectionTemp.subject.split(state.separator)
+    collectionTemp.title = collectionTemp.title.split(state.separator)
+    var type = state.defaultSelections.itemsIDs["Rights"]
+    collectionTemp.rights = getters.getItemId(type, state.collectionForm.rights)
+    type = state.defaultSelections.itemsIDs["Types"]
+    collectionTemp.source_type = getters.getItemId(type, state.collectionForm.source_type)
+    type = state.defaultSelections.itemsIDs["Contributor Sources Roles"]
+    collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
+      name: contributor.name,
+      role: getters.getItemId(type, contributor.role)
+    }));
+    type = state.defaultSelections.itemsIDs["Creator Sources Roles"]
+    collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
+      name: creator.name,
+      role: getters.getItemId(type, creator.role)
+    }));
+    collectionTemp.user_id = state.user.userInfo.user_id
+    const id = collectionTemp.col_id
+    collectionTemp = {
+      ...collectionTemp,
+      piece_col: []
+    }
+    debugger
+    delete collectionTemp.col_id
+    console.log(collectionTemp)
+    const json = JSON.stringify(collectionTemp);
+    console.log(json);
+    return new Promise((resolve, reject) => {
+      commit(types.UPLOAD_COLLECTION_REQUEST)
+      API.editCollection(collectionTemp, id)
+        .then(() => {
+          commit(types.UPLOAD_COLLECTION_SUCCESS)
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.UPLOAD_COLLECTION_FAILURE, {error: error.msg})
+          reject()
+        })
+    })
+  },
+  
   addContributor ({ commit }, form){
     switch (form) {
       case 'User':
@@ -252,7 +353,222 @@ export default{
     .then((res)=>{
       commit(types.FETCH_ITEMS, res)
     })
-  }
+  },
+
+  fetchPieces({commit}) {
+    API.fetchAllPieces()
+    .then((res)=>{
+      commit(types.FETCH_PIECES, res)
+    })
+  },
+
+  fetchCollections({commit}) {
+    API.fetchAllCollections()
+    .then((res)=>{
+      commit(types.FETCH_COLLECTIONS, res)
+    })
+  },
+
+  getPieceInfo({commit, state}, {piece, creadores, contribuidores, contribuidoresp}) {
+    //API.getPiece(piece)
+    //.then((res) => {
+      // const res = state.pieces.find(p => p.id === parseInt(piece[0]))
+      console.log(state, piece)
+      const res = {
+        title: ["Titulo"],
+        rights: 17,
+        creator: "Creator",
+        date: "5 August 2023",
+        type_file: 74,
+        publisher: "Publisher",
+        contributor_role: [
+          {
+            name: "Contributor",
+            role: 22
+          }
+        ],
+        desc: "Description",
+        rightsp: 111,
+        creatorp_role: [
+          {
+            name: "Creador1",
+            role: 34
+          }
+        ],
+        datep: "5 August 2023",
+        real_key: "D",
+        meter: "9/8",
+        tempo: "Fast",
+        instruments: ["Banjo", "5-String Banjo", "Irish Bouzouki"],
+        genre: ["Work piece", "Sons"],
+        contributorp_role: [
+          {
+            name: "Contributor",
+            role: 42
+          }
+        ],
+        alt_title: "AltTitle",
+        mode: "Mode",
+        descp: "Decription",
+        type_piece: 75,
+        formattingp: "Format",
+        subject: ["Subject"],
+        language: "IE",
+        relationp: ["Relation1", "Relation2"],
+        hasVersion: ["Version"],
+        isVersionOf: ["Is", "2"],
+        coverage: "Coverage",
+        spatial: {
+          country: "Ireland",
+          state: "Dublin",
+          location: "Dublin"
+        },
+        temporal: {
+          century: "20th",
+          decade: "10s",
+          year: "1914"
+        },
+        xml: "",
+        mei: "",
+        midi: "",
+        audio: "Audio1",
+        video: "Video1",
+        user_id: 1,
+        col_id: 1
+      }
+    var final = structuredClone(res)
+    final.title = final.title.join('|')
+    var item = state.defaultSelections.items.find(i => i.id === parseInt(final.rights))
+    final.rights = item.name
+    var type_file = state.defaultSelections.items.find(i => i.id === parseInt(final.type_file))
+    final.type_file = type_file.name
+    final.contributor_role = final.contributor_role.map((c) => {
+      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
+      const temp = {
+        name: c.name,
+        role: item.name
+      }
+      contribuidores.push(temp)
+      return temp
+    })
+    final.rightsp = state.defaultSelections.items.find(i => i.id === parseInt(final.rightsp)).name
+    final.creatorp_role = final.creatorp_role.map((c) => {
+      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
+      const temp = {
+        name: c.name,
+        role: item.name
+      }
+      creadores.push(temp)
+      return temp
+    })
+    final.contributorp_role = final.contributorp_role.map((c) => {
+      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
+      const temp = {
+        name: c.name,
+        role: item.name
+      }
+      contribuidoresp.push(temp)
+      return temp
+    })
+    final.subject = final.subject.join('|')
+    final.relationp = final.relationp.join('|')
+    final.hasVersion = final.hasVersion.join('|')
+    final.isVersionOf = final.isVersionOf.join('|')
+
+      commit(types.GET_PIECE_SUCCESS, final)
+    //})
+    //.catch((err) => {
+    //  commit(types.GET_PIECE_FAILURE, err)
+    //})
+  },
+
+  getCollectionInfo({commit, state}, {collection, creadores, contribuidores}) {
+    //API.getCollection(collection)
+    //.then((res) => {
+      const res = state.collections.find(c => c.col_id === parseInt(collection[0]))
+      /*const res = {
+          col_id: 1,
+          title: ["Collection1"],
+          rights: 17,
+          date: "8 August 2023",
+          creator_role: [
+            {
+              name: "Creator1",
+              role: 51
+            }
+          ],
+          contributor_role: [
+            {
+              name: "Contributor1",
+              role: 61
+            }
+          ],
+          source_type: 71,
+          source: "Source",
+          description: "Description",
+          formatting: "Format",
+          extent: "Extent",
+          publisher: "Publisher",
+          subject: ["Subject"],
+          language: "es",
+          relation: ["Relation1", "Relation2"],
+          coverage: "Coverage",
+          spatial: {
+            country: "Ireland",
+            state: "Ireland",
+            location: "Dublin"
+          },
+          temporal: {
+            century: "19th",
+            decade: "10s",
+            year: "1814"
+          },
+          rightsHolder: "RightsHolder",
+          piece_col: []
+        }*/
+      var final = structuredClone(res)
+      final.title = final.title.join('|')
+      var item = state.defaultSelections.items.find(i => i.id === parseInt(final.rights))
+      final.rights = item.name
+      final.source_type = state.defaultSelections.items.find(i => i.id === parseInt(final.source_type)).name
+      final.creator_role = final.creator_role.map((c) => {
+        var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
+        const temp = {
+          name: c.name,
+          role: item.name
+        }
+        debugger
+        creadores.push(temp)
+        return temp
+      })
+      final.contributor_role = final.contributor_role.map((c) => {
+        var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
+        const temp = {
+          name: c.name,
+          role: item.name
+        }
+        contribuidores.push(temp)
+        return temp
+      })
+      final.subject = final.subject.join('|')
+      final.relation = final.relation.join('|')
+
+      commit(types.GET_COLLECTION_SUCCESS, final)
+    //})
+    //.catch((err) => {
+    //  commit(types.GET_COLLECTION_FAILURE, err)
+    //})
+  },
+
+  resetPieceForm({commit}) {
+    commit(types.RESET_PIECE_FORM)
+  },
+
+  resetCollectionForm({commit}) {
+    commit(types.RESET_COLLECTION_FORM)
+  },
+
+
 
   
   /**

@@ -141,7 +141,7 @@ Use ' = ' i.e. space equals space, where a title is available in different langu
                             </v-col>
 
                             <v-col cols="12">
-                                <v-text-field v-model="rightsHolder" label="RightsHolder" ></v-text-field>
+                                <v-text-field v-model="rights_holder" label="Rights Holder" ></v-text-field>
                             </v-col>
                         </v-row>
                     </v-card-text>
@@ -343,12 +343,12 @@ export default {
                 this.$store.commit('UPDATE_COLLECTION_PUBLISHER', value)
             }
         },
-        rightsHolder: {
+        rights_holder: {
             get () {
-                return this.collectionForm.rightsHolder
+                return this.collectionForm.rights_holder
             },
             set (value) {   
-                this.$store.commit('UPDATE_COLLECTION_RIGHTSHOLDER', value)
+                this.$store.commit('UPDATE_COLLECTION_rights_holder', value)
             }
         },
     },
@@ -360,6 +360,7 @@ export default {
             'formatAndSaveDate',
             'removeContributor',
             'removeCreator',
+            'resetCollectionForm'
         ]),
         saveCollection () {
             if (this.title != '' && this.date && this.right != '' && this.creator.length > 0)
@@ -404,6 +405,7 @@ export default {
     },
     
     created () {
+        this.resetCollectionForm()
         this.contribuidores = structuredClone(this.contributor)
         this.creadores = structuredClone(this.creator)
     }

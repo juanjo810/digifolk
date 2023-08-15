@@ -12,14 +12,73 @@
           contain
           src="@/assets/logo.png"
           transition="scale-transition"
-          width="40"
+          width="60"
           style="cursor: pointer"
           @click="$router.push({name: 'dashboard'})"
         />
-        <h1>Digifolk</h1>
       </div>
-
-      <v-spacer></v-spacer>
+      
+        <v-app-bar-title>Digifolk</v-app-bar-title>
+        <v-menu v-if="this.user.tokenSession" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn icon dark v-bind="props">
+              <v-icon>mdi-file-music</v-icon>
+              <span>Pieces</span>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="$router.push({name: 'viewPiece'})">
+              <v-list-item-title>View piece</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push({name: 'sheetpiece'})">
+              <v-list-item-title>View sheetpiece</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push({name: 'uploadPiece'})">
+              <v-list-item-title>Upload piece</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-spacer></v-spacer>
+        
+        <v-menu v-if="this.user.tokenSession" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn icon dark v-bind="props">
+              <v-icon>mdi-folder-music-outline</v-icon>
+              <span>Collections</span>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="$router.push({name: 'viewCollection'})">
+              <v-list-item-title>
+                View collection
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push({name: 'collectionForm'})">
+              <v-list-item-title>Upload collection</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-menu v-if="this.user.tokenSession" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn icon dark v-bind="props">
+              <v-icon>mdi-account</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="viewProfile()">
+              <v-list-item-title>Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="$router.push({name: 'modifyItems'})">
+              <v-list-item-title>Modify items</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="logout()">
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
     </v-app-bar>
     <v-dialog
@@ -48,7 +107,8 @@ export default {
   }),
   computed: {
     ...mapState([
-      'error'
+      'error',
+      'user'
     ]),
     otroError: {
       get () {
@@ -57,6 +117,14 @@ export default {
       set (value) {
         this.$store.commit('RESET_ERROR', value)
       }
+    }
+  },
+  methods: {
+    viewProfile() {
+      window.alert("Profile")
+    },
+    logout() {
+      window.alert("Logout")
     }
   }
 };

@@ -33,7 +33,6 @@ export default {
       "password": password
     }
     const param = JSON.stringify(objectTemp)
-    console.log(param)
 
     return new Promise((resolve, reject) => {
       axios.post('http://100.127.151.18:8000/api/createUser', param, {
@@ -52,6 +51,7 @@ export default {
   },
   uploadCollection(json) {
     return new Promise((resolve, reject) => {
+      console.log(json)
       axios.post('http://100.127.151.18:8000/api/createCol', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -82,6 +82,35 @@ export default {
         });
     });
   },
+  editPiece(json) {
+    return new Promise((resolve, reject) => {
+      axios.post('http://100.127.151.18:8000/api/editPiece', json, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  editCollection(json, id) {
+    return new Promise((resolve, reject) => {
+      axios.post(`http://100.127.151.18:8000/api/editCol?id=${id}`, json
+      )
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+
   addItem(id,typeId, newItem) {
     const obj = {
       "id": id,
@@ -143,6 +172,45 @@ export default {
   fetchAllItems() {
     return new Promise((resolve, reject) => {
       axios.get('http://100.127.151.18:8000/api/getListItems')
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
+  },
+  fetchAllPieces() {
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getListOfPieces')
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
+  },
+  fetchAllCollections() {
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getListOfCols')
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    })
+  },
+  getPiece(piece) {
+    const obj = {
+      "id": piece[0],
+      "title": piece[1]
+    }
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getPiece', {
+        params: obj
+      })
       .then(response => {
         resolve(response.data);
       })
