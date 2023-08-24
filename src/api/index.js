@@ -82,6 +82,25 @@ export default {
         });
     });
   },
+
+  getCollection(collection) {
+    const obj = {
+      id: collection[0],
+      title: collection[1]
+    }
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getCol', {
+        params: obj
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
+  },
+
   editPiece(json) {
     return new Promise((resolve, reject) => {
       axios.post('http://100.127.151.18:8000/api/editPiece', json, {
@@ -100,12 +119,14 @@ export default {
   },
   editCollection(json, id) {
     return new Promise((resolve, reject) => {
-      axios.post(`http://100.127.151.18:8000/api/editCol?id=${id}`, json
+      const query = `http://100.127.151.18:8000/api/editCol?id=${id}`
+      console.log(query)
+      axios.post(query, json
       )
-        .then(response => {
+        .then((response) => {
           resolve(response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -218,5 +239,73 @@ export default {
         reject(error);
       });
     });
-  }
+  },
+  advancedSearchPiece(query) {
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/advancedSearchPiece', {
+        params: query
+      })
+      .then(response => {
+        resolve(response.data);
+      }
+      )
+      .catch(error => {
+        reject(error);
+      }
+      );
+    });
+  },
+  advancedSearchCollection(query) {
+    return new Promise((resolve, reject) => {
+      axios.get('http://1000.127.151.18:8000/api/advancedSearchCol', {
+        params: query
+      })
+      .then(response => {
+        resolve(response.data);
+      }
+      )
+      .catch(error => {
+        reject(error);
+      }
+      );
+    });
+  },
+
+  importDataFromExcel(file) {
+    const fileBlob = new Blob([file], { type: 'application/octet-stream' });
+    const formData = new FormData();
+    formData.append('file', fileBlob);
+    console.log(formData)
+    return new Promise((resolve, reject) => {
+      axios.post('http://100.127.151.18:8000/api/mapFromExcel', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
+  },
+
+  importDataFromMEI(json) {
+    return new Promise((resolve, reject) => {
+      axios.post('http://100.127.151.18:8000/api/meitocsv', json, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    });
+  },
+  
 }

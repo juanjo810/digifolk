@@ -323,9 +323,11 @@
               </v-col>
             </v-row>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer></v-spacer>
+            <v-btn color="deep-purple lighten-2" text @click="saveData()">
+              Save Data
+            </v-btn>
             <v-btn color="deep-purple lighten-2" text @click="importFile()">
               Import File
             </v-btn>
@@ -353,25 +355,6 @@ export default {
   },
   data() {
     return {
-      rights: [
-        "Rights statements",
-        "In copyright",
-        "In copyright – EU Orphan Work",
-        "In copyright - Educational Use Permitted",
-        "In copyright - Non-commercial Use Permitted",
-        "In Copyright – Rights Holder(s) Unlocatable or Unidentifiable",
-        "No Copyright – Contractual Restrictions",
-        "No Copyright – Non-commercial Use Only",
-        "No Copyright – Other Known Legal Restrictions",
-        "CC-BY (Creative Commons – Attribution",
-        "CC-BY-SA (Creative Commons – Attribution – Share Alike)",
-        "CC-BY-NC (Creative Commons – Attribution – Non-commercial)",
-        "CC-BY-NC-SA (Creative Commons – Attribution – Non-commercial – Share Alike)",
-        "CC-BY-ND (Creative Commons – Attribution – No Derivatives)",
-        "CC-BY-NC-ND (Creative Commons – Attribution – Non-commercial – No Derivatives)",
-        "CC-0 (CC Zero)",
-        "Public domain mark",
-      ],
       contribuidores: [],
       creadores: [],
       selectedDate: null,
@@ -632,7 +615,9 @@ export default {
       "removeContributor",
       "removeCreator",
       "formatAndSaveDate",
-      'resetPieceForm'
+      'resetPieceForm',
+      'importDataFromExcel',
+      'importDataFromMEI'
     ]),
     saveData() {
       this.saveDataPiece();
@@ -642,6 +627,19 @@ export default {
     },
     handleFileChange(event) {
       const file = event.target.files[0];
+      if (file && file.name.endsWith(".xlsx")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.importDataFromExcel({ file: e.target.result });
+        };
+        reader.readAsText(file);
+      } else if (file && file.name.endsWith(".mei")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.importDataFromMEI({ file: e.target.result });
+        };
+        reader.readAsText(file);
+      }
       console.log("Archivo seleccionado:", file);
     },
     addFields() {

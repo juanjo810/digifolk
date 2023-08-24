@@ -7,13 +7,8 @@
           <v-col cols="4">
             <h1>View piece</h1>
           </v-col>
-          <v-col cols="4">
-            <v-select label="Select piece" v-model="selectedPiece" :items="this.getNamePieces" @update:model-value="this.loadPieceInfo()"></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <SearchBar objects="pieces"></SearchBar> 
+          <v-col cols="8">
+            <SearchBar :objects="this.getNamePieces" :getInfo="this.loadPieceInfo" typeObject="pieces"></SearchBar>
           </v-col>
         </v-row>
         <h1>Information about the MusicXML file</h1>
@@ -451,8 +446,7 @@ export default {
       rules: [
         value => !!value || 'Required.'
       ],
-      editing: false,
-      selectedPiece: null
+      editing: false
     }
   },
   computed: {
@@ -833,8 +827,8 @@ export default {
       this.editPiece()
       this.editing = false
     },
-    loadPieceInfo() {
-      const parts = this.selectedPiece.split("-")
+    loadPieceInfo(selectedPiece) {
+      const parts = selectedPiece.split("-")
       this.getPieceInfo({piece: parts, creadores: this.creadores, contribuidores: this.contribuidores, contribuidoresp: this.contribuidoresp})
     }
   },

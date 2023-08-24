@@ -54,24 +54,8 @@ export default{
   },
 
   saveDataCollection ({state, commit, getters}) {
-    var collectionTemp = structuredClone(state.collectionForm)
-    collectionTemp.relation = state.collectionForm.relation.split(state.separator)
-    collectionTemp.subject = state.collectionForm.subject.split(state.separator)
-    collectionTemp.title = state.collectionForm.title.split(state.separator)
-    var type = state.defaultSelections.itemsIDs["Rights"]
-    collectionTemp.rights = getters.getItemId(type, state.collectionForm.rights)
-    type = state.defaultSelections.itemsIDs["Types"]
-    collectionTemp.source_type = getters.getItemId(type, state.collectionForm.source_type)
-    type = state.defaultSelections.itemsIDs["Contributor Sources Roles"]
-    collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Creator Sources Roles"]
-    collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
-      name: creator.name,
-      role: getters.getItemId(type, creator.role)
-    }));
+    const collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    collectionTemp.user_id = state.user.userInfo.user_id
     const json = JSON.stringify(collectionTemp)
     return new Promise((resolve, reject) => {
       commit(types.UPLOAD_COLLECTION_REQUEST)
@@ -84,54 +68,20 @@ export default{
           commit(types.UPLOAD_COLLECTION_FAILURE, {error: error.msg})
           reject()
         })
-    })  
+    })
   },
   
   saveDataPiece ({state, commit, getters}) {
-    debugger
-    var temp = structuredClone(state.pieceForm)
-    const combinedForm = structuredClone(state.pieceForm)
-    combinedForm.title = temp.title.split(state.separator)
-    combinedForm.subject = temp.subject.split(state.separator)
-    combinedForm.relationp = temp.relationp.split(state.separator)
-    combinedForm.hasVersion = temp.hasVersion.split(state.separator)
-    combinedForm.isVersionOf = temp.isVersionOf.split(state.separator)
-    var type = state.defaultSelections.itemsIDs["Rights"]
-    combinedForm.rights = getters.getItemId(type,state.pieceForm.rights)
-    type = state.defaultSelections.itemsIDs["Types"]
-    combinedForm.type_file = getters.getItemId(type, state.pieceForm.type_file)
-    type = state.defaultSelections.itemsIDs["Rights"]
-    combinedForm.rightsp = getters.getItemId(type, state.pieceForm.rightsp)
-    type = state.defaultSelections.itemsIDs["Types"]
-    combinedForm.type_piece = getters.getItemId(type, state.pieceForm.type_piece)
-    type = state.defaultSelections.itemsIDs["Mode"]
-    combinedForm.mode = getters.getItemId(type, state.pieceForm.mode)
-    type = state.defaultSelections.itemsIDs["XML Contributor Roles"]
-    combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Creator Pieces Roles"]
-    combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
-      name: creator.name,
-      role: getters.getItemId(type, creator.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Contributor Pieces Roles"]
-    combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
+    var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = utils.parseFileToString(state.xml)
     combinedForm.mei = utils.parseFileToString(state.mei)
     combinedForm.midi = utils.parseFileToBinaryString(state.midi)
     combinedForm.user_id = state.user.userInfo.user_id
-    combinedForm.col_id = 1
-    const json = JSON.stringify(combinedForm);
-    console.log(json);
-    console.log(combinedForm)
+    combinedForm.col_id = parseInt(state.pieceForm.col_id.split(state.separator)[0])
+    const json = JSON.stringify(combinedForm)
     return new Promise((resolve, reject) => {
       commit(types.UPLOAD_PIECE_REQUEST)
-      API.uploadPiece(combinedForm)
+      API.uploadPiece(json)
         .then(() => {
           commit(types.UPLOAD_PIECE_SUCCESS)
           resolve()
@@ -144,50 +94,22 @@ export default{
   },
 
   editPiece ({commit, getters, state}) {
-    var temp = structuredClone(state.pieceForm)
-    const combinedForm = structuredClone(state.pieceForm)
-    
-    combinedForm.title = temp.title.split(state.separator)
-    combinedForm.subject = temp.subject.split(state.separator)
-    combinedForm.relationp = temp.relationp.split(state.separator)
-    combinedForm.hasVersion = temp.hasVersion.split(state.separator)
-    combinedForm.isVersionOf = temp.isVersionOf.split(state.separator)
-    var type = state.defaultSelections.itemsIDs["Rights"]
-    combinedForm.rights = getters.getItemId(type,state.pieceForm.rights)
-    type = state.defaultSelections.itemsIDs["Types"]
-    combinedForm.type_file = getters.getItemId(type, state.pieceForm.type_file)
-    type = state.defaultSelections.itemsIDs["Rights"]
-    combinedForm.rightsp = getters.getItemId(type, state.pieceForm.rightsp)
-    type = state.defaultSelections.itemsIDs["Types"]
-    combinedForm.type_piece = getters.getItemId(type, state.pieceForm.type_piece)
-    type = state.defaultSelections.itemsIDs["XML Contributor Roles"]
-    combinedForm.contributor_role = combinedForm.contributor_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Creator Pieces Roles"]
-    combinedForm.creatorp_role = combinedForm.creatorp_role.map(creator => ({
-      name: creator.name,
-      role: getters.getItemId(type, creator.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Contributor Pieces Roles"]
-    combinedForm.contributorp_role = combinedForm.contributorp_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
+    var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    combinedForm.xml = utils.parseFileToString(state.xml)
+    combinedForm.mei = utils.parseFileToString(state.mei)
+    combinedForm.midi = utils.parseFileToBinaryString(state.midi)
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.col_id = parseInt(state.pieceForm.col_id.split(state.separator)[0])
-    const json = JSON.stringify(combinedForm);
-    console.log(json);
+    const json = JSON.stringify(combinedForm)
     return new Promise((resolve, reject) => {
-      commit(types.UPLOAD_PIECE_REQUEST)
-      API.editPiece(combinedForm)
+      commit(types.EDIT_PIECE_REQUEST)
+      API.editPiece(json)
         .then(() => {
-          commit(types.UPLOAD_PIECE_SUCCESS)
+          commit(types.EDIT_PIECE_SUCCESS)
           resolve()
         })
         .catch((error) => {
-          commit(types.UPLOAD_PIECE_FAILURE, {error: error.msg})
+          commit(types.EDIT_PIECE_FAILURE, error.msg)
           reject()
         })
     })  
@@ -195,45 +117,25 @@ export default{
 
   // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
   editCollection ({commit, getters, state}) {
-    debugger
-    var collectionTemp = structuredClone(state.collectionForm)
-    collectionTemp.relation = collectionTemp.relation.split(state.separator)
-    collectionTemp.subject = collectionTemp.subject.split(state.separator)
-    collectionTemp.title = collectionTemp.title.split(state.separator)
-    var type = state.defaultSelections.itemsIDs["Rights"]
-    collectionTemp.rights = getters.getItemId(type, state.collectionForm.rights)
-    type = state.defaultSelections.itemsIDs["Types"]
-    collectionTemp.source_type = getters.getItemId(type, state.collectionForm.source_type)
-    type = state.defaultSelections.itemsIDs["Contributor Sources Roles"]
-    collectionTemp.contributor_role = collectionTemp.contributor_role.map(contributor => ({
-      name: contributor.name,
-      role: getters.getItemId(type, contributor.role)
-    }));
-    type = state.defaultSelections.itemsIDs["Creator Sources Roles"]
-    collectionTemp.creator_role = collectionTemp.creator_role.map(creator => ({
-      name: creator.name,
-      role: getters.getItemId(type, creator.role)
-    }));
-    collectionTemp.user_id = state.user.userInfo.user_id
+    var collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     const id = collectionTemp.col_id
     collectionTemp = {
       ...collectionTemp,
       piece_col: []
     }
-    debugger
     delete collectionTemp.col_id
     console.log(collectionTemp)
     const json = JSON.stringify(collectionTemp);
     console.log(json);
     return new Promise((resolve, reject) => {
-      commit(types.UPLOAD_COLLECTION_REQUEST)
+      commit(types.EDIT_COLLECTION_REQUEST)
       API.editCollection(collectionTemp, id)
         .then(() => {
-          commit(types.UPLOAD_COLLECTION_SUCCESS)
+          commit(types.EDIT_COLLECTION_SUCCESS, id)
           resolve()
         })
         .catch((error) => {
-          commit(types.UPLOAD_COLLECTION_FAILURE, {error: error.msg})
+          commit(types.EDIT_COLLECTION_FAILURE, error.msg)
           reject()
         })
     })
@@ -298,7 +200,7 @@ export default{
   },
 
   formatAndSaveDate ({commit}, {date, form}) {
-    var formattedDate = format(date[0], 'd MMMM yyyy')
+    const formattedDate = format(date[0], 'd MMMM yyyy')
     switch (form) {
       case 'User':
         commit(types.SAVE_USER_DATE, formattedDate)
@@ -483,9 +385,8 @@ export default{
   },
 
   getCollectionInfo({commit, state}, {collection, creadores, contribuidores}) {
-    //API.getCollection(collection)
-    //.then((res) => {
-      const res = state.collections.find(c => c.col_id === parseInt(collection[0]))
+    API.getCollection(collection)
+    .then((res) => {
       /*const res = {
           col_id: 1,
           title: ["Collection1"],
@@ -526,7 +427,7 @@ export default{
           rightsHolder: "RightsHolder",
           piece_col: []
         }*/
-      var final = structuredClone(res)
+      var final = structuredClone(res[0])
       final.title = final.title.join('|')
       var item = state.defaultSelections.items.find(i => i.id === parseInt(final.rights))
       final.rights = item.name
@@ -537,7 +438,6 @@ export default{
           name: c.name,
           role: item.name
         }
-        debugger
         creadores.push(temp)
         return temp
       })
@@ -554,10 +454,10 @@ export default{
       final.relation = final.relation.join('|')
 
       commit(types.GET_COLLECTION_SUCCESS, final)
-    //})
-    //.catch((err) => {
-    //  commit(types.GET_COLLECTION_FAILURE, err)
-    //})
+    })
+    .catch((err) => {
+      commit(types.GET_COLLECTION_FAILURE, err)
+    })
   },
 
   resetPieceForm({commit}) {
@@ -566,6 +466,52 @@ export default{
 
   resetCollectionForm({commit}) {
     commit(types.RESET_COLLECTION_FORM)
+  },
+
+  advancedSearch({commit, state, getters}, {query, type}) {
+    return new Promise((resolve, reject) => {
+      if (type === 'pieces') {
+        var pieceQuery = utils.parsePieceToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+        API.advancedSearchPieces(pieceQuery)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          commit(types.ADVANCED_SEARCH_FAILURE, err)
+          reject()
+        })
+      } else if (type === 'collections') {
+        var collectionQuery = utils.parseCollectionToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+        API.advancedSearchCollections(collectionQuery)
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          commit(types.ADVANCED_SEARCH_FAILURE, err)
+          reject()
+        })
+      }
+    })
+  },
+
+  importDataFromExcel({commit}, {file}) {
+    API.importDataFromExcel(file)
+    .then((res) => {
+      commit(types.IMPORT_DATA_SUCCESS, res)
+    })
+    .catch((err) => {
+      commit(types.IMPORT_DATA_FAILURE, err)
+    })
+  },
+
+  importDataFromMEI({commit}, {file}) {
+    API.importDataFromMEI(file)
+    .then((res) => {
+      commit(types.IMPORT_DATA_SUCCESS, res)
+    })
+    .catch((err) => {
+      commit(types.IMPORT_DATA_FAILURE, err)
+    })
   },
 
 

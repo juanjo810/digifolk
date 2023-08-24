@@ -523,6 +523,22 @@ export default{
     state.error = error
   },
 
+  [types.EDIT_COLLECTION_REQUEST] (state) {
+    state.fetchingCollection = true
+  },
+
+  [types.EDIT_COLLECTION_SUCCESS] (state, id) {
+    const indexToDelete = state.collections.findIndex(item => item.col_id === id);
+    state.collections.splice(indexToDelete, 1);
+    state.collections.push(state.collectionForm)
+    state.fetchingCollection = false
+  },
+
+  [types.EDIT_COLLECTION_FAILURE] (state, error) {
+    state.fetchingCollection = false
+    state.error = error
+  },
+
   [types.UPLOAD_PIECE_REQUEST] (state) {
     state.fetchingPiece = true
   },
@@ -532,6 +548,22 @@ export default{
   },
 
   [types.UPLOAD_PIECE_FAILURE] (state, error) {
+    state.fetchingPiece = false
+    state.error = error
+  },
+
+  [types.EDIT_PIECE_REQUEST] (state) {
+    state.fetchingPiece = true
+  },
+
+  [types.EDIT_PIECE_SUCCESS] (state, id) {
+    const indexToDelete = state.pieces.findIndex(item => item.id === id);
+    state.pieces.splice(indexToDelete, 1);
+    state.pieces.push(state.pieceForm)
+    state.fetchingPiece = false
+  },
+
+  [types.EDIT_PIECE_FAILURE] (state, error) {
     state.fetchingPiece = false
     state.error = error
   },
@@ -678,5 +710,18 @@ export default{
       rights_holder: '',
       piece_col: []
     }
+  },
+
+  [types.ADVANCED_SEARCH_FAILURE] (state, error) {
+    state.error = error
+  },
+
+  [types.IMPORT_DATA_SUCCESS] (state, res) {
+    state.pieceForm = res
+  },
+
+  [types.IMPORT_DATA_FAILURE] (state, error) {
+    state.error = error
   }
+  
 }

@@ -6,13 +6,8 @@
           <v-col cols="4">
             <h1>View collection</h1>
           </v-col>
-          <v-col cols="4">
-            <v-select label="Select collection" :items="this.getNameCollections" v-model="this.selectedCollection" @update:model-value="this.loadCollectionInfo()"></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <SearchBar objects="collections"></SearchBar> 
+          <v-col>
+            <SearchBar :objects="this.getNameCollections" :getInfo="loadCollectionInfo" typeObject="collections"></SearchBar> 
           </v-col>
         </v-row>
         <div>
@@ -193,7 +188,6 @@ export default {
                 value => !!value || 'Required.'
             ],
             editing: false,
-            selectedCollection: null,
         }
     },
     computed: {
@@ -424,9 +418,8 @@ export default {
         editFields() {
           this.editing = true;
         },
-        loadCollectionInfo() {
-          const parts = this.selectedCollection.split("-")
-          debugger
+        loadCollectionInfo(selectedCollection) {
+          const parts = selectedCollection.split("-")
           console.log(this.contribuidores, this.creadores)
           this.getCollectionInfo({collection: parts, creadores: this.creadores, contribuidores: this.contribuidores})
         },

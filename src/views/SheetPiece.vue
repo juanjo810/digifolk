@@ -10,13 +10,7 @@
           </v-row>
           <v-row>
             <v-col cols="12">
-              <v-select
-                label="Select piece"
-                :items="this.getNamePiecesWithMei"
-                v-model="this.selectedPiece"
-                @update:model-value="this.loadMei()"
-              >
-              </v-select>
+              <SearchBar :objects="this.getNamePieces" :getInfo="this.loadPieceInfo"></SearchBar>
             </v-col>
           </v-row>
           <v-row>
@@ -57,18 +51,20 @@ createVerovioModule().then((VerovioModule) => {
 </script>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import "vue-verovio-canvas/style.css";
 import { VerovioCanvas, createAsyncVerovioToolkit } from "vue-verovio-canvas";
 import { VerovioToolkit } from "verovio/esm";
 import createVerovioModule from "verovio/wasm-hum";
 import { ref } from "vue";
 import MidiAudioPlayer from "@/components/MidiAudioPlayer.vue";
+import SearchBar from "@/components/SearchBar.vue";
 
 export default {
   components: {
     VerovioCanvas,
-    MidiAudioPlayer
+    MidiAudioPlayer,
+    SearchBar
   },
   data() {
     return {
@@ -78,8 +74,11 @@ export default {
     };
   },
   computed: {
-    ...mapState([]),
-    ...mapGetters(["getNamePiecesWithMei", "getMei"]),
+    ...mapGetters([
+      "getNamePiecesWithMei",
+      "getMei",
+      "getNamePieces",
+      "getPieceInfo"]),
   },
   methods: {
     handleFileChange(event) {
@@ -107,6 +106,10 @@ export default {
       };
       debugger;
       reader.readAsText(file);
+    },
+    loadPieceInfo(selectedPiece) {
+      const parts = selectedPiece.split("-")
+      this.getPieceInfo({piece: parts, creadores: this.creadores, contribuidores: this.contribuidores, contribuidoresp: this.contribuidoresp})
     }
   },
 };

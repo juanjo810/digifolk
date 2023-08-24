@@ -231,7 +231,6 @@ export default {
       'resetPieceForm'
     ]),
     saveData() {
-      debugger
       this.saveDataPiece();
     },
     importFile() {
@@ -239,6 +238,19 @@ export default {
     },
     handleFileChange(event) {
       const file = event.target.files[0];
+      if (file && file.name.endsWith(".xlsx")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.importDataFromExcel({ file: e.target.result });
+        };
+        reader.readAsText(file);
+      } else if (file && file.name.endsWith(".mei")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.importDataFromMEI({ file: e.target.result });
+        };
+        reader.readAsText(file);
+      }
       console.log("Archivo seleccionado:", file);
     },
     addFields() {
