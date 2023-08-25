@@ -612,6 +612,10 @@ export default{
     state.pieces = pieces
   },
 
+  [types.FETCH_USERS] (state, users) {
+    state.users = users
+  },
+
   [types.GET_PIECE_SUCCESS] (state, piece) {
     state.pieceForm = piece
   },
@@ -721,6 +725,16 @@ export default{
   },
 
   [types.IMPORT_DATA_FAILURE] (state, error) {
+    state.error = error
+  },
+
+  [types.EDIT_USER_SUCCESS] (state, {user, email}) {
+    var userIndex = state.users.findIndex(u => u.email === email)
+    state.users.splice(userIndex, 1)
+    state.users.push(user)
+  },
+
+  [types.EDIT_USER_FAILURE] (state, error) {
     state.error = error
   }
   

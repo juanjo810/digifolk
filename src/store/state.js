@@ -239,5 +239,6 @@ export default{
     user_id: 1,
     col_id: 1
   },
-  collectionSelected: {}
+  collectionSelected: {},
+  users: []
 }

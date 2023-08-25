@@ -74,6 +74,9 @@
             <v-list-item @click="$router.push({name: 'modifyItems'})">
               <v-list-item-title>Modify items</v-list-item-title>
             </v-list-item>
+            <v-list-item @click="$router.push({name: 'users'})">
+              <v-list-item-title>View users</v-list-item-title>
+            </v-list-item>
             <v-list-item @click="logout()">
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>

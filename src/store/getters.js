@@ -42,6 +42,9 @@ export default{
     getNameCollections: (state) => {
       return state.collections.map(collection => `${collection.col_id}-${collection.title}`)
     },
+    getUserName: () => (user) => {
+      return `${user.user_id}-${user.username}`
+    },
     getFivePosts: (state) => {
       var count = 0
       return state.images.filter((image) => {

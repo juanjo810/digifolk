@@ -27,7 +27,7 @@ export default {
       "last_name": surname,
       "email": email,
       "username": username,
-      "is_admin": true,
+      "is_admin": false,
       "institution": institution,
       "piece": [],
       "password": password
@@ -223,6 +223,18 @@ export default {
       });
     })
   },
+  fetchAllUsers() {
+    return new Promise((resolve, reject) => {
+      axios.get('http://100.127.151.18:8000/api/getListOfUsers')
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+    })
+  },
+
   getPiece(piece) {
     const obj = {
       "id": piece[0],
@@ -307,5 +319,21 @@ export default {
       });
     });
   },
+
+  editUser(user, oldMail) {
+    return new Promise((resolve, reject) => {
+      const query = `http://100.127.151.18:8000/api/editUser?email_old=${oldMail}`
+      console.log(user)
+      axios.post(query, user
+      )
+        .then((response) => {
+          debugger
+          resolve(response.data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
   
 }

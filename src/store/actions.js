@@ -514,8 +514,22 @@ export default{
     })
   },
 
+  fetchUsers({commit}) {
+    API.fetchAllUsers()
+    .then((res) => {
+      commit(types.FETCH_USERS, res)
+    })
+  },
 
-
+  editUserInfo({commit}, {user, oldMail}) {
+    API.editUser(user, oldMail)
+    .then(() => {
+      commit(types.EDIT_USER_SUCCESS, {user, oldMail})
+    })
+    .catch((err) => {
+      commit(types.EDIT_USER_FAILURE, err)
+    })
+  },
   
   /**
    * Función para restablecer la contraseña del usuario.
