@@ -9,7 +9,7 @@ export default{
   separator: '|',
   defaultSelections: {
     items: [],
-    itemsIDs:{
+    itemsIDs: {
       "Rights": 1,
       "XML Contributor Roles": 2,
       "Creator Pieces Roles": 3,
@@ -175,7 +175,7 @@ export default{
     rights_holder: '',
     piece_col: []
   },
-  pieces: [{id: 1, title: "Ejemplo"}],
+  pieces: [],
   collections: [],
   pieceSelected: {
     title: ["Titulo"],

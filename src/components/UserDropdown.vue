@@ -38,6 +38,7 @@
             
             <v-col cols="2">
               <v-checkbox
+                v-if="isAdmin"
                 label="Admin"
                 v-model="currentUser.is_admin" ></v-checkbox>
             </v-col>
@@ -58,9 +59,10 @@ export default {
       type: Object,
       required: true
     },
-    index: {
-      type: Number,
-      required: true}
+    isAdmin: {
+      type: Boolean,
+      required: true
+    }
   },
   data () {
     return {

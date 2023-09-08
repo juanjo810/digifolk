@@ -228,7 +228,9 @@ export default {
       "addContributor",
       "formatAndSaveDate",
       "removeContributor",
-      'resetPieceForm'
+      'resetPieceForm',
+      'importDataFromExcel',
+      'importDataFromMEI'
     ]),
     saveData() {
       this.saveDataPiece();
@@ -271,7 +273,6 @@ export default {
     },
   },
   created() {
-    // this.resetPieceForm();  
     this.contribuidores = structuredClone(this.contributor);
   },
 };

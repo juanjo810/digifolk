@@ -182,7 +182,7 @@
                 <v-select
                   v-model="type"
                   label="Type"
-                  :items="defaultSelections.types"
+                  :items="getItemsNameByType(7)"
                 ></v-select>
               </v-col>
 
@@ -307,7 +307,6 @@
                   accept=".mid"
                   v-model="midi"
                   label="MIDI File"
-              @change="handleFileChange"
                 ></v-file-input>
               </v-col>
 
@@ -672,7 +671,6 @@ export default {
   },
 
   created() {
-    //this.resetPieceForm()
     this.contribuidores = structuredClone(this.contributor)
     this.creadores = structuredClone(this.creator)
   },

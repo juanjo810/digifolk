@@ -86,13 +86,16 @@ export default {
       'loginUser'
     ]),
     logIn () {
-      if (this.email !== '' || this.password !== '') {
+      if (this.user !== '' || this.password !== '') {
         this.loginUser({ user: this.user, password: this.password })
         .then(()=>{
           console.log("OK")
+          this.user = this.password = ''
           this.$router.push({name: 'dashboard'})
         })
         .catch(console.log)
+      } else {
+        this.$store.commit('LOGIN_USER_FAILURE', {error:'Please, fill all the fields'})
       }
     }
   }

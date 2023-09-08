@@ -2,6 +2,8 @@
  * @module Getters
  * @description En este fichero se muestran los diferentes getters que se tienen del estado local del sistema.
  */
+import utils from '@/utils/utils.js'
+
 export default{
     getItemsByType: (state) => (typeId) => {
       return state.defaultSelections.items.filter(item => item.type_item === typeId)
@@ -27,23 +29,25 @@ export default{
         return -1
     },
     getNamePieces: (state) => {
-      return state.pieces.map(piece => `${piece.id}-${piece.title}`)
+      return state.pieces.map(piece => `${piece.music_id}-${piece.title}`)
     },
-    getNamePiecesWithMei: (state) => {
-      return state.pieces.filter(piece => piece.mei !== '').map(piece => `${piece.id}-${piece.title}`)
+    getMei: (state) => {
+      return utils.parseFileToString(state.pieceForm.mei[0])
     },
-    getMei: (state) => (pieceId) => {
-      const piece = state.pieces.find(piece => piece.id === pieceId)
-      if (piece)
-        return piece.mei
-      else
-        return ''
+    getMidi: (state) => {
+      return state.pieceForm.midi
     },
     getNameCollections: (state) => {
       return state.collections.map(collection => `${collection.col_id}-${collection.title}`)
     },
     getUserName: () => (user) => {
       return `${user.user_id}-${user.username}`
+    },
+    getReviewPieces: (state) => {
+      return state.pieces.filter(piece => !piece.review)
+    },
+    getReviewCollections: (state) => {
+      return state.collections.filter(collection => !collection.review)
     },
     getFivePosts: (state) => {
       var count = 0

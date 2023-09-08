@@ -420,7 +420,6 @@ export default {
         },
         loadCollectionInfo(selectedCollection) {
           const parts = selectedCollection.split("-")
-          console.log(this.contribuidores, this.creadores)
           this.getCollectionInfo({collection: parts, creadores: this.creadores, contribuidores: this.contribuidores})
         },
     },

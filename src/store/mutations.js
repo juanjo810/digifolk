@@ -55,54 +55,36 @@ export default{
   },
 
   [types.CHANGE_PASSWORD_SUCCESS] (state) {
-    state.changingPass = false
     state.error = ''
   },
 
-  [types.CHANGE_PASSWORD_FAILURE] (state, { error }) {
-    state.changingPass = false
-    state.error = error
-  },
-
-  [types.CHANGE_INFO_SUCCESS] (state, {user, descripcion}) {
-    state.changingPass = false
-    state.user.data.email = user.email
-    state.user.data.displayName = user.displayName
-    state.user.data.photoURL = user.photoURL
-    state.user.data.descripcion = descripcion
-    state.error = ''
-  },
-
-  [types.CHANGE_INFO_FAILURE] (state, { error }) {
-    state.changingPass = false
-    state.error = error
-  },
-
-  [types.LOG_OUT_FAILURE] (state, {error}) {
+  [types.CHANGE_PASSWORD_FAILURE] (state, error) {
     state.error = error
   },
 
   [types.LOG_OUT_SUCCESS] (state) {
-    state.user.loggedIn = false
-    state.user.data = null
-    state.images = []
+    state.user.tokenSession = ''
+    state.user.userInfo = null
   },
 
   [types.DELETE_ACCOUNT_REQUEST] (state) {
     state.error = ''
-    state.deletingAccount = true
   },
 
   [types.DELETE_ACCOUNT_FAILURE] (state, {error}) {
     state.error = error
-    state.deletingAccount = false
   },
 
   [types.DELETE_ACCOUNT_SUCCESS] (state) {
-    state.user.loggedIn = false
-    state.user.data = null
-    state.images = []
-    state.deletingAccount = false
+    state.pieces = []
+    state.collection = []
+    state.user.tokenSession = ''
+    state.user.userInfo = null
+  },
+
+  ['REMOVE_TOKEN_SESSION'] (state) {
+    state.user.tokenSession = ''
+    state.user.userInfo = null
   },
 
   [types.FETCH_IMAGES_REQUEST] (state, start) {
@@ -527,14 +509,29 @@ export default{
     state.fetchingCollection = true
   },
 
-  [types.EDIT_COLLECTION_SUCCESS] (state, id) {
+  [types.EDIT_COLLECTION_SUCCESS] (state, {collection, id}) {
     const indexToDelete = state.collections.findIndex(item => item.col_id === id);
     state.collections.splice(indexToDelete, 1);
-    state.collections.push(state.collectionForm)
+    state.collections.push(collection)
     state.fetchingCollection = false
   },
 
   [types.EDIT_COLLECTION_FAILURE] (state, error) {
+    state.fetchingCollection = false
+    state.error = error
+  },
+
+  [types.REMOVE_COLLECTION_REQUEST] (state) {
+    state.fetchingCollection = true
+  },
+
+  [types.REMOVE_COLLECTION_SUCCESS] (state, id) {
+    const indexToDelete = state.collections.findIndex(item => item.col_id === id);
+    state.collections.splice(indexToDelete, 1);
+    state.fetchingCollection = false
+  },
+
+  [types.REMOVE_COLLECTION_FAILURE] (state, error) {
     state.fetchingCollection = false
     state.error = error
   },
@@ -556,14 +553,30 @@ export default{
     state.fetchingPiece = true
   },
 
-  [types.EDIT_PIECE_SUCCESS] (state, id) {
-    const indexToDelete = state.pieces.findIndex(item => item.id === id);
+  [types.EDIT_PIECE_SUCCESS] (state, {piece, id}) {
+    debugger
+    const indexToDelete = state.pieces.findIndex(item => item.music_id === id);
     state.pieces.splice(indexToDelete, 1);
-    state.pieces.push(state.pieceForm)
+    state.pieces.push(piece)
     state.fetchingPiece = false
   },
 
   [types.EDIT_PIECE_FAILURE] (state, error) {
+    state.fetchingPiece = false
+    state.error = error
+  },
+  
+  [types.REMOVE_PIECE_REQUEST] (state) {
+    state.fetchingPiece = true
+  },
+
+  [types.REMOVE_PIECE_SUCCESS] (state, id) {
+    const indexToDelete = state.pieces.findIndex(item => item.music_id === id);
+    state.pieces.splice(indexToDelete, 1);
+    state.fetchingPiece = false
+  },
+
+  [types.REMOVE_PIECE_FAILURE] (state, error) {
     state.fetchingPiece = false
     state.error = error
   },
@@ -613,7 +626,7 @@ export default{
   },
 
   [types.FETCH_USERS] (state, users) {
-    state.users = users
+    state.users = users.users
   },
 
   [types.GET_PIECE_SUCCESS] (state, piece) {
@@ -728,8 +741,8 @@ export default{
     state.error = error
   },
 
-  [types.EDIT_USER_SUCCESS] (state, {user, email}) {
-    var userIndex = state.users.findIndex(u => u.email === email)
+  [types.EDIT_USER_SUCCESS] (state, user) {
+    var userIndex = state.users.findIndex(u => u.user_id === user.user_id)
     state.users.splice(userIndex, 1)
     state.users.push(user)
   },

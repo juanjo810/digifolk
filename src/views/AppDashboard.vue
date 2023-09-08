@@ -18,11 +18,15 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchItems'
+      'fetchItems',
+      'fetchCollections',
+      'fetchPieces'
     ]),
   },
   mounted () {
     this.fetchItems()
+    this.fetchCollections()
+    this.fetchPieces()
   }
 };
 </script>

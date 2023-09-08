@@ -33,7 +33,7 @@
             <v-list-item @click="$router.push({name: 'sheetpiece'})">
               <v-list-item-title>View sheetpiece</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="$router.push({name: 'uploadPiece'})">
+            <v-list-item @click="this.goToPieceForm">
               <v-list-item-title>Upload piece</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -53,7 +53,7 @@
                 View collection
               </v-list-item-title>
             </v-list-item>
-            <v-list-item @click="$router.push({name: 'collectionForm'})">
+            <v-list-item @click="this.goToCollectionForm">
               <v-list-item-title>Upload collection</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -68,15 +68,20 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item @click="viewProfile()">
+            <v-list-item @click="$router.push({name: 'profile'})">
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="$router.push({name: 'modifyItems'})">
-              <v-list-item-title>Modify items</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="$router.push({name: 'users'})">
-              <v-list-item-title>View users</v-list-item-title>
-            </v-list-item>
+            <div v-if="this.user.userInfo.is_admin">
+              <v-list-item @click="$router.push({name: 'modifyItems'})">
+                <v-list-item-title>Modify items</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="$router.push({name: 'reviews'})">
+                <v-list-item-title>Reviews</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="$router.push({name: 'users'})">
+                <v-list-item-title>View users</v-list-item-title>
+              </v-list-item>
+            </div>
             <v-list-item @click="logout()">
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
@@ -100,7 +105,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'App',
@@ -123,11 +128,24 @@ export default {
     }
   },
   methods: {
-    viewProfile() {
-      window.alert("Profile")
-    },
+    ...mapActions([
+      'logOut',
+      'resetPieceForm',
+      'resetCollectionForm'
+    ]),
     logout() {
-      window.alert("Logout")
+      this.logOut()
+      .then(() => {
+        this.$router.push({name: 'login'})
+      })
+    },
+    goToCollectionForm() {
+      this.resetCollectionForm()
+      this.$router.push({name: 'collectionForm'})
+    },
+    goToPieceForm() {
+      this.resetPieceForm()
+      this.$router.push({name: 'uploadPiece'})
     }
   }
 };

@@ -37,7 +37,7 @@ export default{
     return new Promise((resolve, reject) => {
       commit(types.REGISTER_USER_REQUEST)
       if (password !== password2) {
-        commit(types.REGISTER_USER_FAILURE, { error: 'Las contraseñas no coinciden' })
+        commit(types.REGISTER_USER_FAILURE, { error: "Passwords don't match" })
         reject()
       } else {
         API.register(email, name, surname, username, password, institution)
@@ -46,10 +46,52 @@ export default{
             resolve()
           })
           .catch(() => {
-            commit(types.REGISTER_USER_FAILURE, {error: 'Error de registro'})
+            commit(types.REGISTER_USER_FAILURE, {error: 'Register error'})
             reject()
           })
       }
+    })
+  },
+
+  changeUserPassword ({commit}, {id, currentPassword, newPassword}) {
+    API.changePassword(id, newPassword, currentPassword)
+      .then(() => {
+        commit(types.CHANGE_PASSWORD_SUCCESS)
+      })
+      .catch(error => {
+          commit(types.CHANGE_PASSWORD_FAILURE, { error })
+      })
+  },
+
+  removeAccount ({commit, state}, {password, email}) {
+    return new Promise((resolve, reject) => {
+      API.logIn(email, password)
+      .then(() => {
+        API.deleteAccount(email, state.user.userInfo.user_id, state.user.userInfo.username)
+          .then(() => {
+            debugger
+            commit(types.DELETE_ACCOUNT_SUCCESS)
+            
+            resolve()
+          })
+          .catch((error) => { 
+            debugger
+            commit(types.DELETE_ACCOUNT_FAILURE, {error: error}) 
+            reject()
+          })
+      })
+      .catch(() => {
+        debugger
+        commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Incorrect password' })
+        reject()
+      })
+    })
+  },
+
+  logOut({commit}) {
+    return new Promise((resolve) => {
+      commit(types.LOG_OUT_SUCCESS)
+      resolve()
     })
   },
 
@@ -71,13 +113,26 @@ export default{
     })
   },
   
-  saveDataPiece ({state, commit, getters}) {
+  async saveDataPiece ({state, commit, getters}) {
     var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    combinedForm.xml = utils.parseFileToString(state.xml)
-    combinedForm.mei = utils.parseFileToString(state.mei)
-    combinedForm.midi = utils.parseFileToBinaryString(state.midi)
+    combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
+    combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
+    combinedForm.midi = await utils.parseFileToBinaryString(state.pieceForm.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
-    combinedForm.col_id = parseInt(state.pieceForm.col_id.split(state.separator)[0])
+    combinedForm.review = false
+    combinedForm.user_id = state.user.userInfo.user_id
+    var temp = 0
+    try {
+      temp = parseInt(state.pieceForm.col_id.split(state.separator)[0])
+    } catch (error) {
+      temp = 0
+    }
+    combinedForm.col_id = temp
+    if(state.user.userInfo.is_admin === true) {
+      combinedForm.review = true
+    } else {
+      combinedForm.review = false
+    }
     const json = JSON.stringify(combinedForm)
     return new Promise((resolve, reject) => {
       commit(types.UPLOAD_PIECE_REQUEST)
@@ -93,19 +148,20 @@ export default{
     })  
   },
 
-  editPiece ({commit, getters, state}) {
-    var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    combinedForm.xml = utils.parseFileToString(state.xml)
-    combinedForm.mei = utils.parseFileToString(state.mei)
-    combinedForm.midi = utils.parseFileToBinaryString(state.midi)
+  async editPiece ({commit, getters, state}) {
+    debugger
+    var combinedForm = await utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
+    combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
+    combinedForm.midi = await utils.parseFileToString(state.pieceForm.midi[0])
+    combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
-    combinedForm.col_id = parseInt(state.pieceForm.col_id.split(state.separator)[0])
-    const json = JSON.stringify(combinedForm)
+    combinedForm.review = false
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
-      API.editPiece(json)
+      API.editPiece(combinedForm)
         .then(() => {
-          commit(types.EDIT_PIECE_SUCCESS)
+          commit(types.EDIT_PIECE_SUCCESS, {piece: combinedForm, id: combinedForm.music_id})
           resolve()
         })
         .catch((error) => {
@@ -118,20 +174,14 @@ export default{
   // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
   editCollection ({commit, getters, state}) {
     var collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    const id = collectionTemp.col_id
-    collectionTemp = {
-      ...collectionTemp,
-      piece_col: []
-    }
-    delete collectionTemp.col_id
     console.log(collectionTemp)
     const json = JSON.stringify(collectionTemp);
     console.log(json);
     return new Promise((resolve, reject) => {
       commit(types.EDIT_COLLECTION_REQUEST)
-      API.editCollection(collectionTemp, id)
+      API.editCollection(collectionTemp)
         .then(() => {
-          commit(types.EDIT_COLLECTION_SUCCESS, id)
+          commit(types.EDIT_COLLECTION_SUCCESS, {collection: state.collectionForm, id: collectionTemp.col_id})
           resolve()
         })
         .catch((error) => {
@@ -272,191 +322,61 @@ export default{
   },
 
   getPieceInfo({commit, state}, {piece, creadores, contribuidores, contribuidoresp}) {
-    //API.getPiece(piece)
-    //.then((res) => {
-      // const res = state.pieces.find(p => p.id === parseInt(piece[0]))
-      console.log(state, piece)
-      const res = {
-        title: ["Titulo"],
-        rights: 17,
-        creator: "Creator",
-        date: "5 August 2023",
-        type_file: 74,
-        publisher: "Publisher",
-        contributor_role: [
-          {
-            name: "Contributor",
-            role: 22
-          }
-        ],
-        desc: "Description",
-        rightsp: 111,
-        creatorp_role: [
-          {
-            name: "Creador1",
-            role: 34
-          }
-        ],
-        datep: "5 August 2023",
-        real_key: "D",
-        meter: "9/8",
-        tempo: "Fast",
-        instruments: ["Banjo", "5-String Banjo", "Irish Bouzouki"],
-        genre: ["Work piece", "Sons"],
-        contributorp_role: [
-          {
-            name: "Contributor",
-            role: 42
-          }
-        ],
-        alt_title: "AltTitle",
-        mode: "Mode",
-        descp: "Decription",
-        type_piece: 75,
-        formattingp: "Format",
-        subject: ["Subject"],
-        language: "IE",
-        relationp: ["Relation1", "Relation2"],
-        hasVersion: ["Version"],
-        isVersionOf: ["Is", "2"],
-        coverage: "Coverage",
-        spatial: {
-          country: "Ireland",
-          state: "Dublin",
-          location: "Dublin"
-        },
-        temporal: {
-          century: "20th",
-          decade: "10s",
-          year: "1914"
-        },
-        xml: "",
-        mei: "",
-        midi: "",
-        audio: "Audio1",
-        video: "Video1",
-        user_id: 1,
-        col_id: 1
-      }
-    var final = structuredClone(res)
-    final.title = final.title.join('|')
-    var item = state.defaultSelections.items.find(i => i.id === parseInt(final.rights))
-    final.rights = item.name
-    var type_file = state.defaultSelections.items.find(i => i.id === parseInt(final.type_file))
-    final.type_file = type_file.name
-    final.contributor_role = final.contributor_role.map((c) => {
-      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
-      const temp = {
-        name: c.name,
-        role: item.name
-      }
-      contribuidores.push(temp)
-      return temp
+    return new Promise((resolve, reject) => {
+      API.getPiece(piece[0])
+      .then((res) => {
+        var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
+        final.mei = utils.parseStringToFile(final.mei, 'MeiFile', )
+        final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
+        final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+        commit(types.GET_PIECE_SUCCESS, final)
+        resolve()
+      })
+      .catch((err) => {
+        commit(types.GET_PIECE_FAILURE, err)
+        reject()
+      })
     })
-    final.rightsp = state.defaultSelections.items.find(i => i.id === parseInt(final.rightsp)).name
-    final.creatorp_role = final.creatorp_role.map((c) => {
-      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
-      const temp = {
-        name: c.name,
-        role: item.name
-      }
-      creadores.push(temp)
-      return temp
-    })
-    final.contributorp_role = final.contributorp_role.map((c) => {
-      var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
-      const temp = {
-        name: c.name,
-        role: item.name
-      }
-      contribuidoresp.push(temp)
-      return temp
-    })
-    final.subject = final.subject.join('|')
-    final.relationp = final.relationp.join('|')
-    final.hasVersion = final.hasVersion.join('|')
-    final.isVersionOf = final.isVersionOf.join('|')
-
-      commit(types.GET_PIECE_SUCCESS, final)
-    //})
-    //.catch((err) => {
-    //  commit(types.GET_PIECE_FAILURE, err)
-    //})
   },
 
-  getCollectionInfo({commit, state}, {collection, creadores, contribuidores}) {
-    API.getCollection(collection)
-    .then((res) => {
-      /*const res = {
-          col_id: 1,
-          title: ["Collection1"],
-          rights: 17,
-          date: "8 August 2023",
-          creator_role: [
-            {
-              name: "Creator1",
-              role: 51
-            }
-          ],
-          contributor_role: [
-            {
-              name: "Contributor1",
-              role: 61
-            }
-          ],
-          source_type: 71,
-          source: "Source",
-          description: "Description",
-          formatting: "Format",
-          extent: "Extent",
-          publisher: "Publisher",
-          subject: ["Subject"],
-          language: "es",
-          relation: ["Relation1", "Relation2"],
-          coverage: "Coverage",
-          spatial: {
-            country: "Ireland",
-            state: "Ireland",
-            location: "Dublin"
-          },
-          temporal: {
-            century: "19th",
-            decade: "10s",
-            year: "1814"
-          },
-          rightsHolder: "RightsHolder",
-          piece_col: []
-        }*/
-      var final = structuredClone(res[0])
-      final.title = final.title.join('|')
-      var item = state.defaultSelections.items.find(i => i.id === parseInt(final.rights))
-      final.rights = item.name
-      final.source_type = state.defaultSelections.items.find(i => i.id === parseInt(final.source_type)).name
-      final.creator_role = final.creator_role.map((c) => {
-        var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
-        const temp = {
-          name: c.name,
-          role: item.name
-        }
-        creadores.push(temp)
-        return temp
+  getReviewPiece({state}, piece) {
+    return new Promise((resolve, reject) => {
+      API.getPiece(piece.music_id)
+      .then((res) => {
+        var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections)
+        final.mei = utils.parseStringToFile(final.mei, 'MeiFile', )
+        final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
+        final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+        resolve(final)
       })
-      final.contributor_role = final.contributor_role.map((c) => {
-        var item = state.defaultSelections.items.find(i => i.id === parseInt(c.role))
-        const temp = {
-          name: c.name,
-          role: item.name
-        }
-        contribuidores.push(temp)
-        return temp
+      .catch((err) => {
+        reject(err)
       })
-      final.subject = final.subject.join('|')
-      final.relation = final.relation.join('|')
+    })
+  },
 
+
+  getCollectionInfo({commit, state}, {collection, creadores, contribuidores}) {
+    API.getCollection(collection[0])
+    .then((res) => {
+      var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items, creadores, contribuidores)
       commit(types.GET_COLLECTION_SUCCESS, final)
     })
     .catch((err) => {
       commit(types.GET_COLLECTION_FAILURE, err)
+    })
+  },
+
+  getReviewCollection({state}, collection) {
+    return new Promise((resolve, reject) => {
+      API.getCollection(collection)
+      .then((res) => {
+        var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items)
+        resolve(final)
+      })
+      .catch((err) => {
+        reject(err)
+      })
     })
   },
 
@@ -524,13 +444,71 @@ export default{
   editUserInfo({commit}, {user, oldMail}) {
     API.editUser(user, oldMail)
     .then(() => {
-      commit(types.EDIT_USER_SUCCESS, {user, oldMail})
+      commit(types.EDIT_USER_SUCCESS, user)
     })
     .catch((err) => {
       commit(types.EDIT_USER_FAILURE, err)
     })
   },
-  
+
+  async validatePiece({commit, state, getters}, piece) {
+    var combinedForm = utils.parsePieceToJSON(piece, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    combinedForm.xml = await utils.parseFileToString(piece.xml)
+    combinedForm.mei = await utils.parseFileToString(piece.mei)
+    combinedForm.midi = await utils.parseFileToBinaryString(piece.midi)
+    combinedForm.user_id = state.user.userInfo.user_id
+    combinedForm.review = true
+    return new Promise((resolve, reject) => {
+      commit(types.EDIT_PIECE_REQUEST)
+      API.editPiece(combinedForm)
+        .then(() => {
+          commit(types.EDIT_PIECE_SUCCESS, {piece: piece, id: piece.music_id})
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.EDIT_PIECE_FAILURE, error.msg)
+          reject()
+        })
+    })
+  },
+
+  deletePiece({commit}, id) {
+    API.removePiece(id)
+    .then(() => {
+      commit(types.REMOVE_PIECE_SUCCESS, id)
+    })
+    .catch((err) => {
+      commit(types.REMOVE_PIECE_FAILURE, err)
+    })
+  },
+
+  validateCollection({commit, state, getters}, collection) {
+    var collectionTemp = utils.parseCollectionToJSON(collection, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    return new Promise((resolve, reject) => {
+      commit(types.EDIT_COLLECTION_REQUEST)
+      API.editCollection(collectionTemp)
+        .then(() => {
+          commit(types.EDIT_COLLECTION_SUCCESS, {collection: collection, id: collectionTemp.col_id})
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.EDIT_COLLECTION_FAILURE, error.msg)
+          reject()
+        })
+    })
+  },  
+
+  deleteCollection({commit}, id) {
+    API.removeCollection(id)
+    .then(() => {
+      commit(types.REMOVE_COLLECTION_SUCCESS, id)
+    })
+    .catch((err) => {
+      commit(types.REMOVE_COLLECTION_FAILURE, err)
+    })
+  },
+
+
   /**
    * Función para restablecer la contraseña del usuario.
    * Se llama a la función de la API para que envíe un email de restablecimiento

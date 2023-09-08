@@ -5,7 +5,7 @@
       v-for="(user, index) in users"
       :key="index"
       :user="user"
-      :index="index"
+      :isAdmin="isAdmin"
     /></v-container>
 </template>
 
@@ -16,6 +16,11 @@ import UserDropdown from "@/components/UserDropdown.vue";
 export default {
   components: {
     UserDropdown
+  },
+  data() {
+    return {
+      isAdmin: true,
+    };
   },
   computed: {
     ...mapState(["users"]),
