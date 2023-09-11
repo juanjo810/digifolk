@@ -5,33 +5,48 @@
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <SearchBar :objects="this.getNamePieces" :getInfo="this.loadPieceInfo"></SearchBar>
+              <SearchBar
+                :objects="this.getNamePieces"
+                :getInfo="this.loadPieceInfo"
+              ></SearchBar>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <v-card-title class="text-h5" v-if="this.content">{{ this.pieceForm.title }}</v-card-title>
-              <v-card-text v-else>This piece doesn't contain any MEI file. You can edit the piece and upload it.</v-card-text>
+              <v-card-title class="text-h5" v-if="this.content">{{
+                this.pieceForm.title
+              }}</v-card-title>
+              <v-card-text v-else
+                >This piece doesn't contain any MEI file. You can edit the piece
+                and upload it.</v-card-text
+              >
               <VerovioCanvas
                 v-if="this.content"
                 :toolkit="toolkit"
                 :data="this.content"
-                view-mode="vertical"  
+                view-mode="vertical"
               />
             </v-col>
           </v-row>
           <v-row>
-          <v-row>
+            <v-row>
+              <v-col cols="12">
+                <input type="file" accept=".xml" @change="handleFileChange2" />
+              </v-col>
+            </v-row>
             <v-col cols="12">
-              <input type="file" accept=".xml" @change="handleFileChange2" />
-            </v-col>
-          </v-row>
-            <v-col cols="12">
-              <v-card-text v-if="!this.midiFilePath">This piece doesn't contain any MIDI file. You can edit the piece and upload it.</v-card-text>
+              <v-card-text v-if="!this.midiFilePath"
+                >This piece doesn't contain any MIDI file. You can edit the
+                piece and upload it.</v-card-text
+              >
               <v-btn v-else @click="this.playMidi = !this.playMidi">
                 {{ this.playMidi ? "Stop" : "Play" }}
               </v-btn>
-              <MidiAudioPlayer :midi="this.midiFilePath" :playMidi="this.playMidi" @finishedPlaying="this.playMidi=false"/>
+              <MidiAudioPlayer
+                :midi="this.midiFilePath"
+                :playMidi="this.playMidi"
+                @finishedPlaying="this.playMidi = false"
+              />
             </v-col>
           </v-row>
         </v-card-text>
@@ -61,7 +76,7 @@ export default {
   components: {
     VerovioCanvas,
     MidiAudioPlayer,
-    SearchBar
+    SearchBar,
   },
   data() {
     return {
@@ -71,21 +86,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
-      "getMei",
-      "getMidi",
-      "getNamePieces"
-    ]),
-    ...mapState([
-      "pieceForm"
-    ])
+    ...mapGetters(["getMei", "getMidi", "getNamePieces"]),
+    ...mapState(["pieceForm"]),
   },
   methods: {
-    ...mapActions([
-      "getPieceInfo"
-    ]),
+    ...mapActions(["getPieceInfo"]),
     handleFileChange2(event) {
-      debugger
+      debugger;
       const file = event.target.files[0];
       const reader = new FileReader();
       reader.onload = () => {
@@ -94,15 +101,15 @@ export default {
       reader.readAsBinaryString(file);
     },
     async loadMedia() {
-      this.content = await this.getMei
-      debugger
-      this.midiFilePath = this.getMidi
+      this.content = await this.getMei;
+      debugger;
+      this.midiFilePath = this.getMidi;
     },
     async loadPieceInfo(selectedPiece) {
-      const parts = selectedPiece.split("-")
-      await this.getPieceInfo({piece: parts})
-      this.loadMedia()
-    }
+      const parts = selectedPiece.split("-");
+      await this.getPieceInfo({ piece: parts });
+      this.loadMedia();
+    },
   },
 };
 </script>

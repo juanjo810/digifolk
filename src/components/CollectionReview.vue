@@ -5,7 +5,10 @@
       <v-card-text>
         <v-row>
           <v-col cols="6">
-            <v-text-field v-model="this.collectionForm.title" label="Title"></v-text-field>
+            <v-text-field
+              v-model="this.collectionForm.title"
+              label="Title"
+            ></v-text-field>
           </v-col>
 
           <v-col cols="6">
@@ -13,7 +16,6 @@
               v-model="this.collectionForm.rights"
               label="Rights"
               :items="this.getItemsNameByType(1)"
-             
             ></v-select>
           </v-col>
 
@@ -35,7 +37,6 @@
                   :rules="rules"
                   hint="URI example in http://www.dib.ie"
                   persistent-hint
-                 
                 ></v-text-field>
               </v-col>
               <v-col cols="5">
@@ -45,7 +46,6 @@
                   label="Role"
                   :items="getItemsNameByType(5)"
                   :rules="rules"
-                 
                 ></v-select>
               </v-col>
             </v-row>
@@ -63,7 +63,6 @@
                   label="Name or URI"
                   hint="URI example in http://www.dib.ie"
                   persistent-hint
-                 
                 ></v-text-field>
               </v-col>
               <v-col cols="5">
@@ -72,7 +71,6 @@
                   @update:modelValue="updateContributor()"
                   label="Role"
                   :items="getItemsNameByType(6)"
-                 
                 ></v-select>
               </v-col>
             </v-row>
@@ -83,7 +81,6 @@
               v-model="this.collectionForm.source_type"
               label="Type"
               :items="getItemsNameByType(7)"
-             
             ></v-select>
           </v-col>
 
@@ -91,7 +88,6 @@
             <v-text-field
               v-model="this.collectionForm.source"
               label="Source"
-             
             ></v-text-field>
           </v-col>
 
@@ -99,7 +95,6 @@
             <v-text-field
               v-model="this.collectionForm.description"
               label="Description"
-             
             ></v-text-field>
           </v-col>
 
@@ -107,7 +102,6 @@
             <v-text-field
               v-model="this.collectionForm.formatting"
               label="Format"
-             
             ></v-text-field>
           </v-col>
 
@@ -115,7 +109,6 @@
             <v-text-field
               v-model="this.collectionForm.extent"
               label="Extent"
-             
             ></v-text-field>
           </v-col>
 
@@ -123,7 +116,6 @@
             <v-text-field
               v-model="this.collectionForm.publisher"
               label="Publisher"
-             
             ></v-text-field>
           </v-col>
 
@@ -131,7 +123,6 @@
             <v-text-field
               v-model="this.collectionForm.subject"
               label="Subject"
-             
             ></v-text-field>
           </v-col>
 
@@ -169,7 +160,6 @@
             <v-text-field
               v-model="this.collectionForm.spatial.state"
               label="State"
-             
             ></v-text-field>
           </v-col>
           <v-col cols="4">
@@ -227,16 +217,16 @@
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  data () {
+  data() {
     return {
-      collectionForm: null
-    }
+      collectionForm: null,
+    };
   },
   props: {
     collection: {
       type: Object,
       required: true,
-    }
+    },
   },
   computed: {
     ...mapGetters(["getItemsNameByType"]),
@@ -403,17 +393,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      "validateCollection",
-      "deleteCollection"
-    ]),
+    ...mapActions(["validateCollection", "deleteCollection"]),
     validate() {
-      this.validateCollection(this.collectionForm)
-      this.$emit("hide")
+      this.validateCollection(this.collectionForm);
+      this.$emit("hide");
     },
     reject() {
-      this.deleteCollection(this.collectionForm.col_id)
-      this.$emit("hide")
+      this.deleteCollection(this.collectionForm.col_id);
+      this.$emit("hide");
     },
   },
   created() {

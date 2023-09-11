@@ -48,18 +48,18 @@ export default {
           axios.post('http://100.127.151.18:8000/sendEmail', {
             "receiver_email": email,
           },
-          {
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(() => {
-            resolve(response.data);
-          })
-          .catch(error => {
-            reject(error);
-          })
+            {
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(() => {
+              resolve(response.data);
+            })
+            .catch(error => {
+              reject(error);
+            })
         })
         .catch(error => {
           reject(error);
@@ -112,14 +112,14 @@ export default {
           username: username
         }
       })
-      .then(() => {
-        debugger
-        resolve();
-      })
-      .catch(error => {
-        debugger
-        reject(error);
-      });
+        .then(() => {
+          debugger
+          resolve();
+        })
+        .catch(error => {
+          debugger
+          reject(error);
+        });
     })
   },
   uploadCollection(json) {
@@ -167,12 +167,12 @@ export default {
       axios.get('http://100.127.151.18:8000/getCol', {
         params: obj
       })
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
 
@@ -210,69 +210,72 @@ export default {
     });
   },
 
-  addItem(id,typeId, newItem) {
+  addItem(id, typeId, newItem) {
     const obj = {
       "id": id,
       "type_item": typeId,
       "name": newItem
     }
     const param = JSON.stringify(obj)
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       axios.post('http://100.127.151.18:8000/createItem', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         }
       })
-      .then(() => {
-        resolve(obj);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(() => {
+          resolve(obj);
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
-  removeItem(id,typeId) {
-    return new Promise((resolve,reject) => {
+  removeItem(id, typeId) {
+    return new Promise((resolve, reject) => {
       axios.delete('http://100.127.151.18:8000/removeItem', {
         params: {
           id: id,
           type_item: typeId
-        }})        
-      .then(() => {
-        resolve();
+        }
       })
-      .catch(error => {
-        reject(error);
-      });
+        .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
   removePiece(id) {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       axios.delete('http://100.127.151.18:8000/removePiece', {
         params: {
           id: id
-        }})
-      .then(() => {
-        resolve();
+        }
       })
-      .catch(error => {
-        reject(error);
-      });
+        .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
   removeCollection(id) {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       axios.delete('http://100.127.151.18:8000/removeCol', {
         params: {
           id: id
-        }})
-      .then(() => {
-        resolve();
+        }
       })
-      .catch(error => {
-        reject(error);
-      });
+        .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
   editOneItem(id, id_type, newName) {
@@ -282,62 +285,62 @@ export default {
       "name": newName
     }
     const param = JSON.stringify(obj)
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       axios.post('http://100.127.151.18:8000/editItem', param, {
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      .then(() => {
-        resolve();
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
   fetchAllItems() {
     return new Promise((resolve, reject) => {
       axios.get('http://100.127.151.18:8000/getListItems')
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
   fetchAllPieces() {
     return new Promise((resolve, reject) => {
       axios.get('http://100.127.151.18:8000/getListOfPieces')
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
   fetchAllCollections() {
     return new Promise((resolve, reject) => {
       axios.get('http://100.127.151.18:8000/getListOfCols')
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
   fetchAllUsers() {
     return new Promise((resolve, reject) => {
       axios.get('http://100.127.151.18:8000/getListOfUsers')
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     })
   },
 
@@ -349,12 +352,12 @@ export default {
       axios.get('http://100.127.151.18:8000/getPiece', {
         params: obj
       })
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
   advancedSearchPiece(query) {
@@ -362,14 +365,14 @@ export default {
       axios.get('http://100.127.151.18:8000/advancedSearchPiece', {
         params: query
       })
-      .then(response => {
-        resolve(response.data);
-      }
-      )
-      .catch(error => {
-        reject(error);
-      }
-      );
+        .then(response => {
+          resolve(response.data);
+        }
+        )
+        .catch(error => {
+          reject(error);
+        }
+        );
     });
   },
   advancedSearchCollection(query) {
@@ -377,14 +380,14 @@ export default {
       axios.get('http://1000.127.151.18:8000/advancedSearchCol', {
         params: query
       })
-      .then(response => {
-        resolve(response.data);
-      }
-      )
-      .catch(error => {
-        reject(error);
-      }
-      );
+        .then(response => {
+          resolve(response.data);
+        }
+        )
+        .catch(error => {
+          reject(error);
+        }
+        );
     });
   },
 
@@ -399,12 +402,12 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
 
@@ -416,12 +419,12 @@ export default {
           'Content-Type': 'application/json'
         }
       })
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(error => {
-        reject(error);
-      });
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
 
@@ -439,5 +442,5 @@ export default {
         });
     });
   }
-  
+
 }

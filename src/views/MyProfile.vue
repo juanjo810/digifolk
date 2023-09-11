@@ -119,8 +119,11 @@ export default {
     ]),
     changePassword() {
       if (this.password.length >= 6 && this.password === this.password2) {
-
-        this.changeUserPassword({id: this.user.userInfo.user_id, currentPassword: this.currentPassword, newPassword: this.password})
+        this.changeUserPassword({
+          id: this.user.userInfo.user_id,
+          currentPassword: this.currentPassword,
+          newPassword: this.password,
+        });
         this.visible = false;
       } else {
         this.$store.commit(
@@ -130,11 +133,12 @@ export default {
       }
     },
     deleteAccount() {
-      this.removeAccount({email: this.email, password: this.password3})
-        .then(() => {
+      this.removeAccount({ email: this.email, password: this.password3 }).then(
+        () => {
           this.visibleDelete = false;
           this.$router.push({ name: "login" });
-        })
+        }
+      );
     },
   },
   mounted() {

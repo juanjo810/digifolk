@@ -165,10 +165,10 @@
 
               <v-col cols="6">
                 <v-select
-                      v-model="mode"
-                      label="Mode"
-                      :items="getItemsNameByType(14)"
-                    ></v-select>
+                  v-model="mode"
+                  label="Mode"
+                  :items="getItemsNameByType(14)"
+                ></v-select>
               </v-col>
 
               <v-col cols="12">
@@ -318,7 +318,11 @@
                 <v-text-field v-model="video" label="Video URL"></v-text-field>
               </v-col>
               <v-col cols="4">
-                <v-select label="Select collection" :items="this.getNameCollections" v-model="this.col_id"></v-select>
+                <v-select
+                  label="Select collection"
+                  :items="this.getNameCollections"
+                  v-model="this.col_id"
+                ></v-select>
               </v-col>
             </v-row>
           </v-card-text>
@@ -361,9 +365,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(['error', 'pieceForm', 'defaultSelections']),
-    ...mapGetters(['getItemsNameByType',
-          'getNameCollections']),
+    ...mapState(["error", "pieceForm", "defaultSelections"]),
+    ...mapGetters(["getItemsNameByType", "getNameCollections"]),
     right: {
       get() {
         return this.pieceForm.rightsp;
@@ -614,9 +617,9 @@ export default {
       "removeContributor",
       "removeCreator",
       "formatAndSaveDate",
-      'resetPieceForm',
-      'importDataFromExcel',
-      'importDataFromMEI'
+      "resetPieceForm",
+      "importDataFromExcel",
+      "importDataFromMEI",
     ]),
     saveData() {
       this.saveDataPiece();
@@ -671,8 +674,8 @@ export default {
   },
 
   created() {
-    this.contribuidores = structuredClone(this.contributor)
-    this.creadores = structuredClone(this.creator)
+    this.contribuidores = structuredClone(this.contributor);
+    this.creadores = structuredClone(this.creator);
   },
 };
 </script>

@@ -2,7 +2,7 @@
   <div class="midi-player hidden">
       <object id="Jazz1" classid="CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90" class="hidden">
           <object id="Jazz2" type="audio/x-jazz" class="hidden">
-              <p class="hidden;">This page requires <a href=http://jazz-soft.net>Jazz-Plugin </a> ...</p> </object> </object> </div>
+              <p class="hidden;">This page requires <a href=http://jazz-soft.net>Jazz-Plugin</a>...</p> </object> </object> </div>
   </template>
   
   <script>

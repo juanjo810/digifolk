@@ -1,5 +1,5 @@
-export default{
-  user:{
+export default {
+  user: {
     tokenSession: '',
     userInfo: null
   },
@@ -98,14 +98,14 @@ export default{
     collectionsIDs: []*/
   },
   pieceForm: {
-    title: '', 
+    title: '',
     rights: '',
     creator: '',
     date: null,
     type_file: '',
     publisher: '',
     contributor_role: [],
-    desc:'',
+    desc: '',
     rightsp: '', //rightsp
     creatorp_role: [],
     datep: null, // datep
@@ -113,17 +113,17 @@ export default{
     meter: '', // meter
     tempo: '',
     instruments: [], // instruments
-    genre: [], 
+    genre: [],
     contributorp_role: [], // contributorp_role
     alt_title: '', // alt_title
     mode: '',
     descp: '', // descp
     type_piece: '', // type_piece
     formattingp: '', // formattingp
-    subject: '', 
-    language: '', 
+    subject: '',
+    language: '',
     relationp: '', // relationp
-    hasVersion: '', 
+    hasVersion: '',
     isVersionOf: '',
     coverage: '',
     spatial: {
@@ -149,16 +149,16 @@ export default{
   collectionForm: {
     title: '',
     rights: '', // rights
-    date: null, 
+    date: null,
     creator_role: [],
     contributor_role: [], // contributor_role
     source_type: '', // source_type
     source: '',
     description: '',
     formatting: '', // formatting
-    extent: '', 
+    extent: '',
     publisher: '',
-    subject: '', 
+    subject: '',
     language: '',
     relation: '',
     coverage: '',

@@ -854,7 +854,7 @@ export default {
         return this.pieceForm.midi;
       },
       set(value) {
-        debugger
+        debugger;
         this.$store.commit("UPDATE_SHEET_MIDI", value);
       },
     },

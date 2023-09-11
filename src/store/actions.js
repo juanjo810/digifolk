@@ -10,30 +10,31 @@ import API from '@/api'
 import { format } from 'date-fns'
 import utils from '@/utils/utils'
 
-export default{
-  
-  loginUser ({ commit }, { user, password }) {
-      return new Promise((resolve, reject)=>{
-        commit(types.LOGIN_USER_REQUEST)
-        API.logIn(user, password)
-          .then((res)=>{
-            if (Array.isArray(res)) {
-              commit(types.LOGIN_USER_SUCCESS, {userInfo: res[0], token: res[1]})
-            } else {
-              commit(types.LOGIN_USER_FAILURE, { error: 'Wrong user or password.'})
-            }
-            resolve()
-          })
-          .catch((err) => {
-            console.log(err)
-            commit(types.LOGIN_USER_FAILURE, { error: 'Failed connection with server.'})
-            reject()
-          })
-      } 
-    )},
+export default {
 
-  
-  registerUser ({ commit }, { email, password, name, surname, username, password2, institution }) {
+  loginUser({ commit }, { user, password }) {
+    return new Promise((resolve, reject) => {
+      commit(types.LOGIN_USER_REQUEST)
+      API.logIn(user, password)
+        .then((res) => {
+          if (Array.isArray(res)) {
+            commit(types.LOGIN_USER_SUCCESS, { userInfo: res[0], token: res[1] })
+          } else {
+            commit(types.LOGIN_USER_FAILURE, { error: 'Wrong user or password.' })
+          }
+          resolve()
+        })
+        .catch((err) => {
+          console.log(err)
+          commit(types.LOGIN_USER_FAILURE, { error: 'Failed connection with server.' })
+          reject()
+        })
+    }
+    )
+  },
+
+
+  registerUser({ commit }, { email, password, name, surname, username, password2, institution }) {
     return new Promise((resolve, reject) => {
       commit(types.REGISTER_USER_REQUEST)
       if (password !== password2) {
@@ -46,56 +47,56 @@ export default{
             resolve()
           })
           .catch(() => {
-            commit(types.REGISTER_USER_FAILURE, {error: 'Register error'})
+            commit(types.REGISTER_USER_FAILURE, { error: 'Register error' })
             reject()
           })
       }
     })
   },
 
-  changeUserPassword ({commit}, {id, currentPassword, newPassword}) {
+  changeUserPassword({ commit }, { id, currentPassword, newPassword }) {
     API.changePassword(id, newPassword, currentPassword)
       .then(() => {
         commit(types.CHANGE_PASSWORD_SUCCESS)
       })
       .catch(error => {
-          commit(types.CHANGE_PASSWORD_FAILURE, { error })
+        commit(types.CHANGE_PASSWORD_FAILURE, { error })
       })
   },
 
-  removeAccount ({commit, state}, {password, email}) {
+  removeAccount({ commit, state }, { password, email }) {
     return new Promise((resolve, reject) => {
       API.logIn(email, password)
-      .then(() => {
-        API.deleteAccount(email, state.user.userInfo.user_id, state.user.userInfo.username)
-          .then(() => {
-            debugger
-            commit(types.DELETE_ACCOUNT_SUCCESS)
-            
-            resolve()
-          })
-          .catch((error) => { 
-            debugger
-            commit(types.DELETE_ACCOUNT_FAILURE, {error: error}) 
-            reject()
-          })
-      })
-      .catch(() => {
-        debugger
-        commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Incorrect password' })
-        reject()
-      })
+        .then(() => {
+          API.deleteAccount(email, state.user.userInfo.user_id, state.user.userInfo.username)
+            .then(() => {
+              debugger
+              commit(types.DELETE_ACCOUNT_SUCCESS)
+
+              resolve()
+            })
+            .catch((error) => {
+              debugger
+              commit(types.DELETE_ACCOUNT_FAILURE, { error: error })
+              reject()
+            })
+        })
+        .catch(() => {
+          debugger
+          commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Incorrect password' })
+          reject()
+        })
     })
   },
 
-  logOut({commit}) {
+  logOut({ commit }) {
     return new Promise((resolve) => {
       commit(types.LOG_OUT_SUCCESS)
       resolve()
     })
   },
 
-  saveDataCollection ({state, commit, getters}) {
+  saveDataCollection({ state, commit, getters }) {
     const collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     collectionTemp.user_id = state.user.userInfo.user_id
     const json = JSON.stringify(collectionTemp)
@@ -107,13 +108,13 @@ export default{
           resolve()
         })
         .catch((error) => {
-          commit(types.UPLOAD_COLLECTION_FAILURE, {error: error.msg})
+          commit(types.UPLOAD_COLLECTION_FAILURE, { error: error.msg })
           reject()
         })
     })
   },
-  
-  async saveDataPiece ({state, commit, getters}) {
+
+  async saveDataPiece({ state, commit, getters }) {
     var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
     combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
@@ -128,7 +129,7 @@ export default{
       temp = 0
     }
     combinedForm.col_id = temp
-    if(state.user.userInfo.is_admin === true) {
+    if (state.user.userInfo.is_admin === true) {
       combinedForm.review = true
     } else {
       combinedForm.review = false
@@ -142,13 +143,13 @@ export default{
           resolve()
         })
         .catch((error) => {
-          commit(types.UPLOAD_PIECE_FAILURE, {error: error.msg})
+          commit(types.UPLOAD_PIECE_FAILURE, { error: error.msg })
           reject()
         })
-    })  
+    })
   },
 
-  async editPiece ({commit, getters, state}) {
+  async editPiece({ commit, getters, state }) {
     debugger
     var combinedForm = await utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
@@ -161,18 +162,18 @@ export default{
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
         .then(() => {
-          commit(types.EDIT_PIECE_SUCCESS, {piece: combinedForm, id: combinedForm.music_id})
+          commit(types.EDIT_PIECE_SUCCESS, { piece: combinedForm, id: combinedForm.music_id })
           resolve()
         })
         .catch((error) => {
           commit(types.EDIT_PIECE_FAILURE, error.msg)
           reject()
         })
-    })  
+    })
   },
 
   // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
-  editCollection ({commit, getters, state}) {
+  editCollection({ commit, getters, state }) {
     var collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     console.log(collectionTemp)
     const json = JSON.stringify(collectionTemp);
@@ -181,7 +182,7 @@ export default{
       commit(types.EDIT_COLLECTION_REQUEST)
       API.editCollection(collectionTemp)
         .then(() => {
-          commit(types.EDIT_COLLECTION_SUCCESS, {collection: state.collectionForm, id: collectionTemp.col_id})
+          commit(types.EDIT_COLLECTION_SUCCESS, { collection: state.collectionForm, id: collectionTemp.col_id })
           resolve()
         })
         .catch((error) => {
@@ -190,8 +191,8 @@ export default{
         })
     })
   },
-  
-  addContributor ({ commit }, form){
+
+  addContributor({ commit }, form) {
     switch (form) {
       case 'User':
         commit(types.ADD_USER_CONTRIBUTOR)
@@ -207,7 +208,7 @@ export default{
     }
   },
 
-  addCreator ({ commit }, form){
+  addCreator({ commit }, form) {
     switch (form) {
       case 'Sheet':
         commit(types.ADD_SHEET_CREATOR)
@@ -220,7 +221,7 @@ export default{
     }
   },
 
-  removeContributor ({ commit }, {index, form}){
+  removeContributor({ commit }, { index, form }) {
     switch (form) {
       case 'User':
         commit(types.REMOVE_USER_CONTRIBUTOR, index)
@@ -236,7 +237,7 @@ export default{
     }
   },
 
-  removeCreator ({ commit }, {index, form}){
+  removeCreator({ commit }, { index, form }) {
     switch (form) {
       case 'Sheet':
         commit(types.REMOVE_SHEET_CREATOR, index)
@@ -249,7 +250,7 @@ export default{
     }
   },
 
-  formatAndSaveDate ({commit}, {date, form}) {
+  formatAndSaveDate({ commit }, { date, form }) {
     const formattedDate = format(date[0], 'd MMMM yyyy')
     switch (form) {
       case 'User':
@@ -266,192 +267,192 @@ export default{
     }
   },
 
-  addNewItem ({commit}, {id, id_type, newItem}) {
+  addNewItem({ commit }, { id, id_type, newItem }) {
     return new Promise((resolve, reject) => {
       API.addItem(id, id_type, newItem)
-      .then((res) => {
-        commit(types.ADD_NEW_ITEM_SUCCESS, res)
-        resolve()
+        .then((res) => {
+          commit(types.ADD_NEW_ITEM_SUCCESS, res)
+          resolve()
+        })
+        .catch((err) => {
+          commit(types.ADD_NEW_ITEM_FAILURE, err)
+          reject()
+        })
+    })
+  },
+
+  removeOneItem({ commit }, { item, id_type }) {
+    API.removeItem(item.id, id_type)
+      .then(() => {
+        commit(types.REMOVE_ITEM_SUCCESS, item)
       })
       .catch((err) => {
-        commit(types.ADD_NEW_ITEM_FAILURE, err)
-        reject()
+        commit(types.REMOVE_ITEM_FAILURE, err)
       })
-    })
   },
 
-  removeOneItem ({commit}, {item, id_type}) {
-    API.removeItem(item.id, id_type)
-    .then(() => {
-      commit(types.REMOVE_ITEM_SUCCESS, item)
-    })
-    .catch((err) => {
-      commit(types.REMOVE_ITEM_FAILURE, err)
-    })
-  },
-
-  editItem ({commit}, {id, id_type, newName}) {
+  editItem({ commit }, { id, id_type, newName }) {
     API.editOneItem(id, id_type, newName)
-    .then(() => {
-      commit(types.EDIT_ITEM_SUCCESS, {id: id, id_type: id_type, newName: newName})
-    })
-    .catch((err) => {
-      commit(types.EDIT_ITEM_FAILURE, err)
-    })
+      .then(() => {
+        commit(types.EDIT_ITEM_SUCCESS, { id: id, id_type: id_type, newName: newName })
+      })
+      .catch((err) => {
+        commit(types.EDIT_ITEM_FAILURE, err)
+      })
   },
 
-  fetchItems({commit}) {
+  fetchItems({ commit }) {
     API.fetchAllItems()
-    .then((res)=>{
-      commit(types.FETCH_ITEMS, res)
-    })
+      .then((res) => {
+        commit(types.FETCH_ITEMS, res)
+      })
   },
 
-  fetchPieces({commit}) {
+  fetchPieces({ commit }) {
     API.fetchAllPieces()
-    .then((res)=>{
-      commit(types.FETCH_PIECES, res)
-    })
+      .then((res) => {
+        commit(types.FETCH_PIECES, res)
+      })
   },
 
-  fetchCollections({commit}) {
+  fetchCollections({ commit }) {
     API.fetchAllCollections()
-    .then((res)=>{
-      commit(types.FETCH_COLLECTIONS, res)
-    })
+      .then((res) => {
+        commit(types.FETCH_COLLECTIONS, res)
+      })
   },
 
-  getPieceInfo({commit, state}, {piece, creadores, contribuidores, contribuidoresp}) {
+  getPieceInfo({ commit, state }, { piece, creadores, contribuidores, contribuidoresp }) {
     return new Promise((resolve, reject) => {
       API.getPiece(piece[0])
-      .then((res) => {
-        var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
-        final.mei = utils.parseStringToFile(final.mei, 'MeiFile', )
-        final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
-        final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
-        commit(types.GET_PIECE_SUCCESS, final)
-        resolve()
-      })
-      .catch((err) => {
-        commit(types.GET_PIECE_FAILURE, err)
-        reject()
-      })
+        .then((res) => {
+          var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
+          final.mei = utils.parseStringToFile(final.mei, 'MeiFile',)
+          final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
+          final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+          commit(types.GET_PIECE_SUCCESS, final)
+          resolve()
+        })
+        .catch((err) => {
+          commit(types.GET_PIECE_FAILURE, err)
+          reject()
+        })
     })
   },
 
-  getReviewPiece({state}, piece) {
+  getReviewPiece({ state }, piece) {
     return new Promise((resolve, reject) => {
       API.getPiece(piece.music_id)
+        .then((res) => {
+          var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections)
+          final.mei = utils.parseStringToFile(final.mei, 'MeiFile',)
+          final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
+          final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+          resolve(final)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+
+
+  getCollectionInfo({ commit, state }, { collection, creadores, contribuidores }) {
+    API.getCollection(collection[0])
       .then((res) => {
-        var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections)
-        final.mei = utils.parseStringToFile(final.mei, 'MeiFile', )
-        final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
-        final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
-        resolve(final)
+        var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items, creadores, contribuidores)
+        commit(types.GET_COLLECTION_SUCCESS, final)
       })
       .catch((err) => {
-        reject(err)
+        commit(types.GET_COLLECTION_FAILURE, err)
       })
-    })
   },
 
-
-  getCollectionInfo({commit, state}, {collection, creadores, contribuidores}) {
-    API.getCollection(collection[0])
-    .then((res) => {
-      var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items, creadores, contribuidores)
-      commit(types.GET_COLLECTION_SUCCESS, final)
-    })
-    .catch((err) => {
-      commit(types.GET_COLLECTION_FAILURE, err)
-    })
-  },
-
-  getReviewCollection({state}, collection) {
+  getReviewCollection({ state }, collection) {
     return new Promise((resolve, reject) => {
       API.getCollection(collection)
-      .then((res) => {
-        var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items)
-        resolve(final)
-      })
-      .catch((err) => {
-        reject(err)
-      })
+        .then((res) => {
+          var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items)
+          resolve(final)
+        })
+        .catch((err) => {
+          reject(err)
+        })
     })
   },
 
-  resetPieceForm({commit}) {
+  resetPieceForm({ commit }) {
     commit(types.RESET_PIECE_FORM)
   },
 
-  resetCollectionForm({commit}) {
+  resetCollectionForm({ commit }) {
     commit(types.RESET_COLLECTION_FORM)
   },
 
-  advancedSearch({commit, state, getters}, {query, type}) {
+  advancedSearch({ commit, state, getters }, { query, type }) {
     return new Promise((resolve, reject) => {
       if (type === 'pieces') {
         var pieceQuery = utils.parsePieceToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
         API.advancedSearchPieces(pieceQuery)
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((err) => {
-          commit(types.ADVANCED_SEARCH_FAILURE, err)
-          reject()
-        })
+          .then((res) => {
+            resolve(res)
+          })
+          .catch((err) => {
+            commit(types.ADVANCED_SEARCH_FAILURE, err)
+            reject()
+          })
       } else if (type === 'collections') {
         var collectionQuery = utils.parseCollectionToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
         API.advancedSearchCollections(collectionQuery)
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((err) => {
-          commit(types.ADVANCED_SEARCH_FAILURE, err)
-          reject()
-        })
+          .then((res) => {
+            resolve(res)
+          })
+          .catch((err) => {
+            commit(types.ADVANCED_SEARCH_FAILURE, err)
+            reject()
+          })
       }
     })
   },
 
-  importDataFromExcel({commit}, {file}) {
+  importDataFromExcel({ commit }, { file }) {
     API.importDataFromExcel(file)
-    .then((res) => {
-      commit(types.IMPORT_DATA_SUCCESS, res)
-    })
-    .catch((err) => {
-      commit(types.IMPORT_DATA_FAILURE, err)
-    })
+      .then((res) => {
+        commit(types.IMPORT_DATA_SUCCESS, res)
+      })
+      .catch((err) => {
+        commit(types.IMPORT_DATA_FAILURE, err)
+      })
   },
 
-  importDataFromMEI({commit}, {file}) {
+  importDataFromMEI({ commit }, { file }) {
     API.importDataFromMEI(file)
-    .then((res) => {
-      commit(types.IMPORT_DATA_SUCCESS, res)
-    })
-    .catch((err) => {
-      commit(types.IMPORT_DATA_FAILURE, err)
-    })
+      .then((res) => {
+        commit(types.IMPORT_DATA_SUCCESS, res)
+      })
+      .catch((err) => {
+        commit(types.IMPORT_DATA_FAILURE, err)
+      })
   },
 
-  fetchUsers({commit}) {
+  fetchUsers({ commit }) {
     API.fetchAllUsers()
-    .then((res) => {
-      commit(types.FETCH_USERS, res)
-    })
+      .then((res) => {
+        commit(types.FETCH_USERS, res)
+      })
   },
 
-  editUserInfo({commit}, {user, oldMail}) {
+  editUserInfo({ commit }, { user, oldMail }) {
     API.editUser(user, oldMail)
-    .then(() => {
-      commit(types.EDIT_USER_SUCCESS, user)
-    })
-    .catch((err) => {
-      commit(types.EDIT_USER_FAILURE, err)
-    })
+      .then(() => {
+        commit(types.EDIT_USER_SUCCESS, user)
+      })
+      .catch((err) => {
+        commit(types.EDIT_USER_FAILURE, err)
+      })
   },
 
-  async validatePiece({commit, state, getters}, piece) {
+  async validatePiece({ commit, state, getters }, piece) {
     var combinedForm = utils.parsePieceToJSON(piece, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = await utils.parseFileToString(piece.xml)
     combinedForm.mei = await utils.parseFileToString(piece.mei)
@@ -462,7 +463,7 @@ export default{
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
         .then(() => {
-          commit(types.EDIT_PIECE_SUCCESS, {piece: piece, id: piece.music_id})
+          commit(types.EDIT_PIECE_SUCCESS, { piece: piece, id: piece.music_id })
           resolve()
         })
         .catch((error) => {
@@ -472,23 +473,23 @@ export default{
     })
   },
 
-  deletePiece({commit}, id) {
+  deletePiece({ commit }, id) {
     API.removePiece(id)
-    .then(() => {
-      commit(types.REMOVE_PIECE_SUCCESS, id)
-    })
-    .catch((err) => {
-      commit(types.REMOVE_PIECE_FAILURE, err)
-    })
+      .then(() => {
+        commit(types.REMOVE_PIECE_SUCCESS, id)
+      })
+      .catch((err) => {
+        commit(types.REMOVE_PIECE_FAILURE, err)
+      })
   },
 
-  validateCollection({commit, state, getters}, collection) {
+  validateCollection({ commit, state, getters }, collection) {
     var collectionTemp = utils.parseCollectionToJSON(collection, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     return new Promise((resolve, reject) => {
       commit(types.EDIT_COLLECTION_REQUEST)
       API.editCollection(collectionTemp)
         .then(() => {
-          commit(types.EDIT_COLLECTION_SUCCESS, {collection: collection, id: collectionTemp.col_id})
+          commit(types.EDIT_COLLECTION_SUCCESS, { collection: collection, id: collectionTemp.col_id })
           resolve()
         })
         .catch((error) => {
@@ -496,16 +497,16 @@ export default{
           reject()
         })
     })
-  },  
+  },
 
-  deleteCollection({commit}, id) {
+  deleteCollection({ commit }, id) {
     API.removeCollection(id)
-    .then(() => {
-      commit(types.REMOVE_COLLECTION_SUCCESS, id)
-    })
-    .catch((err) => {
-      commit(types.REMOVE_COLLECTION_FAILURE, err)
-    })
+      .then(() => {
+        commit(types.REMOVE_COLLECTION_SUCCESS, id)
+      })
+      .catch((err) => {
+        commit(types.REMOVE_COLLECTION_FAILURE, err)
+      })
   },
 
 
@@ -561,7 +562,7 @@ export default{
   //   }
   // },
 
- 
+
   /**
    * Función para el borrado de cuenta
    * Se comprueban las credenciales del usuario para asegurar que realmente
@@ -592,7 +593,7 @@ export default{
   //   })
   // },
 
- 
+
   /**
    * Función que recupera los 20 reportes más recientes del sistema
    * empezando por la imagen con id 'start'
@@ -616,7 +617,7 @@ export default{
    * Si start está vacío se empieza desde el principio
    * @param {start} id de la publicación por la que queremos empezar
    */
-  
+
 
   /**
    * Función utilizada para el cierre de sesión del usuario

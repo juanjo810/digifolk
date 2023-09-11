@@ -162,10 +162,10 @@ export default router
 router.beforeEach((to, from, next) => {
   // instead of having to check every route record with
   // to.matched.some(record => record.meta.requiresAuth)
-  if(to.meta.requiresAuth) {
+  if (to.meta.requiresAuth) {
     utils.authenticated(store.state.user.tokenSession)
       .then((authenticated) => {
-        if(!authenticated) {
+        if (!authenticated) {
           next({ name: 'login' })
         } else if (to.meta.requiresAdmin && !store.state.user.userInfo.is_admin) {
           next({ name: 'dashboard' })
@@ -173,19 +173,19 @@ router.beforeEach((to, from, next) => {
           next()
         }
       })
+  } else {
+    if (store.state.user.tokenSession) {
+      utils.authenticated(store.state.user.tokenSession)
+        .then((authenticated) => {
+          if (authenticated)
+            next({ name: 'dashboard' })
+          else
+            store.commit('REMOVE_TOKEN_SESSION')
+          next()
+        })
     } else {
-      if (store.state.user.tokenSession){
-        utils.authenticated(store.state.user.tokenSession)
-          .then((authenticated) => {
-            if(authenticated)
-              next({ name: 'dashboard' })
-            else
-              store.commit('REMOVE_TOKEN_SESSION')
-              next()
-          })
-      } else {
-        next()
-      }
+      next()
     }
+  }
 })
 

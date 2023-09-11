@@ -15,10 +15,10 @@ import createPersistedState from "vuex-plugin-persistedstate";
 const debug = process.env.NODE_ENV !== 'production'
 
 export default createStore({
-    strict: debug,
-    plugins: debug ? [createLogger(), createPersistedState()] : [createPersistedState()],
-    state,
-    getters,
-    actions,
-    mutations
+  strict: debug,
+  plugins: debug ? [createLogger(), createPersistedState()] : [createPersistedState()],
+  state,
+  getters,
+  actions,
+  mutations
 })

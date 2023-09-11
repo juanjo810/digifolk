@@ -153,7 +153,7 @@ export default {
       rules: [(value) => !!value || "Required."],
       contribuidores: [],
       selectedDate: null,
-      id: 'XX-XXXX-XX-XX-X'
+      id: "XX-XXXX-XX-XX-X",
     };
   },
   computed: {
@@ -228,9 +228,9 @@ export default {
       "addContributor",
       "formatAndSaveDate",
       "removeContributor",
-      'resetPieceForm',
-      'importDataFromExcel',
-      'importDataFromMEI'
+      "resetPieceForm",
+      "importDataFromExcel",
+      "importDataFromMEI",
     ]),
     saveData() {
       this.saveDataPiece();

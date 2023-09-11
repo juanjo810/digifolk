@@ -6,7 +6,7 @@
       :key="index"
       :user="user"
       :isAdmin="isAdmin"
-    /></v-container>
+  /></v-container>
 </template>
 
 <script>
@@ -15,7 +15,7 @@ import UserDropdown from "@/components/UserDropdown.vue";
 
 export default {
   components: {
-    UserDropdown
+    UserDropdown,
   },
   data() {
     return {
@@ -26,13 +26,10 @@ export default {
     ...mapState(["users"]),
   },
   methods: {
-    ...mapActions([
-      "getUserInfo",
-      "fetchUsers"
-    ]),
+    ...mapActions(["getUserInfo", "fetchUsers"]),
   },
   mounted() {
     this.fetchUsers();
-  }
+  },
 };
 </script>
