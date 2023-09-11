@@ -40,8 +40,7 @@
                   v-model="title"
                   label="Title"
                   :rules="rules"
-                  hint="Use ' | ', i.e. space colon space, to separate title and subtitle
-                  Use ' = ' i.e. space equals space, where a title is available in different languages"
+                  hint="Use ' | ', i.e. space colon space, to separate title and subtitle"
                   persistent-hint
                   :disabled="!editing"
                 ></v-text-field>
@@ -385,7 +384,7 @@
                 <v-text-field
                   v-model="hasVersion"
                   label="HasVersion"
-                  hint="Multiple versions must be separated by ':'"
+                  hint="Multiple versions must be separated by ''"
                   persistent-hint
                   :disabled="!editing"
                 ></v-text-field>
