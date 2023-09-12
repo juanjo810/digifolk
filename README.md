@@ -1,4 +1,4 @@
-# frontend
+# digifolk
 
 ## Project setup
 ```
