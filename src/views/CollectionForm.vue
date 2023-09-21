@@ -58,9 +58,11 @@
                       @input="updateCreator()"
                       label="Name or URI"
                       :rules="rules"
-                      hint="URI example in http://www.dib.ie"
                       persistent-hint
                     ></v-text-field>
+                    <span>
+                      <a href="http://www.dib.ie" target="_blank">URI examples</a>
+                    </span>
                   </v-col>
                   <v-col cols="5">
                     <v-select
@@ -92,9 +94,11 @@
                       v-model="c.name"
                       @input="updateContributor()"
                       label="Name or URI"
-                      hint="URI example in http://www.dib.ie"
                       persistent-hint
                     ></v-text-field>
+                    <span>
+                      <a href="http://www.dib.ie" target="_blank">URI examples</a>
+                    </span>
                   </v-col>
                   <v-col cols="5">
                     <v-select
@@ -150,18 +154,19 @@
                 <v-text-field
                   v-model="subject"
                   label="Subject"
-                  hint="You can check the subject in https://www.vwml.org/song-subject-index. Multiple subjects must be separated by '|'"
+                  hint="Multiple subjects must be separated by '|'"
                   persistent-hint
                 ></v-text-field>
+                <span>You can check the subject <a href="https://www.vwml.org/song-subject-index" target="_blank">here</a></span>
               </v-col>
 
               <v-col cols="6">
                 <v-text-field
                   v-model="language"
                   label="Language code"
-                  hint="You can check the code in https://www.loc.gov/standards/iso639-2/php/code_list.php"
                   persistent-hint
                 ></v-text-field>
+                <span>You can check the code <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php" target="_blank">here</a></span>
               </v-col>
 
               <v-col cols="6">

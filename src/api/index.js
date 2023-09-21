@@ -8,7 +8,7 @@ export default {
 
     return new Promise((resolve, reject) => {
       //resolve([{user_id: 1, first_name:'Juanjo', last_name:'Navarro', email:'juanjo@juanjo.com', username:'juanjo', is_admin: true, institution:'USAL'},"token"])
-      axios.post('http://100.127.151.18:8000/auth/token', data, {
+      axios.post('http://100.127.151.18:8000/api/auth/token', data, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -38,14 +38,14 @@ export default {
     const param = JSON.stringify(objectTemp)
 
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/createUser', param, {
+      axios.post('http://100.127.151.18:8000/api/createUser', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         }
       })
         .then(response => {
-          axios.post('http://100.127.151.18:8000/sendEmail', {
+          axios.post('http://100.127.151.18:8000/api/sendEmail', {
             "receiver_email": email,
           },
             {
@@ -68,7 +68,7 @@ export default {
   },
   isAutenticated(token) {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getAuth', {
+      axios.get('http://100.127.151.18:8000/api/getAuth', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -89,7 +89,7 @@ export default {
     }
     debugger
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/editPassword', param, {
+      axios.post('http://100.127.151.18:8000/api/editPassword', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ export default {
   },
   deleteAccount(email, id, username) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/removeUser', {
+      axios.delete('http://100.127.151.18:8000/api/removeUser', {
         params: {
           email: email,
           id: id,
@@ -125,13 +125,14 @@ export default {
   uploadCollection(json) {
     return new Promise((resolve, reject) => {
       console.log(json)
-      axios.post('http://100.127.151.18:8000/createCol', json, {
+      axios.post('http://100.127.151.18:8000/api/createCol', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         }
       })
         .then(response => {
+          debugger
           resolve(response.data);
         })
         .catch(error => {
@@ -142,7 +143,7 @@ export default {
   },
   uploadPiece(json) {
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/createPiece', json, {
+      axios.post('http://100.127.151.18:8000/api/createPiece', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -164,7 +165,7 @@ export default {
       id: collection
     }
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getCol', {
+      axios.get('http://100.127.151.18:8000/api/getCol', {
         params: obj
       })
         .then(response => {
@@ -179,7 +180,7 @@ export default {
   editPiece(json) {
     console.log(json)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/editPiece', json, {
+      axios.post('http://100.127.151.18:8000/api/editPiece', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -197,7 +198,7 @@ export default {
   },
   editCollection(json) {
     return new Promise((resolve, reject) => {
-      const query = 'http://100.127.151.18:8000/editCol'
+      const query = 'http://100.127.151.18:8000/api/editCol'
       console.log(query)
       axios.post(query, json
       )
@@ -218,7 +219,7 @@ export default {
     }
     const param = JSON.stringify(obj)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/createItem', param, {
+      axios.post('http://100.127.151.18:8000/api/createItem', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -234,7 +235,7 @@ export default {
   },
   removeItem(id, typeId) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/removeItem', {
+      axios.delete('http://100.127.151.18:8000/api/removeItem', {
         params: {
           id: id,
           type_item: typeId
@@ -250,7 +251,7 @@ export default {
   },
   removePiece(id) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/removePiece', {
+      axios.delete('http://100.127.151.18:8000/api/removePiece', {
         params: {
           id: id
         }
@@ -264,13 +265,15 @@ export default {
     })
   },
   removeCollection(id) {
+    debugger
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/removeCol', {
+      axios.delete('http://100.127.151.18:8000/api/removeCol', {
         params: {
           id: id
         }
       })
         .then(() => {
+          debugger
           resolve();
         })
         .catch(error => {
@@ -286,7 +289,7 @@ export default {
     }
     const param = JSON.stringify(obj)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/editItem', param, {
+      axios.post('http://100.127.151.18:8000/api/editItem', param, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -301,7 +304,7 @@ export default {
   },
   fetchAllItems() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getListItems')
+      axios.get('http://100.127.151.18:8000/api/getListItems')
         .then(response => {
           resolve(response.data);
         })
@@ -312,7 +315,7 @@ export default {
   },
   fetchAllPieces() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getListOfPieces')
+      axios.get('http://100.127.151.18:8000/api/getListOfPieces')
         .then(response => {
           resolve(response.data);
         })
@@ -323,7 +326,7 @@ export default {
   },
   fetchAllCollections() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getListOfCols')
+      axios.get('http://100.127.151.18:8000/api/getListOfCols')
         .then(response => {
           resolve(response.data);
         })
@@ -334,7 +337,7 @@ export default {
   },
   fetchAllUsers() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getListOfUsers')
+      axios.get('http://100.127.151.18:8000/api/getListOfUsers')
         .then(response => {
           resolve(response.data);
         })
@@ -349,7 +352,7 @@ export default {
       "id": piece
     }
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/getPiece', {
+      axios.get('http://100.127.151.18:8000/api/getPiece', {
         params: obj
       })
         .then(response => {
@@ -362,7 +365,7 @@ export default {
   },
   advancedSearchPiece(query) {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/advancedSearchPiece', {
+      axios.get('http://100.127.151.18:8000/api/advancedSearchPiece', {
         params: query
       })
         .then(response => {
@@ -392,12 +395,11 @@ export default {
   },
 
   importDataFromExcel(file) {
-    const fileBlob = new Blob([file], { type: 'application/octet-stream' });
-    const formData = new FormData();
-    formData.append('file', fileBlob);
-    console.log(formData)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/mapFromExcel', formData, {
+      axios.post('http://100.127.151.18:8000/api/PieceFromExcel', 
+      {
+        file: file
+      }, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -406,6 +408,7 @@ export default {
           resolve(response.data);
         })
         .catch(error => {
+          debugger
           reject(error);
         });
     });
@@ -413,7 +416,7 @@ export default {
 
   importDataFromMEI(json) {
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/meitocsv', json, {
+      axios.post('http://100.127.151.18:8000/api/meitocsv', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -430,7 +433,7 @@ export default {
 
   editUser(user, oldMail) {
     return new Promise((resolve, reject) => {
-      const query = `http://100.127.151.18:8000/editUser?email_old=${oldMail}`
+      const query = `http://100.127.151.18:8000/api/editUser?email_old=${oldMail}`
       console.log(user)
       axios.post(query, user
       )

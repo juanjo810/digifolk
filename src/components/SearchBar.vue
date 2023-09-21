@@ -21,9 +21,9 @@
         <v-list-item
           v-for="piece in filteredPieces"
           :key="piece.id"
-          @click="getInfo(piece)"
+          @click="getInfo(piece.id)"
         >
-          <v-list-item-title>{{ piece }}</v-list-item-title>
+          <v-list-item-title>{{ piece.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-row>
@@ -713,7 +713,7 @@ export default {
         return this.advancedSearchResult;
       } else {
         return this.objects.filter((piece) => {
-          return piece.toLowerCase().includes(this.searchQuery.toLowerCase());
+          return piece.title.toLowerCase().includes(this.searchQuery.toLowerCase());
         });
       }
     },

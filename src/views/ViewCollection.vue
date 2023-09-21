@@ -24,6 +24,14 @@
           </template>
           <v-card-text>
             <v-row>
+              <v-col cols="1">
+                <v-text-field 
+                  readonly
+                  v-model="collectionForm.col_id"
+                  label="ID"
+                  :disabled="!editing || editing"
+                ></v-text-field>
+              </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="title"
@@ -35,7 +43,7 @@
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="6">
+              <v-col cols="5">
                 <v-select
                   v-model="right"
                   label="Rights"
@@ -54,7 +62,7 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Fecha seleccionada: {{ date }}</h2>
+                <h2>Selected date: {{ date }}</h2>
               </v-col>
 
               <v-col cols="6">
@@ -551,9 +559,8 @@ export default {
       this.editing = true;
     },
     loadCollectionInfo(selectedCollection) {
-      const parts = selectedCollection.split("-");
       this.getCollectionInfo({
-        collection: parts,
+        collection: selectedCollection,
         creadores: this.creadores,
         contribuidores: this.contribuidores,
       });

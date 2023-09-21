@@ -13,11 +13,15 @@ const utils = {
       }
     })
   },
-  parseFileToBinaryString(file) {
+  parseFileToBase64(file) {
     return new Promise((resolve) => {
       if (file && file !== '') {
         const reader = new FileReader();
-        reader.onload = () => { resolve(reader.result) }
+        reader.onload = () => { 
+          debugger
+          const base64 = btoa(reader.result)
+          resolve(base64)
+        }
         reader.onerror = () => { resolve('') }
         reader.readAsBinaryString(file);
       } else {
@@ -27,6 +31,16 @@ const utils = {
   },
   parseStringToFile(stringContent, fileName, mimeType) {
     if (stringContent && stringContent !== '') {
+      const blob = new Blob([stringContent], { type: mimeType });
+      const file = new File([blob], fileName, { type: mimeType });
+      return [file]
+    } else {
+      return ""
+    }
+  },
+  parseBase64ToFile(base64, fileName, mimeType) {
+    if (base64 && base64 !== '') {
+      const stringContent = atob(base64)
       const blob = new Blob([stringContent], { type: mimeType });
       const file = new File([blob], fileName, { type: mimeType });
       return [file]
@@ -111,7 +125,7 @@ const utils = {
       var item = itemsIDs.find(i => i.id === parseInt(c.role))
       const temp = {
         name: c.name,
-        role: item.name
+        role: item ? item.name : ''
       }
       if (contribuidores) contribuidores.push(temp)
       return temp
@@ -125,7 +139,7 @@ const utils = {
       var item = itemsIDs.find(i => i.id === parseInt(c.role))
       const temp = {
         name: c.name,
-        role: item.name
+        role: item ? item.name : ''
       }
       if (creadores) creadores.push(temp)
       return temp
@@ -134,7 +148,7 @@ const utils = {
       var item = itemsIDs.find(i => i.id === parseInt(c.role))
       const temp = {
         name: c.name,
-        role: item.name
+        role: item ? item.name : ''
       }
       if (contribuidoresp) contribuidoresp.push(temp)
       return temp
@@ -171,6 +185,7 @@ const utils = {
   },
 
   parseJSONToCollection(fields, separator, itemsIDs, contribuidores, creadores) {
+    debugger
     var final = structuredClone(fields)
     final.title = final ? final.title.join(separator) : ''
     var item = itemsIDs.find(i => i.id === parseInt(final.rights))
@@ -181,7 +196,7 @@ const utils = {
       var item = itemsIDs.find(i => i.id === parseInt(c.role))
       const temp = {
         name: c.name,
-        role: item.name
+        role: item ? item.name : ''
       }
       if (creadores) creadores.push(temp)
       return temp
@@ -190,7 +205,7 @@ const utils = {
       var item = itemsIDs.find(i => i.id === parseInt(c.role))
       const temp = {
         name: c.name,
-        role: item.name
+        role: item ? item.name : ''
       }
       if (contribuidores) contribuidores.push(temp)
       return temp
