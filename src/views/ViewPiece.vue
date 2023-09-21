@@ -955,9 +955,8 @@ export default {
       this.editing = false;
     },
     async loadPieceInfo(selectedPiece) {
-      const parts = selectedPiece.split("-");
       await this.getPieceInfo({
-        piece: parts,
+        piece: selectedPiece,
         creadores: this.creadores,
         contribuidores: this.contribuidores,
         contribuidoresp: this.contribuidoresp,

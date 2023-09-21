@@ -495,9 +495,8 @@ export default {
     state.fetchingCollection = true
   },
 
-  [types.UPLOAD_COLLECTION_SUCCESS](state, res) {
+  [types.UPLOAD_COLLECTION_SUCCESS](state) {
     state.fetchingCollection = false
-    state.defaultSelections.collectionsIDs.push(res)
   },
 
   [types.UPLOAD_COLLECTION_FAILURE](state, error) {
@@ -554,7 +553,6 @@ export default {
   },
 
   [types.EDIT_PIECE_SUCCESS](state, { piece, id }) {
-    debugger
     const indexToDelete = state.pieces.findIndex(item => item.music_id === id);
     state.pieces.splice(indexToDelete, 1);
     state.pieces.push(piece)

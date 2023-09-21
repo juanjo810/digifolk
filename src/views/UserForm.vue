@@ -88,9 +88,11 @@
                       @input="updateContributor()"
                       label="Name or URI"
                       :rules="rules"
-                      hint="URI example in http://www.dib.ie"
                       persistent-hint
                     ></v-text-field>
+                    <span>
+                      <a href="http://www.dib.ie" target="_blank">URI examples</a>
+                    </span>
                   </v-col>
                   <v-col cols="5">
                     <v-select
@@ -241,17 +243,19 @@ export default {
     handleFileChange(event) {
       const file = event.target.files[0];
       if (file && file.name.endsWith(".xlsx")) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.importDataFromExcel({ file: e.target.result });
-        };
-        reader.readAsText(file);
+        // const reader = new FileReader();
+        // reader.onload = (e) => {
+        //   this.importDataFromExcel({ file: e.target.result });
+        // };
+        // reader.readAsText(file);
+        this.importDataFromExcel({ file: file })
       } else if (file && file.name.endsWith(".mei")) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.importDataFromMEI({ file: e.target.result });
-        };
-        reader.readAsText(file);
+        // const reader = new FileReader();
+        // reader.onload = (e) => {
+        //   this.importDataFromMEI({ file: e.target.result });
+        // };
+        // reader.readAsText(file);
+        this.importDataFromMEI({ file: file })
       }
       console.log("Archivo seleccionado:", file);
     },

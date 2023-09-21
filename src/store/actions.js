@@ -103,8 +103,9 @@ export default {
     return new Promise((resolve, reject) => {
       commit(types.UPLOAD_COLLECTION_REQUEST)
       API.uploadCollection(json)
-        .then((res) => {
-          commit(types.UPLOAD_COLLECTION_SUCCESS, res)
+        .then(() => {
+          debugger
+          commit(types.UPLOAD_COLLECTION_SUCCESS)
           resolve()
         })
         .catch((error) => {
@@ -154,7 +155,7 @@ export default {
     var combinedForm = await utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
     combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
-    combinedForm.midi = await utils.parseFileToString(state.pieceForm.midi[0])
+    combinedForm.midi = await utils.parseFileToBase64(state.pieceForm.midi[0])
     combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = false
@@ -324,12 +325,12 @@ export default {
 
   getPieceInfo({ commit, state }, { piece, creadores, contribuidores, contribuidoresp }) {
     return new Promise((resolve, reject) => {
-      API.getPiece(piece[0])
+      API.getPiece(piece)
         .then((res) => {
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
           final.mei = utils.parseStringToFile(final.mei, 'MeiFile',)
           final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
-          final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+          final.midi = utils.parseBase64ToFile(final.midi, 'MidiFile', 'audio/mid')
           commit(types.GET_PIECE_SUCCESS, final)
           resolve()
         })
@@ -358,7 +359,8 @@ export default {
 
 
   getCollectionInfo({ commit, state }, { collection, creadores, contribuidores }) {
-    API.getCollection(collection[0])
+    debugger
+    API.getCollection(collection)
       .then((res) => {
         var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items, creadores, contribuidores)
         commit(types.GET_COLLECTION_SUCCESS, final)
@@ -369,6 +371,7 @@ export default {
   },
 
   getReviewCollection({ state }, collection) {
+    debugger
     return new Promise((resolve, reject) => {
       API.getCollection(collection)
         .then((res) => {

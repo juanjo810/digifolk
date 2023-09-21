@@ -29,16 +29,28 @@ export default {
       return -1
   },
   getNamePieces: (state) => {
-    return state.pieces.map(piece => `${piece.music_id}-${piece.title}`)
+    return state.pieces.map(piece => {
+      const title = piece.title.join('|')
+      return {
+        id: piece.music_id,
+        title: title
+      }
+    })
   },
   getMei: (state) => {
     return utils.parseFileToString(state.pieceForm.mei[0])
   },
   getMidi: (state) => {
-    return state.pieceForm.midi
+    return utils.parseFileToString(state.pieceForm.midi[0])
   },
   getNameCollections: (state) => {
-    return state.collections.map(collection => `${collection.col_id}-${collection.title}`)
+    return state.collections.map(collection => {
+      const title = collection.title.join('|')
+      return {
+        id: collection.col_id,
+        title: title
+      }
+    })
   },
   getUserName: () => (user) => {
     return `${user.user_id}-${user.username}`
