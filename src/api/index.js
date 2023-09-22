@@ -8,7 +8,7 @@ export default {
 
     return new Promise((resolve, reject) => {
       //resolve([{user_id: 1, first_name:'Juanjo', last_name:'Navarro', email:'juanjo@juanjo.com', username:'juanjo', is_admin: true, institution:'USAL'},"token"])
-      axios.post('http://100.127.151.18:8000/api/auth/token', data, {
+      axios.post('http://digifolk.usal.es/api/auth/token', data, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -38,14 +38,14 @@ export default {
     const param = JSON.stringify(objectTemp)
 
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/createUser', param, {
+      axios.post('http://digifolk.usal.es/api/createUser', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         }
       })
         .then(response => {
-          axios.post('http://100.127.151.18:8000/api/sendEmail', {
+          axios.post('http://digifolk.usal.es/api/sendEmail', {
             "receiver_email": email,
           },
             {
@@ -68,8 +68,9 @@ export default {
   },
   isAutenticated(token) {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getAuth', {
+      axios.get('http://digifolk.usal.es/api/getAuth', {
         headers: {
+          'Access-Control-Allow-Origin': '*',
           'Authorization': `Bearer ${token}`
         }
       })
@@ -89,7 +90,7 @@ export default {
     }
     debugger
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/editPassword', param, {
+      axios.post('http://digifolk.usal.es/api/editPassword', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -105,7 +106,7 @@ export default {
   },
   deleteAccount(email, id, username) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/api/removeUser', {
+      axios.delete('http://digifolk.usal.es/api/removeUser', {
         params: {
           email: email,
           id: id,
@@ -125,7 +126,7 @@ export default {
   uploadCollection(json) {
     return new Promise((resolve, reject) => {
       console.log(json)
-      axios.post('http://100.127.151.18:8000/api/createCol', json, {
+      axios.post('http://digifolk.usal.es/api/createCol', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -143,7 +144,7 @@ export default {
   },
   uploadPiece(json) {
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/createPiece', json, {
+      axios.post('http://digifolk.usal.es/api/createPiece', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -165,7 +166,7 @@ export default {
       id: collection
     }
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getCol', {
+      axios.get('http://digifolk.usal.es/api/getCol', {
         params: obj
       })
         .then(response => {
@@ -180,7 +181,7 @@ export default {
   editPiece(json) {
     console.log(json)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/editPiece', json, {
+      axios.post('http://digifolk.usal.es/api/editPiece', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -198,7 +199,7 @@ export default {
   },
   editCollection(json) {
     return new Promise((resolve, reject) => {
-      const query = 'http://100.127.151.18:8000/api/editCol'
+      const query = 'http://digifolk.usal.es/api/editCol'
       console.log(query)
       axios.post(query, json
       )
@@ -219,7 +220,7 @@ export default {
     }
     const param = JSON.stringify(obj)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/createItem', param, {
+      axios.post('http://digifolk.usal.es/api/createItem', param, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -235,7 +236,7 @@ export default {
   },
   removeItem(id, typeId) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/api/removeItem', {
+      axios.delete('http://digifolk.usal.es/api/removeItem', {
         params: {
           id: id,
           type_item: typeId
@@ -251,7 +252,7 @@ export default {
   },
   removePiece(id) {
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/api/removePiece', {
+      axios.delete('http://digifolk.usal.es/api/removePiece', {
         params: {
           id: id
         }
@@ -267,7 +268,7 @@ export default {
   removeCollection(id) {
     debugger
     return new Promise((resolve, reject) => {
-      axios.delete('http://100.127.151.18:8000/api/removeCol', {
+      axios.delete('http://digifolk.usal.es/api/removeCol', {
         params: {
           id: id
         }
@@ -289,7 +290,7 @@ export default {
     }
     const param = JSON.stringify(obj)
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/editItem', param, {
+      axios.post('http://digifolk.usal.es/api/editItem', param, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -304,7 +305,7 @@ export default {
   },
   fetchAllItems() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getListItems')
+      axios.get('http://digifolk.usal.es/api/getListItems')
         .then(response => {
           resolve(response.data);
         })
@@ -315,7 +316,7 @@ export default {
   },
   fetchAllPieces() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getListOfPieces')
+      axios.get('http://digifolk.usal.es/api/getListOfPieces')
         .then(response => {
           resolve(response.data);
         })
@@ -326,7 +327,7 @@ export default {
   },
   fetchAllCollections() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getListOfCols')
+      axios.get('http://digifolk.usal.es/api/getListOfCols')
         .then(response => {
           resolve(response.data);
         })
@@ -337,7 +338,7 @@ export default {
   },
   fetchAllUsers() {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getListOfUsers')
+      axios.get('http://digifolk.usal.es/api/getListOfUsers')
         .then(response => {
           resolve(response.data);
         })
@@ -352,7 +353,7 @@ export default {
       "id": piece
     }
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/getPiece', {
+      axios.get('http://digifolk.usal.es/api/getPiece', {
         params: obj
       })
         .then(response => {
@@ -365,7 +366,7 @@ export default {
   },
   advancedSearchPiece(query) {
     return new Promise((resolve, reject) => {
-      axios.get('http://100.127.151.18:8000/api/advancedSearchPiece', {
+      axios.get('http://digifolk.usal.es/api/advancedSearchPiece', {
         params: query
       })
         .then(response => {
@@ -396,7 +397,7 @@ export default {
 
   importDataFromExcel(file) {
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/PieceFromExcel', 
+      axios.post('http://digifolk.usal.es/api/PieceFromExcel', 
       {
         file: file
       }, {
@@ -416,7 +417,7 @@ export default {
 
   importDataFromMEI(json) {
     return new Promise((resolve, reject) => {
-      axios.post('http://100.127.151.18:8000/api/meitocsv', json, {
+      axios.post('http://digifolk.usal.es/api/meitocsv', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -433,7 +434,7 @@ export default {
 
   editUser(user, oldMail) {
     return new Promise((resolve, reject) => {
-      const query = `http://100.127.151.18:8000/api/editUser?email_old=${oldMail}`
+      const query = `http://digifolk.usal.es/api/editUser?email_old=${oldMail}`
       console.log(user)
       axios.post(query, user
       )
@@ -444,6 +445,22 @@ export default {
           reject(error);
         });
     });
+  },
+
+  exportPieceToExcel(id) {
+    return new Promise((resolve, reject) => {
+      axios.get('http://digifolk.usal.es/api/pieceToExcel', {
+        params: {
+          piece_id: id
+        }
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    })
   }
 
 }

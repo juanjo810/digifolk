@@ -511,36 +511,46 @@
               </v-col>
             </v-row>
           </v-card-text>
-          <v-card-actions
-            v-if="
-              pieceSelected &&
-              this.pieceForm.user_id === this.user.userInfo.user_id
-            "
-          >
+          <v-card-actions>
+
             <v-spacer></v-spacer>
+            <div
+              v-if="
+                pieceSelected &&
+                this.pieceForm.user_id === this.user.userInfo.user_id
+              "
+            >
+              <v-btn
+                color="deep-purple lighten-2"
+                text
+                @click="saveFields"
+                v-if="editing"
+              >
+                Save piece
+              </v-btn>
+              <v-btn
+                color="deep-purple lighten-2"
+                text
+                @click="editFields"
+                v-else
+              >
+                Edit fields
+              </v-btn>
+              <v-btn
+                color="deep-purple lighten-2"
+                text
+                @click="this.delete"
+                v-if="!editing"
+              >
+                Delete piece
+              </v-btn>
+            </div>
             <v-btn
               color="deep-purple lighten-2"
               text
-              @click="saveFields"
-              v-if="editing"
+              @click="this.exportExcel"
             >
-              Save piece
-            </v-btn>
-            <v-btn
-              color="deep-purple lighten-2"
-              text
-              @click="editFields"
-              v-else
-            >
-              Edit fields
-            </v-btn>
-            <v-btn
-              color="deep-purple lighten-2"
-              text
-              @click="this.delete"
-              v-if="!editing"
-            >
-              Delete piece
+              Export Excel
             </v-btn>
           </v-card-actions>
         </div>
@@ -896,6 +906,7 @@ export default {
       "editPiece",
       "resetPieceForm",
       "deletePiece",
+      "exportPieceToExcel",
     ]),
     importFile() {
       this.$refs.fileInput.click();
@@ -967,6 +978,9 @@ export default {
       this.deletePiece(this.pieceForm.music_id);
       this.resetPieceForm();
     },
+    exportExcel() {
+      this.exportPieceToExcel(this.pieceForm.music_id);
+    }
   },
   created() {
     this.resetPieceForm();

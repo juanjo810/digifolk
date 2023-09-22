@@ -512,6 +512,15 @@ export default {
       })
   },
 
+  exportPieceToExcel(context, id) {
+    API.exportPieceToExcel(id)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  },
 
   /**
    * Función para restablecer la contraseña del usuario.
