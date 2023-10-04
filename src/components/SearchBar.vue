@@ -719,7 +719,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["advancedSearch"]),
+    ...mapActions([
+      "filteredSearch"
+    ]),
     showAdvancedSearch() {
       if (this.typeObject === "pieces") {
         this.visible1 = true;
@@ -753,6 +755,7 @@ export default {
       this.datep = format(this.selectedDatep[0], "d MMMM yyyy");
     },
     searchFilter() {
+      debugger
       if (this.typeObject === "collections") {
         const query = {
           title: this.title,
@@ -782,7 +785,7 @@ export default {
           },
           rights_holder: this.rights_holder,
         };
-        this.advancedSearch({ query: query, type: this.typeObject }).then(
+        this.filteredSearch({ query: query, type: this.typeObject }).then(
           (res) => {
             this.advancedSearchResult = res;
             this.searchQuery = "Advanced search";
@@ -831,7 +834,7 @@ export default {
           },
           col_id: this.col_id,
         };
-        this.advancedSearch({ query: query, type: this.typeObject }).then(
+        this.filteredSearch({ query: query, type: this.typeObject }).then(
           (res) => {
             this.advancedSearchResult = res;
             this.searchQuery = "Advanced search";

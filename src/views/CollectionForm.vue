@@ -103,7 +103,7 @@
                   <v-col cols="5">
                     <v-select
                       v-model="c.role"
-                      @update:modelValue="updateContributor()"
+                      @input="updateContributor()"
                       label="Role"
                       :items="getItemsNameByType(6)"
                     ></v-select>
@@ -485,6 +485,7 @@ export default {
       this.creadores.splice(index, 1);
     },
     updateContributor() {
+      debugger
       this.$store.commit("UPDATE_COLLECTION_CONTRIBUTOR", this.contribuidores);
     },
     updateCreator() {

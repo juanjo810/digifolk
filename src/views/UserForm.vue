@@ -24,7 +24,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="this.title"
-                  label="Title"
+                  label="Title*"
                   :rules="rules"
                   hint="Use ' | ', i.e. space colon space, to separate title and subtitle. Use ' = ' i.e. space equals space, where a title is available in different languages"
                   persistent-hint
@@ -34,7 +34,7 @@
               <v-col cols="6">
                 <v-select
                   v-model="this.right"
-                  label="Rights"
+                  label="Rights*"
                   :items="getItemsNameByType(1)"
                 ></v-select>
               </v-col>
@@ -42,7 +42,7 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="this.creator"
-                  label="Creator"
+                  label="Creator*"
                   :rules="rules"
                 ></v-text-field>
               </v-col>
@@ -54,7 +54,7 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Fecha seleccionada: {{ this.date }}</h2>
+                <h2>Selected date*: {{ this.date }}</h2>
               </v-col>
 
               <v-col cols="6">
@@ -235,7 +235,13 @@ export default {
       "importDataFromMEI",
     ]),
     saveData() {
-      this.saveDataPiece();
+      
+      if (this.pieceForm.rightsp !== "" && this.pieceForm.creatorp_role.length > 0 && this.pieceForm.datep !== "" &&
+        this.title !== "" && this.rights !== "" && this.creator !== "" && this.date !== "") {
+        this.saveDataPiece();
+      } else {
+        alert("Please fill in all the required fields");
+      }
     },
     importFile() {
       this.$refs.fileInput.click();
@@ -271,8 +277,11 @@ export default {
       this.$store.commit("UPDATE_USER_CONTRIBUTOR", this.contribuidores);
     },
     formatDate() {
-      if (this.selectedDate) {
+      if (this.selectedDate.length > 0) {
+        debugger
         this.formatAndSaveDate({ date: this.selectedDate, form: "User" });
+      } else {
+        alert("Please select a date");
       }
     },
   },

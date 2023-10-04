@@ -7,7 +7,7 @@
           <v-container>
             <v-row>
               <v-col cols="4">
-                <v-list-item-title>{{ item.title[0] }}</v-list-item-title>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-col>
               <v-list-item-action>
                 <v-btn @click="goToDetailsPage(item)">Details</v-btn>
@@ -25,7 +25,7 @@
           <v-container>
             <v-row>
               <v-col cols="4">
-                <v-list-item-title>{{ item.title[0] }}</v-list-item-title>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-col>
               <v-list-item-action>
                 <v-btn @click="goToCollectionPage(item)">Details</v-btn>
@@ -70,13 +70,13 @@ export default {
   methods: {
     ...mapActions(["getReviewPiece", "getReviewCollection"]),
     goToDetailsPage(item) {
-      this.getReviewPiece(item).then((p) => {
+      this.getReviewPiece(item.id).then((p) => {
         this.selectedItem = p;
         if (p) this.visiblePiece = true;
       });
     },
     goToCollectionPage(item) {
-      this.getReviewCollection(item.col_id).then((c) => {
+      this.getReviewCollection(item.id).then((c) => {
         debugger;
         this.selectedItem = c;
         if (c) this.visibleCollection = true;

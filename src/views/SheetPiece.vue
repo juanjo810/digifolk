@@ -99,8 +99,8 @@ export default {
       this.midiFilePath = await this.getMidi;
     },
     async loadPieceInfo(selectedPiece) {
-      const parts = selectedPiece.split("-");
-      await this.getPieceInfo({ piece: parts });
+      debugger
+      await this.getPieceInfo({ piece: selectedPiece });
       this.loadMedia();
     },
   },

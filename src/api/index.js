@@ -15,11 +15,9 @@ export default {
         }
       })
         .then(response => {
-          debugger
           resolve(response.data);
         })
         .catch(error => {
-          debugger
           reject(error);
         })
     })
@@ -364,16 +362,31 @@ export default {
         });
     });
   },
-  advancedSearchPiece(query) {
+  advancedSearchPieces(query) {
+    const obj = {
+      ...query,
+      music_id: query.music_id ? query.music_id : 0,
+      xml: '',
+      mei: '',
+      midi: '',
+      audio: '',
+      video: '',
+      user_id: query.user_id ? query.user_id : 0,
+    }
     return new Promise((resolve, reject) => {
-      axios.get('http://digifolk.usal.es/api/advancedSearchPiece', {
-        params: query
+      axios.get('http://digifolk.usal.es/api/getPieceFromFilters', obj, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
       })
         .then(response => {
+          debugger
           resolve(response.data);
         }
         )
         .catch(error => {
+          debugger
           reject(error);
         }
         );
@@ -435,7 +448,6 @@ export default {
   editUser(user, oldMail) {
     return new Promise((resolve, reject) => {
       const query = `http://digifolk.usal.es/api/editUser?email_old=${oldMail}`
-      console.log(user)
       axios.post(query, user
       )
         .then((response) => {
@@ -449,15 +461,18 @@ export default {
 
   exportPieceToExcel(id) {
     return new Promise((resolve, reject) => {
-      axios.get('http://digifolk.usal.es/api/pieceToExcel', {
-        params: {
-          piece_id: id
+      axios.post(`http://digifolk.usal.es/api/pieceToExcel?piece_id=${id}`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
         }
       })
         .then(response => {
+          debugger
           resolve(response.data);
         })
         .catch(error => {
+          debugger
           reject(error);
         });
     })

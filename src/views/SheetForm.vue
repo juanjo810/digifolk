@@ -16,14 +16,14 @@
               <v-col cols="12">
                 <v-select
                   v-model="this.right"
-                  label="Rights"
+                  label="Rights*"
                   :items="getItemsNameByType(1)"
                   :rules="rules"
                 ></v-select>
               </v-col>
 
               <v-col cols="6  ">
-                <h2>Creators</h2>
+                <h2>Creators*</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFieldsCreators()">Add creator</v-btn>
@@ -73,7 +73,7 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Fecha seleccionada: {{ this.date }}</h2>
+                <h2>Selected date*: {{ this.date }}</h2>
               </v-col>
 
               <v-col cols="4">
@@ -624,7 +624,12 @@ export default {
       "importDataFromMEI",
     ]),
     saveData() {
-      this.saveDataPiece();
+      if (this.right !== "" && this.creator.length > 0 && this.date !== "" &&
+        this.pieceForm.title !== "" && this.pieceForm.rights !== "" && this.pieceForm.creator !== "" && this.pieceForm.date !== "") {
+        this.saveDataPiece();
+      } else {
+        alert("You must fill the required fields");
+      }
     },
     importFile() {
       this.$refs.fileInput.click();
@@ -669,8 +674,10 @@ export default {
       this.$store.commit("UPDATE_SHEET_CREATOR", this.creadores);
     },
     formatDate() {
-      if (this.selectedDate) {
+      if (this.selectedDate.length > 0) {
         this.formatAndSaveDate({ date: this.selectedDate, form: "Sheet" });
+      } else {
+        alert("You must select a date");
       }
     },
   },

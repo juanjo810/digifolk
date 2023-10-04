@@ -511,7 +511,11 @@ export default {
   [types.EDIT_COLLECTION_SUCCESS](state, { collection, id }) {
     const indexToDelete = state.collections.findIndex(item => item.col_id === id);
     state.collections.splice(indexToDelete, 1);
-    state.collections.push(collection)
+    const newCol = {
+      col_id: id,
+      title: collection.title.split('|'),
+    }
+    state.collections.push(newCol)
     state.fetchingCollection = false
   },
 
@@ -555,7 +559,11 @@ export default {
   [types.EDIT_PIECE_SUCCESS](state, { piece, id }) {
     const indexToDelete = state.pieces.findIndex(item => item.music_id === id);
     state.pieces.splice(indexToDelete, 1);
-    state.pieces.push(piece)
+    const newPiece = {
+      music_id: id,
+      title: piece.title,
+    }
+    state.pieces.push(newPiece)
     state.fetchingPiece = false
   },
 

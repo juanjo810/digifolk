@@ -569,8 +569,6 @@ export default {
 
   created() {
     this.resetCollectionForm();
-    this.contribuidores = structuredClone(this.contributor);
-    this.creadores = structuredClone(this.creator);
     this.fetchCollections();
   },
 };

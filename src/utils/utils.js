@@ -14,6 +14,7 @@ const utils = {
     })
   },
   parseFileToBase64(file) {
+    debugger
     return new Promise((resolve) => {
       if (file && file !== '') {
         const reader = new FileReader();
@@ -108,7 +109,7 @@ const utils = {
     return pieceTemp
   },
 
-  parseJSONToPiece(fields, separator, itemsIDs, collections, contribuidores, creadores, contribuidoresp) {
+  parseJSONToPiece(fields, separator, itemsIDs, collections, creadores, contribuidores, contribuidoresp) {
     var final = structuredClone(fields)
     final.title = final.title.join(separator)
     var temp = itemsIDs.find(i => i.id === parseInt(final.rights))
@@ -127,7 +128,7 @@ const utils = {
         name: c.name,
         role: item ? item.name : ''
       }
-      if (contribuidores) contribuidores.push(temp)
+      if (contribuidores) contribuidores.push(structuredClone(temp))
       return temp
     })
     temp = itemsIDs.find(i => i.id === parseInt(final.rightsp)).name
@@ -141,7 +142,7 @@ const utils = {
         name: c.name,
         role: item ? item.name : ''
       }
-      if (creadores) creadores.push(temp)
+      if (creadores) creadores.push(structuredClone(temp))
       return temp
     })
     final.contributorp_role = final.contributorp_role.map((c) => {
@@ -150,7 +151,7 @@ const utils = {
         name: c.name,
         role: item ? item.name : ''
       }
-      if (contribuidoresp) contribuidoresp.push(temp)
+      if (contribuidoresp) contribuidoresp.push(structuredClone(temp))
       return temp
     })
     final.subject = final.subject.join(separator)
@@ -184,7 +185,7 @@ const utils = {
     return final
   },
 
-  parseJSONToCollection(fields, separator, itemsIDs, contribuidores, creadores) {
+  parseJSONToCollection(fields, separator, itemsIDs, creadores, contribuidores) {
     debugger
     var final = structuredClone(fields)
     final.title = final ? final.title.join(separator) : ''
@@ -198,7 +199,7 @@ const utils = {
         name: c.name,
         role: item ? item.name : ''
       }
-      if (creadores) creadores.push(temp)
+      if (creadores) creadores.push(structuredClone(temp))
       return temp
     })
     final.contributor_role = final.contributor_role.map((c) => {
@@ -207,7 +208,7 @@ const utils = {
         name: c.name,
         role: item ? item.name : ''
       }
-      if (contribuidores) contribuidores.push(temp)
+      if (contribuidores) contribuidores.push(structuredClone(temp))
       return temp
     })
     final.subject = final.subject.join(separator)

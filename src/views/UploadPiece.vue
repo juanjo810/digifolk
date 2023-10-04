@@ -19,3 +19,15 @@
     </v-row>
   </v-container>
 </template>
+
+<script>
+import { mapActions } from 'vuex';
+export default {
+  methods: {
+    ...mapActions(['resetPieceForm']),
+  },
+  created() {
+    this.resetPieceForm();
+  },
+};
+</script>

@@ -546,6 +546,7 @@
               </v-btn>
             </div>
             <v-btn
+              v-if="pieceSelected"
               color="deep-purple lighten-2"
               text
               @click="this.exportExcel"
@@ -906,7 +907,7 @@ export default {
       "editPiece",
       "resetPieceForm",
       "deletePiece",
-      "exportPieceToExcel",
+      "exportPieceToExcel"
     ]),
     importFile() {
       this.$refs.fileInput.click();

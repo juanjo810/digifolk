@@ -117,9 +117,9 @@ export default {
 
   async saveDataPiece({ state, commit, getters }) {
     var combinedForm = utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
-    combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
-    combinedForm.midi = await utils.parseFileToBinaryString(state.pieceForm.midi[0])
+    combinedForm.xml = await utils.parseFileToBase64(state.pieceForm.xml[0])
+    combinedForm.mei = await utils.parseFileToBase64(state.pieceForm.mei[0])
+    combinedForm.midi = await utils.parseFileToBase64(state.pieceForm.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = false
     combinedForm.user_id = state.user.userInfo.user_id
@@ -153,8 +153,8 @@ export default {
   async editPiece({ commit, getters, state }) {
     debugger
     var combinedForm = await utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    combinedForm.xml = await utils.parseFileToString(state.pieceForm.xml[0])
-    combinedForm.mei = await utils.parseFileToString(state.pieceForm.mei[0])
+    combinedForm.xml = await utils.parseFileToBase64(state.pieceForm.xml[0])
+    combinedForm.mei = await utils.parseFileToBase64(state.pieceForm.mei[0])
     combinedForm.midi = await utils.parseFileToBase64(state.pieceForm.midi[0])
     combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
@@ -175,6 +175,7 @@ export default {
 
   // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
   editCollection({ commit, getters, state }) {
+    debugger
     var collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     console.log(collectionTemp)
     const json = JSON.stringify(collectionTemp);
@@ -328,8 +329,8 @@ export default {
       API.getPiece(piece)
         .then((res) => {
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
-          final.mei = utils.parseStringToFile(final.mei, 'MeiFile',)
-          final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
+          final.mei = utils.parseBase64ToFile(final.mei, 'MeiFile',)
+          final.xml = utils.parseBase64ToFile(final.xml, 'XMLFile', 'text/xml')
           final.midi = utils.parseBase64ToFile(final.midi, 'MidiFile', 'audio/mid')
           commit(types.GET_PIECE_SUCCESS, final)
           resolve()
@@ -343,12 +344,12 @@ export default {
 
   getReviewPiece({ state }, piece) {
     return new Promise((resolve, reject) => {
-      API.getPiece(piece.music_id)
+      API.getPiece(piece)
         .then((res) => {
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections)
-          final.mei = utils.parseStringToFile(final.mei, 'MeiFile',)
-          final.xml = utils.parseStringToFile(final.xml, 'XMLFile', 'text/xml')
-          final.midi = utils.parseStringToFile(final.midi, 'MidiFile', 'audio/mid')
+          final.mei = utils.parseBase64ToFile(final.mei, 'MeiFile',)
+          final.xml = utils.parseBase64ToFile(final.xml, 'XMLFile', 'text/xml')
+          final.midi = utils.parseBase64ToFile(final.midi, 'MidiFile', 'audio/mid')
           resolve(final)
         })
         .catch((err) => {
@@ -359,7 +360,6 @@ export default {
 
 
   getCollectionInfo({ commit, state }, { collection, creadores, contribuidores }) {
-    debugger
     API.getCollection(collection)
       .then((res) => {
         var final = utils.parseJSONToCollection(res[0], state.separator, state.defaultSelections.items, creadores, contribuidores)
@@ -371,7 +371,6 @@ export default {
   },
 
   getReviewCollection({ state }, collection) {
-    debugger
     return new Promise((resolve, reject) => {
       API.getCollection(collection)
         .then((res) => {
@@ -392,10 +391,11 @@ export default {
     commit(types.RESET_COLLECTION_FORM)
   },
 
-  advancedSearch({ commit, state, getters }, { query, type }) {
+  filteredSearch({ commit, state, getters }, { query, type }) {
     return new Promise((resolve, reject) => {
       if (type === 'pieces') {
         var pieceQuery = utils.parsePieceToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+        debugger
         API.advancedSearchPieces(pieceQuery)
           .then((res) => {
             resolve(res)
@@ -457,9 +457,9 @@ export default {
 
   async validatePiece({ commit, state, getters }, piece) {
     var combinedForm = utils.parsePieceToJSON(piece, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    combinedForm.xml = await utils.parseFileToString(piece.xml)
-    combinedForm.mei = await utils.parseFileToString(piece.mei)
-    combinedForm.midi = await utils.parseFileToBinaryString(piece.midi)
+    combinedForm.xml = await utils.parseFileToBase64(piece.xml[0])
+    combinedForm.mei = await utils.parseFileToBase64(piece.mei[0])
+    combinedForm.midi = await utils.parseFileToBase64(piece.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = true
     return new Promise((resolve, reject) => {
@@ -515,7 +515,25 @@ export default {
   exportPieceToExcel(context, id) {
     API.exportPieceToExcel(id)
       .then((res) => {
-        console.log(res)
+        const decodedInfo = atob(res)
+        debugger
+        const blob = new Blob([decodedInfo], { type: 'application/xml' });
+
+        // Crear un objeto URL para el Blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Crear un elemento <a> para el enlace de descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'archivo_excel.xml'; // Nombre del archivo que se descargará
+
+        // Agregar el elemento <a> al documento y simular un clic para iniciar la descarga
+        document.body.appendChild(a);
+        a.click();
+
+        // Eliminar el elemento <a> y liberar el objeto URL después de la descarga
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.log(err)
