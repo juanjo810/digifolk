@@ -504,7 +504,7 @@
               <v-col cols="4">
                 <v-select
                   label="Select collection"
-                  :items="this.getNameCollections"
+                  :items="this.getNameCollectionsWithId"
                   v-model="this.col_id"
                   :disabled="!editing"
                 ></v-select>
@@ -596,6 +596,7 @@ export default {
       "getItemsNameByType",
       "getNamePieces",
       "getNameCollections",
+      "getNameCollectionsWithId"
     ]),
     id: {
       get() {
@@ -890,6 +891,7 @@ export default {
         return this.pieceForm.col_id;
       },
       set(value) {
+        debugger
         this.$store.commit("UPDATE_SHEET_COLID", value);
       },
     },

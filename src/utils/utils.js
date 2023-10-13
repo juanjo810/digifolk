@@ -68,6 +68,7 @@ const utils = {
       name: creator.name,
       role: getItemId(type, creator.role)
     }));
+    collectionTemp.code = collectionTemp.code ? collectionTemp.code : collectionTemp.col_id
     return collectionTemp
   },
   parsePieceToJSON(fields, separator, itemsIDs, getItemId) {
@@ -105,6 +106,8 @@ const utils = {
     if (pieceTemp.col_id) {
       const temp = pieceTemp.col_id.split('-')
       pieceTemp.col_id = temp ? parseInt(temp[0]) : null
+    } else {
+      pieceTemp.col_id = null
     }
     return pieceTemp
   },

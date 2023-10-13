@@ -29,7 +29,8 @@ export default {
       return -1
   },
   getNamePieces: (state) => {
-    return state.pieces.map(piece => {
+    var pieces = state.pieces.filter(piece => piece.review)
+    return pieces.map(piece => {
       const title = piece.title.join('|')
       return {
         id: piece.music_id,
@@ -44,7 +45,8 @@ export default {
     return utils.parseFileToString(state.pieceForm.midi[0])
   },
   getNameCollections: (state) => {
-    return state.collections.map(collection => {
+    var collections = state.collections.filter(collection => collection.review)
+    return collections.map(collection => {
       const title = collection.title.join('|')
       return {
         id: collection.col_id,
@@ -52,28 +54,32 @@ export default {
       }
     })
   },
+  getNameCollectionsWithId: (state) => {
+    return state.collections.map(collection => {
+      const title = collection.title.join('|')
+      return `${collection.id}-${title}`
+    })
+  },
   getUserName: () => (user) => {
     return `${user.user_id}-${user.username}`
   },
   getReviewPieces: (state) => {
-    return state.pieces.map(piece => {
-      if (!piece.review) {
-        const title = piece.title.join('|')
-        return {
-          id: piece.music_id,
-          title: title
-        }
+    const pieces = state.pieces.filter(piece => !piece.review)
+    return pieces.map(piece => {
+      const title = piece.title.join('|')
+      return {
+        id: piece.music_id,
+        title: title
       }
     })
   },
   getReviewCollections: (state) => {
-    return state.collections.map(collection => {
-      if (!collection.review) {
-        const title = collection.title.join('|')
-        return {
-          id: collection.col_id,
-          title: title
-        }
+    const collections = state.collections.filter(collection => !collection.review)
+    return collections.map(collection => {
+      const title = collection.title.join('|')
+      return {
+        id: collection.col_id,
+        title: title
       }
     })
   },

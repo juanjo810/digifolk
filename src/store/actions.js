@@ -368,6 +368,19 @@ export default {
       .catch((err) => {
         commit(types.GET_COLLECTION_FAILURE, err)
       })
+    API.getPiecesCollection(collection)
+      .then((res) => {
+        const pieces = res.map((piece) => {
+          return {
+            music_id: piece.music_id,
+            title: piece.title.join(state.separator)
+          }
+        })
+        commit(types.GET_PIECES_COLLECTION_SUCCESS, pieces)
+      })
+      .catch((err) => {
+        commit(types.GET_PIECES_COLLECTION_FAILURE, err)
+      })
   },
 
   getReviewCollection({ state }, collection) {
@@ -418,8 +431,8 @@ export default {
     })
   },
 
-  importDataFromExcel({ commit }, { file }) {
-    API.importDataFromExcel(file)
+  importDataFromExcel({ commit, state }, { file }) {
+    API.importPieceFromExcel(file, state.user.userInfo.user_id)
       .then((res) => {
         commit(types.IMPORT_DATA_SUCCESS, res)
       })
@@ -430,6 +443,26 @@ export default {
 
   importDataFromMEI({ commit }, { file }) {
     API.importDataFromMEI(file)
+      .then((res) => {
+        commit(types.IMPORT_DATA_SUCCESS, res)
+      })
+      .catch((err) => {
+        commit(types.IMPORT_DATA_FAILURE, err)
+      })
+  },
+
+  importColFromExcel({ commit, state }, { file }) {
+    API.importCollectionFromExcel(file, state.user.userInfo.user_id)
+      .then((res) => {
+        commit(types.IMPORT_DATA_SUCCESS, res)
+      })
+      .catch((err) => {
+        commit(types.IMPORT_DATA_FAILURE, err)
+      })
+  },
+  
+  importColFromMEI({ commit }, { file }) {
+    API.importCollectionFromMEI(file)
       .then((res) => {
         commit(types.IMPORT_DATA_SUCCESS, res)
       })
@@ -487,7 +520,9 @@ export default {
   },
 
   validateCollection({ commit, state, getters }, collection) {
+    collection.review = true
     var collectionTemp = utils.parseCollectionToJSON(collection, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
+    debugger
     return new Promise((resolve, reject) => {
       commit(types.EDIT_COLLECTION_REQUEST)
       API.editCollection(collectionTemp)
@@ -515,9 +550,7 @@ export default {
   exportPieceToExcel(context, id) {
     API.exportPieceToExcel(id)
       .then((res) => {
-        const decodedInfo = atob(res)
-        debugger
-        const blob = new Blob([decodedInfo], { type: 'application/xml' });
+        const blob = new Blob([res]);
 
         // Crear un objeto URL para el Blob
         const url = window.URL.createObjectURL(blob);
@@ -525,7 +558,7 @@ export default {
         // Crear un elemento <a> para el enlace de descarga
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'archivo_excel.xml'; // Nombre del archivo que se descargará
+        a.download = 'archivo_excel.csv'; // Nombre del archivo que se descargará
 
         // Agregar el elemento <a> al documento y simular un clic para iniciar la descarga
         document.body.appendChild(a);

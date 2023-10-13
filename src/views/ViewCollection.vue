@@ -287,6 +287,26 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        <h2>Pieces</h2>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item v-for="(piece, index) in this.collectionForm.pieces" :key="index">
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        {{ piece.title }}
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+            </v-row>
           </v-card-text>
 
           <v-card-actions>

@@ -176,6 +176,23 @@ export default {
     });
   },
 
+  getPiecesCollection(collection) {
+    const obj = {
+      id: collection
+    }
+    return new Promise((resolve, reject) => {
+      axios.get('http://digifolk.usal.es/api/getPiecesFromCol', {
+        params: obj
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+
   editPiece(json) {
     console.log(json)
     return new Promise((resolve, reject) => {
@@ -202,9 +219,11 @@ export default {
       axios.post(query, json
       )
         .then((response) => {
+          debugger
           resolve(response.data);
         })
         .catch((error) => {
+          debugger
           reject(error);
         });
     });
@@ -365,16 +384,16 @@ export default {
   advancedSearchPieces(query) {
     const obj = {
       ...query,
-      music_id: query.music_id ? query.music_id : 0,
       xml: '',
       mei: '',
       midi: '',
       audio: '',
       video: '',
       user_id: query.user_id ? query.user_id : 0,
+      review: true
     }
     return new Promise((resolve, reject) => {
-      axios.get('http://digifolk.usal.es/api/getPieceFromFilters', obj, {
+      axios.post('http://digifolk.usal.es/api/getPieceFromFilters', obj, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -408,10 +427,34 @@ export default {
     });
   },
 
-  importDataFromExcel(file) {
+  importPieceFromExcel(file, id) {
     return new Promise((resolve, reject) => {
       axios.post('http://digifolk.usal.es/api/PieceFromExcel', 
       {
+        xml: '',
+        mei: '',
+        user_id: id,
+        file: file
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          debugger
+          reject(error);
+        });
+    });
+  },
+
+  importColFromExcel(file, id) {
+    return new Promise((resolve, reject) => {
+      axios.post('http://digifolk.usal.es/api/ColFromExcel', 
+      {
+        user_id: id,
         file: file
       }, {
         headers: {
@@ -461,7 +504,7 @@ export default {
 
   exportPieceToExcel(id) {
     return new Promise((resolve, reject) => {
-      axios.post(`http://digifolk.usal.es/api/pieceToExcel?piece_id=${id}`, {
+      axios.post(`http://digifolk.usal.es/api/piecesToCsv?piece_id=${id}`, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -469,6 +512,7 @@ export default {
       })
         .then(response => {
           debugger
+          console.log(response)
           resolve(response.data);
         })
         .catch(error => {

@@ -651,6 +651,14 @@ export default {
     state.error = err
   },
 
+  [types.GET_PIECES_COLLECTION_SUCCESS](state, pieces) {
+    state.collectionForm.pieces = pieces
+  },
+
+  [types.GET_PIECES_COLLECTION_FAILURE](state, err) {
+    state.error = err
+  },
+
   [types.RESET_PIECE_FORM](state) {
     state.pieceForm = {
       title: '',

@@ -322,7 +322,7 @@
               <v-col cols="4">
                 <v-select
                   label="Select collection"
-                  :items="this.getNameCollections"
+                  :items="this.getNameCollectionsWithId"
                   v-model="this.col_id"
                 ></v-select>
               </v-col>
@@ -368,7 +368,7 @@ export default {
   },
   computed: {
     ...mapState(["error", "pieceForm", "defaultSelections"]),
-    ...mapGetters(["getItemsNameByType", "getNameCollections"]),
+    ...mapGetters(["getItemsNameByType", "getNameCollections", "getNameCollectionsWithId"]),
     right: {
       get() {
         return this.pieceForm.rightsp;
