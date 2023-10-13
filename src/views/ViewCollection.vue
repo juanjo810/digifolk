@@ -32,7 +32,15 @@
                   :disabled="!editing || editing"
                 ></v-text-field>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="2">
+                <v-text-field 
+                  readonly
+                  v-model="collectionForm.code"
+                  label="Code"
+                  :disabled="!editing || editing"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="5">
                 <v-text-field
                   v-model="title"
                   label="Title"
@@ -43,7 +51,7 @@
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="5">
+              <v-col cols="4">
                 <v-select
                   v-model="right"
                   label="Rights"
