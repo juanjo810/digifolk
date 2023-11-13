@@ -170,6 +170,7 @@ router.beforeEach((to, from, next) => {
         } else if (to.meta.requiresAdmin && !store.state.user.userInfo.is_admin) {
           next({ name: 'dashboard' })
         } else {
+          store.commit('REFRESH_TOKEN_SESSION', authenticated.access_token)
           next()
         }
       })
@@ -177,9 +178,10 @@ router.beforeEach((to, from, next) => {
     if (store.state.user.tokenSession) {
       utils.authenticated(store.state.user.tokenSession)
         .then((authenticated) => {
-          if (authenticated)
+          if (authenticated){
+           store.commit('REFRESH_TOKEN_SESSION', authenticated.access_token)
             next({ name: 'dashboard' })
-          else
+          }else
             store.commit('REMOVE_TOKEN_SESSION')
           next()
         })

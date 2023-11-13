@@ -73,6 +73,7 @@ export default {
         }
       })
         .then((response) => {
+          debugger
           resolve(response.data);
         })
         .catch((error) => {
@@ -86,7 +87,6 @@ export default {
       "new_password": newPassword,
       "user_id": id
     }
-    debugger
     return new Promise((resolve, reject) => {
       axios.post('http://digifolk.usal.es/api/editPassword', param, {
         headers: {
@@ -112,11 +112,9 @@ export default {
         }
       })
         .then(() => {
-          debugger
           resolve();
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     })
@@ -131,11 +129,9 @@ export default {
         }
       })
         .then(response => {
-          debugger
           resolve(response.data);
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     });
@@ -149,11 +145,9 @@ export default {
         }
       })
         .then(response => {
-          debugger
           resolve(response.data);
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     });
@@ -203,11 +197,9 @@ export default {
         }
       })
         .then(response => {
-          debugger
           resolve(response.data);
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     });
@@ -219,11 +211,9 @@ export default {
       axios.post(query, json
       )
         .then((response) => {
-          debugger
           resolve(response.data);
         })
         .catch((error) => {
-          debugger
           reject(error);
         });
     });
@@ -283,7 +273,6 @@ export default {
     })
   },
   removeCollection(id) {
-    debugger
     return new Promise((resolve, reject) => {
       axios.delete('http://digifolk.usal.es/api/removeCol', {
         params: {
@@ -291,7 +280,6 @@ export default {
         }
       })
         .then(() => {
-          debugger
           resolve();
         })
         .catch(error => {
@@ -390,8 +378,9 @@ export default {
       audio: '',
       video: '',
       user_id: query.user_id ? query.user_id : 0,
-      review: true
+      review: false
     }
+    console.log(JSON.stringify(obj))
     return new Promise((resolve, reject) => {
       axios.post('http://digifolk.usal.es/api/getPieceFromFilters', obj, {
         headers: {
@@ -417,10 +406,12 @@ export default {
         params: query
       })
         .then(response => {
+          debugger
           resolve(response.data);
         }
         )
         .catch(error => {
+          debugger
           reject(error);
         }
         );
@@ -440,29 +431,28 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-        .then(response => {
-          resolve(response.data);
+        .then(() => {
+          resolve();
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     });
   },
 
-  importColFromExcel(file, id) {
+  importColFromExcel(file) {
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/ColFromExcel', 
+      axios.post('http://digifolk.usal.es/api/ExcelToCol', 
       {
-        user_id: id,
         file: file
       }, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
-        .then(response => {
-          resolve(response.data);
+        .then(() => {
+          debugger
+          resolve();
         })
         .catch(error => {
           debugger
@@ -511,12 +501,9 @@ export default {
         }
       })
         .then(response => {
-          debugger
-          console.log(response)
           resolve(response.data);
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     })

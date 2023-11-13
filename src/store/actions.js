@@ -419,7 +419,7 @@ export default {
           })
       } else if (type === 'collections') {
         var collectionQuery = utils.parseCollectionToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-        API.advancedSearchCollections(collectionQuery)
+        API.advancedSearchCollection(collectionQuery)
           .then((res) => {
             resolve(res)
           })
@@ -433,8 +433,8 @@ export default {
 
   importDataFromExcel({ commit, state }, { file }) {
     API.importPieceFromExcel(file, state.user.userInfo.user_id)
-      .then((res) => {
-        commit(types.IMPORT_DATA_SUCCESS, res)
+      .then(() => {
+        commit(types.IMPORT_DATA_SUCCESS)
       })
       .catch((err) => {
         commit(types.IMPORT_DATA_FAILURE, err)
@@ -451,10 +451,10 @@ export default {
       })
   },
 
-  importColFromExcel({ commit, state }, { file }) {
-    API.importCollectionFromExcel(file, state.user.userInfo.user_id)
-      .then((res) => {
-        commit(types.IMPORT_DATA_SUCCESS, res)
+  importColFromExcel({ commit }, { file }) {
+    API.importColFromExcel(file)
+      .then(() => {
+        commit(types.IMPORT_DATA_SUCCESS)
       })
       .catch((err) => {
         commit(types.IMPORT_DATA_FAILURE, err)
@@ -462,7 +462,7 @@ export default {
   },
   
   importColFromMEI({ commit }, { file }) {
-    API.importCollectionFromMEI(file)
+    API.importColFromMEI(file)
       .then((res) => {
         commit(types.IMPORT_DATA_SUCCESS, res)
       })

@@ -235,7 +235,6 @@ export default {
       "importDataFromMEI",
     ]),
     saveData() {
-      
       if (this.pieceForm.rightsp !== "" && this.pieceForm.creatorp_role.length > 0 && this.pieceForm.datep !== "" &&
         this.title !== "" && this.rights !== "" && this.creator !== "" && this.date !== "") {
         this.saveDataPiece();

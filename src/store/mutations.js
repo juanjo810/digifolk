@@ -87,6 +87,11 @@ export default {
     state.user.userInfo = null
   },
 
+  ['REFRESH_TOKEN_SESSION'](state, token) {
+    state.user.tokenSession = token
+    debugger
+  },
+
   [types.FETCH_IMAGES_REQUEST](state, start) {
     if (start === '')
       state.images = []
