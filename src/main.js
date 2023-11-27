@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
+import VueGtag from 'vue-gtag'
 
 loadFonts()
 
@@ -11,4 +12,13 @@ createApp(App)
   .use(router)
   .use(store)
   .use(vuetify)
+  .use(
+    VueGtag,
+    {
+      appName: 'Vue 3 Products',
+      pageTrackerScreenviewEnabled: true,
+      config: { id: 'ID_ANALYTICS'}
+    },
+    router
+  )
   .mount('#app')

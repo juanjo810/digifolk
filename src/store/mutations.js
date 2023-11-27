@@ -89,7 +89,6 @@ export default {
 
   ['REFRESH_TOKEN_SESSION'](state, token) {
     state.user.tokenSession = token
-    debugger
   },
 
   [types.FETCH_IMAGES_REQUEST](state, start) {
