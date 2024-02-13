@@ -431,8 +431,9 @@ export default {
     })
   },
 
-  importDataFromExcel({ commit, state }, { file }) {
-    API.importPieceFromExcel(file, state.user.userInfo.user_id)
+  importDataFromExcel({ commit, state }, { file, xml, mei }) {
+    debugger
+    API.importPieceFromExcel(file, state.user.userInfo.user_id, xml, mei)
       .then(() => {
         commit(types.IMPORT_DATA_SUCCESS)
       })

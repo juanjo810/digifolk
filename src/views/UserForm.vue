@@ -248,21 +248,36 @@ export default {
     handleFileChange(event) {
       const file = event.target.files[0];
       if (file && file.name.endsWith(".xlsx")) {
-        // const reader = new FileReader();
-        // reader.onload = (e) => {
-        //   this.importDataFromExcel({ file: e.target.result });
-        // };
-        // reader.readAsText(file);
-        this.importDataFromExcel({ file: file })
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if(window.confirm("Do you want to upload the corresponding XML File for this piece?"))
+            var xml = await this.readFileContents()
+          if(window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
+            var mei = await this.readFileContents()
+          this.importDataFromExcel({ file: e.target.result, xml: xml ? xml : '', mei: mei ? mei : '' });
+        };
+        reader.readAsText(file);
       } else if (file && file.name.endsWith(".mei")) {
-        // const reader = new FileReader();
-        // reader.onload = (e) => {
-        //   this.importDataFromMEI({ file: e.target.result });
-        // };
-        // reader.readAsText(file);
-        this.importDataFromMEI({ file: file })
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.importDataFromMEI({ file: e.target.result });
+        };
+        reader.readAsText(file);
       }
       console.log("Archivo seleccionado:", file);
+    },
+    async readFileContents() {
+      console.log("")
+      try {
+        console.log("Reading file...")
+        const fileHandle = await window.showOpenFilePicker();
+        const file = await fileHandle[0].getFile();
+        const contents = await file.text();
+        return contents;
+      } catch (error) {
+        console.error("Error al leer el archivo:", error);
+        return '';
+      }
     },
     addFields() {
       this.addContributor("User");

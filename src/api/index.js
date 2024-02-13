@@ -418,12 +418,12 @@ export default {
     });
   },
 
-  importPieceFromExcel(file, id) {
+  importPieceFromExcel(file, id, xml, mei) {
     return new Promise((resolve, reject) => {
       axios.post('http://digifolk.usal.es/api/PieceFromExcel', 
       {
-        xml: '',
-        mei: '',
+        xml: xml,
+        mei: mei,
         user_id: id,
         file: file
       }, {
