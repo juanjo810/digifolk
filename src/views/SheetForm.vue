@@ -353,6 +353,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 import { VDatePicker } from "vuetify/labs/VDatePicker";
+import utils from '@/utils/utils.js'
 
 export default {
   components: {
@@ -640,9 +641,9 @@ export default {
         const reader = new FileReader();
         reader.onload = async (e) => {
           if(window.confirm("Do you want to upload the corresponding XML File for this piece?"))
-            var xml = await this.readFileContents()
+            var xml = await utils.readFileContents(".xml, .mxml, .musicxml")
           if(window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
-            var mei = await this.readFileContents()
+            var mei = await utils.readFileContents(".mei")
           this.importDataFromExcel({ file: e.target.result, xml: xml ? xml : '', mei: mei ? mei : '' });
         };
         reader.readAsText(file);
@@ -654,19 +655,6 @@ export default {
         reader.readAsText(file);
       }
       console.log("Archivo seleccionado:", file);
-    },
-    async readFileContents() {
-      console.log("")
-      try {
-        console.log("Reading file...")
-        const fileHandle = await window.showOpenFilePicker();
-        const file = await fileHandle[0].getFile();
-        const contents = await file.text();
-        return contents;
-      } catch (error) {
-        console.error("Error al leer el archivo:", error);
-        return '';
-      }
     },
     addFields() {
       this.addContributor("Sheet");
