@@ -73,7 +73,6 @@ export default {
         }
       })
         .then((response) => {
-          debugger
           resolve(response.data);
         })
         .catch((error) => {
