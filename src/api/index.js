@@ -477,6 +477,28 @@ export default {
     });
   },
 
+  importMultipleFiles(excel, mei, xml, user_id) {
+    return new Promise((resolve, reject) => {
+      axios.post('http://digifolk.usal.es/api/importController', 
+      {
+        excel: excel,
+        mei: mei,
+        xml: xml,
+        user_id: user_id
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(() => {
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+
   editUser(user, oldMail) {
     return new Promise((resolve, reject) => {
       const query = `http://digifolk.usal.es/api/editUser?email_old=${oldMail}`

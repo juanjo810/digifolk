@@ -53,7 +53,17 @@
         </v-list>
       </v-menu>
       <v-spacer></v-spacer>
+      
+      <v-menu v-if="this.user.tokenSession" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn icon dark v-bind="props" @click="importMultipleData()">
+            <v-icon>mdi-file-multiple</v-icon>
+            <span>Import pieces and Collections</span>
+          </v-btn>
+        </template>
+      </v-menu>
       <v-spacer></v-spacer>
+
       <v-spacer></v-spacer>
       <v-menu v-if="this.user.tokenSession" location="bottom">
         <template v-slot:activator="{ props }">
@@ -93,6 +103,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import utils from '@/utils/utils.js'
 
 export default {
   name: "App",
@@ -112,7 +123,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["logOut", "resetPieceForm", "resetCollectionForm"]),
+    ...mapActions(["logOut", "resetPieceForm", "resetCollectionForm", "isAutenticated", "importMultipleFiles"]),
     logout() {
       this.logOut().then(() => {
         this.$router.push({ name: "login" });
@@ -126,6 +137,43 @@ export default {
       this.resetPieceForm();
       this.$router.push({ name: "uploadPiece" });
     },
+    async importMultipleData() {
+      var extensions = [
+        {
+          description: 'Archivos Excel',
+          accept: {
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            'application/vnd.ms-excel': ['.xls']
+          }
+        }
+      ]
+      var excelFile = await utils.readFileContents(extensions)
+      if (excelFile !== '') {
+        if(window.confirm('Do you want to import XML Files?')){
+          extensions = [
+            {
+              description: 'Archivos XML y MXML',
+              accept: {
+                'text/xml': ['.xml', '.mxml', '.musicxml']
+              }
+            }
+          ]
+          var xmlFiles = await utils.readFileContents(extensions, true)
+        }
+        if(window.confirm('Do you want to import MEI Files?')) {
+          extensions = [
+            {
+              description: 'Archivos MEI',
+              accept: {
+                'text/mei': ['.mei']
+              }
+            }
+          ]
+          var meiFiles = await utils.readFileContents(extensions, true)
+        }
+        this.importMultipleFiles({excelFile: excelFile, xmlFiles: xmlFiles, meiFiles: meiFiles})
+      }
+    }
   },
 };
 </script>

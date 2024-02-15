@@ -472,6 +472,16 @@ export default {
       })
   },
 
+  importMultipleFiles ({commit, state}, { excelFile, xmlFiles, meiFiles }) {
+    API.importMultipleFiles(excelFile, xmlFiles, meiFiles, state.user.userInfo.user_id)
+      .then(() => {
+        commit(types.IMPORT_DATA_SUCCESS)
+      })
+      .catch((err) => {
+        commit(types.IMPORT_DATA_FAILURE, err)
+      })
+  },
+
   fetchUsers({ commit }) {
     API.fetchAllUsers()
       .then((res) => {
