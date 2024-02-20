@@ -13,17 +13,12 @@
             <v-icon>mdi-file-music</v-icon>
           </v-btn>
 
-          <v-btn value="pdf" @click="importFile()">
+          <v-btn value="import" @click="importFile()">
             <span>Import from file</span>
             <v-icon>mdi-file</v-icon>
           </v-btn>
-          <input
-            type="file"
-            ref="fileInput"
-            class="d-none"
-            accept=".xlsx, .xls, .mei, .mxml"
-            @change="handleFileChange"
-          />
+          <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml"
+            @change="handleFileChange" />
         </v-bottom-navigation>
 
         <router-view></router-view>
@@ -41,8 +36,7 @@ export default {
       'importDataFromExcel',
       'importDataFromXML',
       'importDataFromMEI']),
-  },
-  importFile() {
+    importFile() {
       this.$refs.fileInput.click();
     },
     handleFileChange(event) {
@@ -50,9 +44,9 @@ export default {
       if (file && file.name.endsWith(".xlsx")) {
         const reader = new FileReader();
         reader.onload = async (e) => {
-          if(window.confirm("Do you want to upload the corresponding XML File for this piece?"))
+          if (window.confirm("Do you want to upload the corresponding XML File for this piece?"))
             var xml = await utils.readFileContents(".xml, .mxml, .musicxml")
-          if(window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
+          if (window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
             var mei = await utils.readFileContents(".mei")
           this.importDataFromExcel({ file: e.target.result, xml: xml ? xml : '', mei: mei ? mei : '' });
         };
@@ -72,6 +66,7 @@ export default {
       }
       console.log("Archivo seleccionado:", file);
     },
+  },
   created() {
     this.resetPieceForm();
   },
