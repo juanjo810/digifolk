@@ -333,16 +333,6 @@
             <v-btn color="deep-purple lighten-2" text @click="saveData()">
               Save Data
             </v-btn>
-            <v-btn color="deep-purple lighten-2" text @click="importFile()">
-              Import File
-            </v-btn>
-            <input
-              type="file"
-              ref="fileInput"
-              class="d-none"
-              accept=".xlsx, .xls, .mei, .mxml"
-              @change="handleFileChange"
-            />
           </v-card-actions>
         </div>
       </v-col>
@@ -353,7 +343,6 @@
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 import { VDatePicker } from "vuetify/labs/VDatePicker";
-import utils from '@/utils/utils.js'
 
 export default {
   components: {
@@ -623,6 +612,7 @@ export default {
       "resetPieceForm",
       "importDataFromExcel",
       "importDataFromMEI",
+      "importDataFromXML",
     ]),
     saveData() {
       if (this.right !== "" && this.creator.length > 0 && this.date !== "" &&
@@ -631,30 +621,6 @@ export default {
       } else {
         alert("You must fill the required fields");
       }
-    },
-    importFile() {
-      this.$refs.fileInput.click();
-    },
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      if (file && file.name.endsWith(".xlsx")) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          if(window.confirm("Do you want to upload the corresponding XML File for this piece?"))
-            var xml = await utils.readFileContents(".xml, .mxml, .musicxml")
-          if(window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
-            var mei = await utils.readFileContents(".mei")
-          this.importDataFromExcel({ file: e.target.result, xml: xml ? xml : '', mei: mei ? mei : '' });
-        };
-        reader.readAsText(file);
-      } else if (file && file.name.endsWith(".mei")) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.importDataFromMEI({ file: e.target.result });
-        };
-        reader.readAsText(file);
-      }
-      console.log("Archivo seleccionado:", file);
     },
     addFields() {
       this.addContributor("Sheet");
