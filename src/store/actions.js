@@ -329,9 +329,9 @@ export default {
       API.getPiece(piece)
         .then((res) => {
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
-          final.mei = utils.parseBase64ToFile(final.mei, 'MeiFile',)
-          final.xml = utils.parseBase64ToFile(final.xml, 'XMLFile', 'text/xml')
-          final.midi = utils.parseBase64ToFile(final.midi, 'MidiFile', 'audio/mid')
+          final.mei = utils.parseBase64ToFile(final.mei, final.title_xml + '.mei',)
+          final.xml = utils.parseBase64ToFile(final.xml, final.title_xml + '.xml', 'text/xml')
+          final.midi = utils.parseBase64ToFile(final.midi, final.title_xml + '.mid', 'audio/mid')
           commit(types.GET_PIECE_SUCCESS, final)
           resolve()
         })

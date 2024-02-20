@@ -600,11 +600,8 @@ export default {
     ]),
     id: {
       get() {
-        return this.pieceForm.identifier;
-      },
-      set(value) {
-        this.$store.commit("UPDATE_USER_ID", value);
-      },
+        return this.pieceForm.title_xml;
+      }
     },
     title: {
       get() {

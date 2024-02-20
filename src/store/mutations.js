@@ -222,10 +222,6 @@ export default {
    * Each following method update the corresponding field of the user form in the vuex state
    */
 
-  ['UPDATE_USER_ID'](state, id) {
-    state.pieceForm.identifier = id
-  },
-
   ['UPDATE_USER_TITLE'](state, title) {
     state.pieceForm.title = title
   },

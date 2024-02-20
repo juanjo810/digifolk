@@ -144,7 +144,8 @@ export default {
     audio: '',
     video: '',
     user_id: '',
-    col_id: '' // ID de la colección. Por tanto, primero tiene que crear la colección y después meter los otros formularios.
+    col_id: '', // ID de la colección. Por tanto, primero tiene que crear la colección y después meter los otros formularios.
+    title_xml: ''
   },
   collectionForm: {
     title: '',

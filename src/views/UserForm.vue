@@ -13,15 +13,8 @@
           </template>
           <v-card-text>
             <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="this.id"
-                  label="Identifier"
-                  readonly
-                ></v-text-field>
-              </v-col>
 
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-text-field
                   v-model="this.title"
                   label="Title*"
@@ -31,7 +24,7 @@
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-select
                   v-model="this.right"
                   label="Rights*"
@@ -39,7 +32,7 @@
                 ></v-select>
               </v-col>
 
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-text-field
                   v-model="this.creator"
                   label="Creator*"
