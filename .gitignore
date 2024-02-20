@@ -24,7 +24,7 @@ pnpm-debug.log*
 *.env
 
 # Byte-compiled files
-__pycache__/
+*/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -188,6 +188,11 @@ $RECYCLE.BIN/
 *.zip
 *.tar.gz
 *.data
+*.csv
+*.xlsx
+*.mei
+*.mid
+*.xml
 
 # dotenv environment variable files
 .env
