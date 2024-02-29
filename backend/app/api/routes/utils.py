@@ -4,6 +4,7 @@ import pickle
 import itertools
 
 from app.core.config import DATABASE_PATH
+from app.core.config import CODE_SEP,SEPARATOR as SEP
 
 def retrieve_score(name):
     music_path = os.sep.join(
@@ -160,3 +161,27 @@ def piece_model_to_dict(model_instance):
         data_dict[column_name] = column_value
 
     return data_dict
+
+""""
+Function to check if an Excel cell contains any value
+"""
+def is_empty(cell):
+    if type(cell) is float or cell is None or cell == "":
+        return False
+    return True
+
+"""
+Function to split a cell into a list of elements
+"""
+def split_cell(cell, separator):
+    if is_empty(cell):
+        return  cell.split(separator)
+    return []
+
+"""
+Function to get and clean a cell
+"""
+def get_cell(cell):
+    if is_empty(cell):
+        return cell.strip()
+    return ""

@@ -9,6 +9,7 @@ from typing import Dict
 from sqlalchemy import text
 from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
+from app.api.routes.utils import is_empty
 
 
 router = APIRouter()
@@ -164,29 +165,48 @@ def col_excel_to_sqlalchemy(file: UploadFile = File(...)):
       
        
         # Supposing we are working with numbers directly
-        cont=row["ContributorC"].split(SEP)
-        roles=row["RoleCC"].split(SEP)
+
+        if is_empty(row["ContributorC"]):
+            cont = row["ContributorC"].split(SEP)
+        else:
+            cont = []
+        if is_empty(row["RoleCC"]):
+            roles = row["RoleCC"].split(SEP)
+        else:
+            roles = []
         cont_role=list()
         for ci,ri in zip(cont,roles):
             cont_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
         
-        creators= row["CreatorC"].split(SEP)
-        roles=row["RoleC"].split(SEP)
+        if is_empty(row["CreatorC"]):
+            creators= row["CreatorC"].split(SEP)
+        else:
+            creators=[]
+        if is_empty(row["RoleC"]):
+            roles=row["RoleC"].split(SEP)
+        else:
+            roles=[]
         c_role=list()
         for ci,ri in zip(creators,roles):
             c_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
         
-        tl=row["TemporalC"].split(SEP)
-        temp=dict(century=tl[0],decade=tl[1],year=tl[2])
+        if is_empty(row["TemporalC"]):
+            tl=row["TemporalC"].split(SEP)
+            temp=dict(century=tl[0],decade=tl[1],year=tl[2])
+        else:
+            temp=dict(century="",decade="",year="")
 
-        tl=row["SpatialC"].split(SEP)
-        spatial=dict(country=tl[0],state=tl[1],location=tl[2])
+        if is_empty(row["SpatialC"]):
+            tl=row["SpatialC"].split(SEP)
+            spat=dict(country=tl[0],state=tl[1],location=tl[2])
+        else:
+            spat=dict(country="",state="",location="")
         
         col=PieceColSc(title=row["SourceTitle"].split(SEP), rights=row["RightsC"].split(CODE_SEP)[0], extent=row["Extent"],
                     date=row["DateC"], subject=row["SubjectC"].split(SEP),language=row["LanguageC"],
                     contributor_role=cont_role, creator_role=c_role, publisher=row["PublisherC"],source=row["Source"], description=row["DescriptionC"],
                     source_type=row["TypeC"].split(CODE_SEP)[0], formatting=row["FormatC"], relation=row["RelationC"].split(SEP),
-                    spatial=spatial, temporal=temp, rights_holder=row["RightsHolder"],coverage=row["CoverageC"],code=row["CodeC"],review=True)
+                    spatial=spat, temporal=temp, rights_holder=row["RightsHolder"],coverage=row["CoverageC"],code=row["CodeC"],review=True)
         
         db_col  = PieceCol(title=col.title, rights=col.rights, extent=col.extent, subject=col.subject, date=col.date, language=col.language, creator_role=col.creator_role,
             contributor_role=col.contributor_role, publisher=col.publisher, source=col.source, source_type=col.source_type, description=col.description,

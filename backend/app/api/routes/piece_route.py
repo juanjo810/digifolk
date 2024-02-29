@@ -17,7 +17,7 @@ import csv
 from xml.etree import ElementTree as ET
 from typing import Optional
 from io import BytesIO
-from app.api.routes.utils import piece_model_to_dict
+from app.api.routes.utils import piece_model_to_dict, split_cell, get_cell
 import json
 import base64
 
@@ -243,48 +243,50 @@ def excel_controller(file: UploadFile = File(...), user_id: int=None,):
     for index, row in df_c.iterrows():
         columns = df.columns.tolist()
         # Convert the column names to JSON
-        cont=row["ContributorC"].split(SEP)
-        roles=row["RoleCC"].split(SEP)
+        cont = split_cell(row["ContributorC"], SEP)
+        roles = split_cell(row["RoleCC"], SEP)
         cont_role=list()
         for ci,ri in zip(cont,roles):
-            cont_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
+            cont_role.append(dict(name=ci,role=split_cell(ri, CODE_SEP)[0]))
         
-        creators= row["CreatorC"].split(SEP)
-        roles=row["RoleC"].split(SEP)
+        creators= split_cell(row["CreatorC"], SEP)
+        roles=split_cell(row["RoleC"], SEP)
         c_role=list()
         for ci,ri in zip(creators,roles):
-            c_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
-        
-        tl=row["TemporalC"].split(SEP)
+            c_role.append(dict(name=ci,role=split_cell(ri, CODE_SEP)[0]))
+
+        tl=split_cell(row["TemporalC"], SEP)
         temp=dict(century=tl[0],decade=tl[1],year=tl[2])
 
-        tl=row["SpatialC"].split(SEP)
-        spatial=dict(country=tl[0],state=tl[1],location=tl[2])
+        tl=split_cell(row["SpatialC"], SEP)
+        spat=dict(country=tl[0],state=tl[1],location=tl[2])
+
         #return col_list
-        pc = PieceColSc(code=row["CodeC"],title=row["TitleC"],rights=row["RightsC"].split(CODE_SEP)[0],date=row["DateC"],type_file=row["TypeC"].split(CODE_SEP)[0], contributor_role=cont_role, creator=c_role, temporal=temporal, spatial=spatial, description=row["DescriptionC"], rights=row["RightsC"].split(CODE_SEP)[0], user_id=user_id,review=True)
-        item = PieceCol(code=pc.code,title=pc.title,rights=pc.rights,date=pc.date,type_file=pc.type_file,contributor_role=pc.contributor_role,creator=pc.creator,temporal=pc.temporal,spatial=pc.spatial,description=pc.description,rights=pc.rights,user_id=pc.user_id,review=pc.review)
+        col = PieceColSc(title=split_cell(row["SourceTitle"],SEP), rights=split_cell(row["RightsC"], CODE_SEP)[0], extent=get_cell(row["Extent"]),
+                    date=get_cell(row["DateC"]), subject=split_cell(row["SubjectC"], SEP),language=get_cell(row["LanguageC"]),
+                    contributor_role=cont_role, creator_role=c_role, publisher=get_cell(row["PublisherC"]),source="row[Source]", description="row[DescriptionC]",
+                    source_type=split_cell(row["TypeC"], CODE_SEP)[0], formatting=get_cell(row["FormatC"]), relation=split_cell(row["RelationC"], SEP),
+                    spatial=spat, temporal=temp, rights_holder="row[RightsHolder]",coverage=get_cell(row["CoverageC"]),code=get_cell(row["CodeC"]),review=True)
+        item = PieceCol(title=col.title, rights=col.rights, extent=col.extent, subject=col.subject, date=col.date, language=col.language, creator_role=col.creator_role,
+            contributor_role=col.contributor_role, publisher=col.publisher, source=col.source, source_type=col.source_type, description=col.description,
+            formatting=col.formatting, relation=col.relation, spatial=col.spatial,temporal=col.temporal,rights_holder=col.rights_holder,coverage=col.coverage,review=col.review,code=col.code)
         col_list.append(item)
-        new_col_list.append(pc.code)
-        db.session.add(item)
-    db.session.commit()
-    #return col_list
-    # Read the Pieces from the file
-    sheet_name="Pieces"
-    df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
-    df_p = df.iloc[:, :]  # Columns A to AJ
-    #df_c = df.iloc[:, 36:]
-    
-    #duplicated_columns = df_c.columns[df_c.columns.duplicated()]
-    lpieces=list()
-    #return json.dumps(str(df_c.dtypes))#to_json(orient='records')
-    ##CHECK if collection exists:
-    piece_excel_to_sqlalchemy(df_p, user_id, col_list)
-    
+        print(item.code)
+        
+        new_col_list.append(col.code)
+        # db.session.add(item)
+      
+    # db.session.commit()
+    print(col_list)
+
+    # Extract pieces from the file
+    piece_excel_to_sqlalchemy(file=file, user_id=user_id, xml="", mei="", midi="", col_id_list=new_col_list, excel_file=excel_file)
 
 
 @router.post("/ExcelToPiece")
-def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str=None, mei: str=None, midi: bytes=None, col_id_list: list=None):
-    excel_file= file.file.read()
+def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str=None, mei: str=None, midi: bytes=None, col_id_list: list=None, excel_file: bytes=None):
+    if(excel_file==None):
+        excel_file= file.file.read()
     #excel_file="Metadatadummy.xlsx"
     sheet_name="Pieces"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
@@ -304,50 +306,48 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
      
         row=df_p.iloc[index]
 
-        cont= row["Contributor"].split(SEP)
-        roles=row["Role"].split(SEP)
+        cont=split_cell(row["Contributor"], SEP)
+        roles=split_cell(row["Role"], SEP)
         cont_role=list()
         for ci,ri in zip(cont,roles):
-            ri=ri.split(CODE_SEP)[0]
-            cont_role.append(dict(name=ci,role=int(ri)))
+            cont_role.append(dict(name=ci,role=split_cell(ri, CODE_SEP)[0]))
 
-        cont= row["ContributorP"].split(SEP)
-        roles=row["RoleCP"].split(SEP)
-        gend=row["GenderCP"].split(SEP)
+        cont = split_cell(row["ContributorP"], SEP)
+        roles = split_cell(row["RoleCP"], SEP)
+        gend = split_cell(row["GenderCP"], SEP)
         cont2_role=list()
-        for ci,ri in zip(cont,roles):
-            ri=ri.split(CODE_SEP)[0]
-            cont2_role.append(dict(name=ci,role=int(ri),gender=gend))
+        for ci,ri,ge in zip(cont,roles,gend):
+            ri=split_cell(ri, CODE_SEP)[0]
+            cont2_role.append(dict(name=ci,role=int(ri),gender=ge))
         
-        creators= row["CreatorP"].split(SEP)
-        roles=row["RoleP"].split(SEP)
-        gend=row["GenderP"].split(SEP)
-        c_role=list()
-        for ci,ri in zip(creators,roles):
-            ri=ri.split(CODE_SEP)[0]
-            c_role.append(dict(name=ci,role=int(ri),gender=gend))
 
-        tl=row["Temporal"].split(SEP)
+        creators= split_cell(row["CreatorP"], SEP)
+        roles=split_cell(row["RoleP"], SEP)
+        gend = split_cell(row["GenderP"], SEP)
+        c_role=list()
+        for ci,ri,ge in zip(creators,roles,gend):
+            ri=split_cell(ri, CODE_SEP)[0]
+            c_role.append(dict(name=ci,role=int(ri),gender=ge))
+
+        tl = split_cell(row["Temporal"], SEP)
         temp=dict(century=tl[0],decade=tl[1],year=tl[2])
 
-        tl=row["Spatial"].split(SEP)
+        tl = split_cell(row["Spatial"], SEP)
         spat=dict(country=tl[0],state=tl[1],location=tl[2])
 
         #get col_id from Collection where code=row["col_id"] with sqlalchemy query
-        colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
+        # colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
         #return col_list
-        if col_id_list:
-            colect_id=col_id_list[int(row["Col_id"])]
-        else:
-            colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
+        colect_id=int(row["Col_id"])
+        # colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
 
-        pc = PieceSc(publisher=row["Publisher"],contributor_role=cont_role,creator=row["Creator"],title=row["Title"].split(SEP),rights=row["Rights"].split(CODE_SEP)[0],
-                     date=row["Date"],type_file=row["Type"].split(CODE_SEP)[0], desc=row["Description"],rightsp=row["RightsP"].split(CODE_SEP)[0],contributorp_role=cont2_role, 
-                     creatorp_role=c_role,alt_title=row["AlternativeTitle"], datep=row["DateP"],descp=row["DescriptionP"],type_piece=row["TypeP"].split(CODE_SEP)[0],
-                     formattingp=row["FormatP"],hasVersion=row["HasVersion"].split(SEP),subject=row["Subject"].split(SEP),language=row["Language"], spatial=spat, temporal=temp,
-                     isVersionOf=row["IsVersionOf"].split(SEP),coverage=row["Coverage"], relationp=row["Relation"].split(SEP), real_key=row["Key"], mode=row["Mode"],
-                     meter=row["Metre"], tempo=row["Tempo"], genre=row["Genre"].split(SEP),instruments=row["Instrument"].split(SEP),xml=xml,mei=mei,midi=midi,audio=row["Audio"],
-                     video=row["Video"],user_id=user_id,col_id=colect_id,review=True,title_xml=row["Identifier"])
+        pc = PieceSc(publisher=get_cell(row["Publisher"]),contributor_role=cont_role,creator=get_cell(row["Creator"]),title=split_cell(row["Title"], SEP),rights=split_cell(row["Rights"], CODE_SEP)[0],
+                     date=get_cell(row["Date"]),type_file=split_cell(row["Type"], CODE_SEP)[0], desc=get_cell(row["Description"]),rightsp=split_cell(row["RightsP"], CODE_SEP)[0],contributorp_role=cont2_role, 
+                     creatorp_role=c_role,alt_title=get_cell(row["AlternativeTitle"]), datep=get_cell(row["DateP"]),descp=get_cell(row["DescriptionP"]),type_piece=split_cell(row["TypeP"], CODE_SEP)[0],
+                     formattingp=get_cell(row["FormatP"]),hasVersion=split_cell(row["HasVersion"],SEP),subject=split_cell(row["Subject"], SEP),language=get_cell(row["Language"]), spatial=spat, temporal=temp,
+                     isVersionOf=split_cell(row["IsVersionOf"], SEP),coverage=get_cell(row["Coverage"]), relationp=split_cell(row["Relation"], SEP), real_key=get_cell(row["Key"]), mode=get_cell(row["Mode"]),
+                     meter=get_cell(row["Metre"]), tempo=get_cell(row["Tempo"]), genre=split_cell(row["Genre"], SEP),instruments=split_cell(row["Instrument"], SEP),xml=xml,mei=mei,midi=midi,audio="",
+                     video="",user_id=user_id,col_id=colect_id,review=True,title_xml=get_cell(row["Identifier"]))
         
         
         item = Piece(publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
@@ -359,9 +359,10 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
  
             
         lpieces.append(item)
-        db.session.add(item)
+        # db.session.add(item)
     
-    db.session.commit()
+    # db.session.commit()
+    print(lpieces)
         
     return {"msg": "Pieces added"}
 
