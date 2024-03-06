@@ -9,7 +9,8 @@ import converter21 as c21
 from lxml import etree
 import csv
 import xml.etree.ElementTree as ET
-from app.models.piece import Piece
+import subprocess
+# from app.models.piece import Piece
 
 NAME_SPACE = {'mei': 'http://www.music-encoding.org/ns/mei'}
 MEI_SPACE = '{' + NAME_SPACE['mei'] + '}'
@@ -74,13 +75,12 @@ class MEIExtractor:
     def xml_to_mei(self, xml_path, mei_path):
         
         # Load MusicXML data
-        xml_data = m21.converter.parse(xml_path)
+        # xml_data = m21.converter.parse(xml_path)
 
-       # I need to execute a command in the shell : musicxml2hum output.musicxml -o output.hum
-       # I need to execute the command in the shell: hum2mxml output.hum -o output.musicxml
-
-        os.system(f"../bin/humdrum-tools/humextra/bin/xml2hum {xml_path} > output.hum")
-        os.system(f"../bin/humdrum-tools/humextra/bin/hum2mei output.hum > {mei_path}")
+        # I need to execute a command in the shell : musicxml2hum output.musicxml -o output.hum
+        # I need to execute the command in the shell: hum2mxml output.hum -o output.musicxml
+        subprocess.run("verovio -t xml " + xml_path + " -o output.mei", shell=True)
+        print(mei)
 
     def explore_xml_element(self,element, level=0):
         # Print the element's tag and attributes
@@ -245,7 +245,7 @@ class MEIExtractor:
 
         regionTag = etree.SubElement(classificationTermList, f'{MEI_SPACE}term', type='region') # type: ignore
         districtTag = etree.SubElement(classificationTermList, f'{MEI_SPACE}term', type='district') # type: ignore
-        cityTag = etree.SubElement(classificationTermList, f'{MEI_SPACE}term', type='city') # type: ignor
+        cityTag = etree.SubElement(classificationTermList, f'{MEI_SPACE}term', type='city') # type: ignore
 
         dict_temp={"country":regionTag.text,"location":districtTag.text+"-"+cityTag.text}
         piece.spatial=dict_temp
@@ -472,7 +472,7 @@ def map_class_to_csv(objects, filename):
 if __name__ == "__main__":
     mei_path = "./ES-1913-B-JSV-001.mei"
     mei_name="ES-1913-B-JSV-001"
-    xml_path ="./"+mei_name+".xml"
+    xml_path ="./ES-1913.xml"
     # score=parseEndings(mei_path)
     score = MEIExtractor()
     mei_file=score.xml_to_mei(xml_path,"./probando.mei")

@@ -1,6 +1,6 @@
 
 # from app.api.routes.games import melodyGame
-from app.api.routes.piece_route import excel_controller
+from app.api.routes.piece_route import convert_xml_to_mei
 from fastapi import UploadFile
 import io
 import sys
@@ -12,14 +12,13 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-file_name = "Metadata template - IE_1797_BT_EB.xlsx"
-with open(file_name, "rb") as f:
+file_name = "ES-1913.xml"
+with open(file_name, "r") as f:
     contents = f.read()
 
-file = UploadFile(
-    file=io.BytesIO(contents)
-)
-excel_controller(file=file, user_id=1)
+print(contents)
+
+convert_xml_to_mei(contents)
 
 
 if __name__ == "__main__":

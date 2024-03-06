@@ -18,6 +18,8 @@ from xml.etree import ElementTree as ET
 from typing import Optional
 from io import BytesIO
 from app.api.routes.utils import piece_model_to_dict, split_cell, get_cell
+from app.musicXmlConversion.musicxmltomei import MusicXMLtoMei
+import subprocess
 import json
 import base64
 
@@ -28,6 +30,29 @@ NAME_SPACE = {'mei': 'http://www.music-encoding.org/ns/mei'}
 router = APIRouter()
 
 
+def convert_xml_to_mei(xml: str):
+    """
+    This function converts an XML file to MEI format
+    """
+    # Convert the XML file to MEI
+    xml_path = "./input.xml"
+    mei_path = "./output.mei"
+    #Write xml to file
+    with open(xml_path, "w") as file:
+        file.write(xml)
+
+    subprocess.run("verovio -t xml " + xml_path + " -o " + mei_path, shell=True)
+    
+    # Read the MEI file
+    with open(mei_path, "r") as file:
+        mei = file.read()
+
+    # Remove both files
+    subprocess.run("rm " + xml_path, shell=True)
+    subprocess.run("rm " + mei_path, shell=True)
+    
+    return mei
+
 ## CREATE PIECE
 @router.post("/createPiece")
 #def create_piece(pc: PieceSc=Depends(), midi: Optional[UploadFile] = File(None)):
@@ -35,6 +60,9 @@ def create_piece(pc: PieceSc):
 
     
     #midi_data = pc.midi.read()
+
+    if pc.xml != "" and pc.mei == "":
+        pc.mei = convert_xml_to_mei(pc.xml)
     
     db_music = Piece(publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
     type_file=pc.type_file, contributor_role=pc.contributor_role,desc=pc.desc, rightsp=pc.rightsp,

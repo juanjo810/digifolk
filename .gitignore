@@ -194,6 +194,7 @@ $RECYCLE.BIN/
 *.mid
 *.xml
 *.mscz
+*.docx
 
 # dotenv environment variable files
 .env
