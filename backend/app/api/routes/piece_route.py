@@ -18,7 +18,6 @@ from xml.etree import ElementTree as ET
 from typing import Optional
 from io import BytesIO
 from app.api.routes.utils import piece_model_to_dict, split_cell, get_cell
-from app.musicXmlConversion.musicxmltomei import MusicXMLtoMei
 import subprocess
 import json
 import base64
@@ -420,25 +419,76 @@ def piece_to_csv(piece_id: int=None):
 
 
 @router.post("/MeiToCsv")
-def parse_mei_to_metadata():
+def parse_mei_to_metadata(mei: str):
     mei_path="ES-1913-B-JSV-001.mei"
     # score=parseEndings(mei_path)
-    score = MTCExtractor(mei_path,ET.parse(mei_path))
+    #score = MTCExtractor(mei_path,ET.parse(mei_path))
     # Parse the XML file
+    import xml.etree.ElementTree as ET
+
+
+
     tree = ET.parse(mei_path)
     root = tree.getroot()
-
+    
+    # Define the namespace
+    MEI_NS = '{http://www.music-encoding.org/ns/mei}'
     # Start exploring from the root element
-    score.explore_xml_element(root)
-
-    score.m21_to_midi("ES-1913.mid")
-    # score = m21.converter.parse("prob.mei", format='mei', forceSource=True)
-    # Load the MEI file into a music21 stream
+    # score.explore_xml_element(root)
     
     
-    metadata = {}
+    # Load the MEI file
+    # Find the metadata elements
+    title_main = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title[@type="main"]').text
+    # Extract contributors
+    contributors = []
 
-    return score
+    # Find all respStmt elements
+    respStmt_elements = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}respStmt')
+
+    # Iterate over respStmt elements
+    for respStmt in respStmt_elements:
+        # Find all persName elements within respStmt
+        persName_elements = respStmt.findall(f'.//{MEI_NS}persName')
+        # Iterate over persName elements
+        for persName in persName_elements:
+            name = persName.text if persName.text else "Unknown"
+            role = persName.get('role') if persName.get('role') else "Unknown"
+            gender = persName.get('gender') if persName.get('gender') else "Unknown"
+            contributors.append({"name": name, "role": role, "gender": gender})
+    
+    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date').text
+    availability = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}availability').text
+    source_title = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}title').text
+    source_publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}publisher').text
+    source_pubPlace = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}pubPlace').text
+    source_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}date').text
+    author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author').text if root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author') is not None else "Unknown"
+
+
+    # Print metadata
+    print("Main Title:", title_main)
+    print("Contributors:", contributors)
+    print("Creation Date:", creation_date)
+    print("Availability:", availability)
+    print("Source Title:", source_title)
+    print("Source Publisher:", source_publisher)
+    print("Source Publication Place:", source_pubPlace)
+    print("Source Date:", source_date)
+    print("Author:", author)
+
+    # Create a dictionary to store the metadata
+    metadata = {
+        "title": title_main,
+        "Creation Date": creation_date,
+        "Availability": availability,
+        "Source Title": source_title,
+        "Source Publisher": source_publisher,
+        "Source Publication Place": source_pubPlace,
+        "Source Date": source_date,
+        "Author": author
+    }
+    return metadata
     try:
         # Extract metadata from the music21 stream
         if 'composer' in score.metadata:

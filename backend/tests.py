@@ -1,6 +1,6 @@
 
 # from app.api.routes.games import melodyGame
-from app.api.routes.piece_route import convert_xml_to_mei
+from app.api.routes.piece_route import parse_mei_to_metadata
 from fastapi import UploadFile
 import io
 import sys
@@ -12,13 +12,11 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-file_name = "ES-1913.xml"
+file_name = "ES-1913-B-JSV-001.mei"
 with open(file_name, "r") as f:
     contents = f.read()
 
-print(contents)
-
-convert_xml_to_mei(contents)
+parse_mei_to_metadata(contents)
 
 
 if __name__ == "__main__":
