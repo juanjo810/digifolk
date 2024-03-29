@@ -12,7 +12,7 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-file_name = "ES-1913-B-JSV-001.mei"
+file_name = "IT-1952-RO-CO-047.mei"
 with open(file_name, "r") as f:
     contents = f.read()
 

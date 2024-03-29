@@ -1,3 +1,4 @@
+import datetime
 from app.api.schemas.col_schema import PieceColSc
 from app.models.items import ListItem
 from fastapi import APIRouter, Request, Depends, UploadFile, File
@@ -420,7 +421,7 @@ def piece_to_csv(piece_id: int=None):
 
 @router.post("/MeiToCsv")
 def parse_mei_to_metadata(mei: str):
-    mei_path="ES-1913-B-JSV-001.mei"
+    mei_path="IT-1952-RO-CO-047.mei"
     # score=parseEndings(mei_path)
     #score = MTCExtractor(mei_path,ET.parse(mei_path))
     # Parse the XML file
@@ -433,13 +434,22 @@ def parse_mei_to_metadata(mei: str):
     
     # Define the namespace
     MEI_NS = '{http://www.music-encoding.org/ns/mei}'
+    XML_NS = '{http://www.w3.org/XML/1998/namespace}'
     # Start exploring from the root element
     # score.explore_xml_element(root)
     
     
     # Load the MEI file
     # Find the metadata elements
-    title_main = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title[@type="main"]').text
+    titles = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
+    for title in titles:
+        title_type = title.get('type')
+        if title_type == 'main':
+            title_main = title.text if title.text else "Unknown"
+            id = title.get(f'{XML_NS}id')
+            print(id)
+        elif title_type == 'subtitle':
+            title_subtitle = title.text if title.text else "Unknown"
     # Extract contributors
     contributors = []
 
@@ -457,65 +467,109 @@ def parse_mei_to_metadata(mei: str):
             gender = persName.get('gender') if persName.get('gender') else "Unknown"
             contributors.append({"name": name, "role": role, "gender": gender})
     
+    publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}publisher').text
     creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date').text
-    availability = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}availability').text
-    source_title = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}title').text
-    source_publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}publisher').text
-    source_pubPlace = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}pubPlace').text
-    source_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}date').text
+    # source_title = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}title').text
     author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author').text if root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author') is not None else "Unknown"
+    key = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}key')
+    mode = key.get('mode')
+    key = key.text
+    meter = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}meter').text
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo').text
+    terms_elements = root.findall(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}classification/{MEI_NS}termList/{MEI_NS}term')
+    terms = {}   
+    for term in terms_elements:
+        term_type = term.get('type')
+        term_value = term.text if term.text is not None else "Unknown"
+        terms[term_type] = term_value
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo').text
 
 
     # Print metadata
-    print("Main Title:", title_main)
-    print("Contributors:", contributors)
-    print("Creation Date:", creation_date)
-    print("Availability:", availability)
-    print("Source Title:", source_title)
-    print("Source Publisher:", source_publisher)
-    print("Source Publication Place:", source_pubPlace)
-    print("Source Date:", source_date)
-    print("Author:", author)
+    # print("ID:", id)
+    # print("Main Title:", title_main)
+    # print("Subtitle:", title_subtitle)
+    # print("Contributors:", contributors)
+    # print("Creation Date:", creation_date)
+    # print("Publisher:", publisher)
+    # print("Availability:", availability)
+    # print("Source Title:", source_title)
+    # print("Source Publisher:", source_publisher)
+    # print("Source Publication Place:", source_pubPlace)
+    # print("Source Date:", source_date)
+    # print("Author:", author)
+    # print("Key:", key)
+    # print("Mode:", mode)
+    # print("Meter:", meter)
+    # print("Tempo:", tempo)
+    # print("Terms:", terms)
 
     # Create a dictionary to store the metadata
+    # Current date in format Day of Month Year
+    current_date = datetime.datetime.now().strftime("%d %B %Y")
+    year_str = id.split("-")[1]
+    # Obtener el siglo
+    century = str(int(year_str[:2]) + 1)
+    # Obtener la década
+    decade = f"{year_str[2]}0s"
+    # Obtener el año
+    year = year_str
     metadata = {
-        "title": title_main,
-        "Creation Date": creation_date,
-        "Availability": availability,
-        "Source Title": source_title,
-        "Source Publisher": source_publisher,
-        "Source Publication Place": source_pubPlace,
-        "Source Date": source_date,
-        "Author": author
+        "publisher": publisher,
+        "creator": author,
+        "title": [title_main, title_subtitle],
+        "rights": 0,
+        "date": current_date,
+        "type_file": "Unknown",
+        "contributor_role": contributors,
+        "desc": "",
+        "rightsp": 0,
+        "contributorp_role": [],
+        "creatorp_role": [],
+        "alt_title": "Unknown",
+        "datep": creation_date,
+        "descp": "",
+        "type_piece": 0,
+        "formattingp": "MEI",
+        "subject": [],
+        "language": id.split("-")[0],
+        "relationp": [],
+        "hasVersion": [],
+        "isVersionOf": [],
+        "coverage": "Unknown",
+        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
+        "spatial": {"country": "Italy", "state": terms["region"], "location": terms["district"] + ", " + terms["city"]},
+        "genre": terms["genre"],
+        "meter": meter,
+        "tempo": tempo,
+        "real_key": key,
+        "mode": mode,
+        "instruments": [],
+        "title_xml": id,
+        "xml": "",
+        "mei": mei,
+        "midi": "",
+        "audio": "",
+        "video": "",
+        "review": True,
+        "user_id": 0,
+        "col_id": 0
     }
-    return metadata
+    print(metadata)
+    db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
+    type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],
+    creatorp_role=metadata["creatorp_role"],contributorp_role=metadata["contributorp_role"], alt_title=metadata["alt_title"], datep=metadata["datep"], descp=metadata["descp"], type_piece=metadata["type_piece"],
+    formattingp=metadata["formattingp"],subject=metadata["subject"], language=metadata["language"], relationp=metadata["relationp"], hasVersion=metadata["hasVersion"], isVersionOf=metadata["isVersionOf"],
+    coverage=metadata["coverage"],genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
+    xml=metadata["xml"], mei=metadata["mei"], midi=metadata["midi"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"],col_id=metadata["col_id"])
     try:
-        # Extract metadata from the music21 stream
-        if 'composer' in score.metadata:
-            metadata['composer'] = score.metadata.composer
-        if 'title' in score.metadata:
-            metadata['title'] = score.metadata.title
-        if 'date' in score.metadata:
-            metadata['date'] = score.metadata.date
-
-        # You can add more fields here based on the metadata available in your MEI files
-        csv_path="probandocsv.csv"
-        save_metadata_to_csv(metadata, csv_path)
-
-        mf = score.to_midi()
-
-        # Save the MIDI file
-        mf.open("./output.mid", 'wb')
-        mf.write()
-        mf.close()
+        db.session.add(db_music)
+        db.session.commit()
+        db.session.refresh(db_music)
     except Exception as e:
-        print ("ups")
-        
-
-    
-
-    except IOError as e:
-        print("Error saving metadata to CSV:", e)
+        db.session.rollback()
+        return {"error": str(e)}  # Return an error message
+    return db_music
 
 def parseEndings(song):
     """
