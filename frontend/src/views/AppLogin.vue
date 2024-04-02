@@ -1,4 +1,5 @@
 <template>
+  <HomeBar />
   <div>
     <v-card class="mx-auto my-12" max-width="374">
       <v-img height="250" style="margin: 5px" src="@/assets/logo.png"></v-img>
@@ -43,6 +44,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
+import HomeBar from '@/components/HomeBar.vue';
 
 export default {
   data() {
@@ -51,6 +53,9 @@ export default {
       password: "",
       visible: false,
     };
+  },
+  components: {
+    HomeBar
   },
   computed: {
     ...mapState(["fetchingUser", "error"]),

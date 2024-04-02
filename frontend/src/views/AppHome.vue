@@ -1,28 +1,7 @@
 <template>
     <div class="home">
         <!-- Header section -->
-        <header>
-            <v-app-bar app color="blue" dark>
-                <div class="d-flex align-center">
-                    <v-img alt="Digifolk Logo" class="shrink mr-2" contain src="@/assets/logo.png"
-                        transition="scale-transition" width="60" style="cursor: pointer" />
-                    <v-img alt="UE Financiado" class="shrink mr-2" contain src="" transition="scale-transition"
-                        width="100" style="cursor: pointer" />
-                </div>
-                <v-list-item @click="$router.push({ name: 'home' })">
-                    <v-app-bar-title>Home</v-app-bar-title>
-                </v-list-item>
-                <v-list-item @click="$router.push({ name: 'contact' })">
-                    <v-app-bar-title>Contact</v-app-bar-title>
-                </v-list-item>
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-list-item @click="$router.push({ name: 'login' })">
-                    <v-app-bar-title>Login</v-app-bar-title>
-                </v-list-item>
-            </v-app-bar>
-        </header>
+        <HomeBar />
 
         <!-- First section -->
         <section>
@@ -60,7 +39,7 @@
                     <v-divider vertical></v-divider>
                     <v-col cols="6">
                         <h2>Digifolk</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <p>{{this.resume}}</p>
                     </v-col>
                 </v-row>
             </v-container>
@@ -113,9 +92,7 @@
                 </v-col>
                 <v-col class="d-flex align-center justify-end">
                     <div>
-                        DISCLAIMER: This project has been funded with support from the European Commission. This publication
-                        reflects the views only of the author, and the Commission cannot be held responsible for any use which
-                        may be made of the information contained therein.
+                        {{this.disclaimer }}
                     </div>
                 </v-col>
             </v-row>
@@ -126,6 +103,7 @@
 </template>
 
 <script>
+import HomeBar from '@/components/HomeBar.vue';
 
 export default {
     data() {
@@ -146,8 +124,13 @@ export default {
                 '<ul> <li>Music Education</li> <li>Musicology</li> <li>Computer Science</li></ul>',
                 '<ol> <li>Analyse and to evaluate published/developed proposals</li> <li>Recognize the computational and musical requirements (digital formats, computing technologies, programming languages, hardware requirements, server configuration, etc.)</li> <li>Implement a solution-generation process</li> <li>Iteratively develop a solution prototype</li> <li>Integrate a solution with what has been developed in other work packages.</li> <li>Validate results.</li> </ol>',
                 '<ol> <li>Coordination/Management</li> <li>Corpus design and creation</li> <li>Design and music analysis</li> <li>Multimodal folk music</li> <li>Text analysis</li> <li>Data visualization</li> <li>Education Plans</li> <li>Communication/Dissemination</li> </ol>'
-            ]
+            ],
+            resume: 'Music is an element that is present in our daily lives. There are different styles of music, including classical, jazz, pop, rock, etc. There is a kind of music, folk music, which is of great interest due to its peculiar characteristics and the social context it represents or has represented. This music is a form of social and cultural identification that allows us to twin and recognize ourselves as folks, and also to promote cultural diversity through knowledge of other music. This project proposes creating a platform that contains and presents information about folk music from European and Iber-American culture. The main goal is to create a whole paradigm in which folk music can be understandable from a ethnomusicological, musical and educative point of view. Furthermore, we aim to bring folk music closer to the public creating an interactive and attractive platform that incorporate multimedia information (audio files, scores, visual information about patterns and similarities, etc.). As the platform will be open to the common public, all people that might be interested in folk music can get access, enjoy the resources or even submit their own materials. Our goal is aligned with three main pillars: i) Create a new paradigm to make the musical and ethnomusicological analysis easier for the community; ii) Show knowledge discovery through the application of new technologies in the platform; iii) Bring folk music to educative and public environments. Our project complies with the digitalization pillars proposed in the strategic plan of MSCA, through the inclusion of computer sciences technologies to get a new vision in music analysis. It also helps to create a more resilient, inclusive and democratic European society and includes actions that are also mentioned in the cluster “Culture, Creative and Inclusive Society”, through the inclusion of folk repertoires that reflect cultural issues from different European and Iber-American regions.',
+            disclaimer: 'DISCLAIMER: This project has been funded with support from the European Commission. This publication reflects the views only of the author, and the Commission cannot be held responsible for any use which may be made of the information contained therein.'
         };
+    },
+    components: {
+        HomeBar
     },
     methods: {
         showText(index) {
