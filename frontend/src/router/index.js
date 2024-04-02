@@ -11,6 +11,16 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'home',
+      component: () => import('@/views/AppHome.vue'),
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('@/views/AppContact.vue'),
+    },
+    {
+      path: '/login',
       name: 'login',
       component: Login,
       meta: {
