@@ -14,6 +14,9 @@
                         </v-col>
 
                         <v-col class="d-flex align-center justify-center" cols="2">
+                            <v-card class="contact-card">
+                                <v-container>
+                                    <v-card-text>
                             <ul class="list">
                                 <li class="col-sm-6">
                                     <address>
@@ -28,6 +31,10 @@
                                     </address>
                                 </li>
                             </ul>
+                        </v-card-text>
+
+                        </v-container>
+                        </v-card>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -72,5 +79,10 @@ export default {
     }
     .list{
         list-style-type: none;
+    }
+    .contact-card{
+        background-color: rgba(255, 255, 255, 0.5);
+        /* Bordes redondeados */
+        border-radius: 50px;
     }
 </style>
