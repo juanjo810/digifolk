@@ -462,7 +462,7 @@ export default {
 
   importDataFromMEI(json) {
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/meitocsv', json, {
+      axios.post('http://digifolk.usal.es/api/MeiToCsv', json, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
@@ -479,9 +479,9 @@ export default {
 
   importMultipleFiles(excel, mei, xml, user_id) {
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/importController', 
+      axios.post('http://digifolk.usal.es/api/ExcelController', 
       {
-        excel: excel,
+        file: excel,
         mei: mei,
         xml: xml,
         user_id: user_id
@@ -528,6 +528,5 @@ export default {
           reject(error);
         });
     })
-  }
-
+  }  
 }

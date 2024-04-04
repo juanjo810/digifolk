@@ -254,7 +254,7 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
     5.- The function imports the pieces to the database
 """
 @router.post("/ExcelController")
-def excel_controller(file: UploadFile = File(...), user_id: int=None,):
+def excel_controller(file: UploadFile = File(...), mei: list = None , xml: list = None, user_id: int = None):
     # Read the Excel File
     excel_file= file.file.read()
     #excel_file="Metadatadummy.xlsx"
@@ -294,7 +294,7 @@ def excel_controller(file: UploadFile = File(...), user_id: int=None,):
                     date=get_cell(row["DateC"]), subject=split_cell(row["SubjectC"], SEP),language=get_cell(row["LanguageC"]),
                     contributor_role=cont_role, creator_role=c_role, publisher=get_cell(row["PublisherC"]),source="row[Source]", description="row[DescriptionC]",
                     source_type=split_cell(row["TypeC"], CODE_SEP)[0], formatting=get_cell(row["FormatC"]), relation=split_cell(row["RelationC"], SEP),
-                    spatial=spat, temporal=temp, rights_holder="row[RightsHolder]",coverage=get_cell(row["CoverageC"]),code=get_cell(row["CodeC"]),review=True)
+                    spatial=spat, temporal=temp, rights_holder=get_cell(row["RightsHolder"]),coverage=get_cell(row["CoverageC"]),code=get_cell(row["CodeC"]),review=True)
         item = PieceCol(title=col.title, rights=col.rights, extent=col.extent, subject=col.subject, date=col.date, language=col.language, creator_role=col.creator_role,
             contributor_role=col.contributor_role, publisher=col.publisher, source=col.source, source_type=col.source_type, description=col.description,
             formatting=col.formatting, relation=col.relation, spatial=col.spatial,temporal=col.temporal,rights_holder=col.rights_holder,coverage=col.coverage,review=col.review,code=col.code)
