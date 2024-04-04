@@ -115,6 +115,14 @@ const router = createRouter({
           name: 'collections',
           children: [
             {
+              path: 'listCollections',
+              name: 'listCollections',
+              component: () => import('@/views/AppListCollections.vue'),
+              meta: {
+                requiresAuth: true
+              }
+            },
+            {
               path: 'viewCollection',
               name: 'viewCollection',
               component: () => import('@/views/ViewCollection.vue'),

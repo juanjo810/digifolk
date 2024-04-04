@@ -593,7 +593,7 @@ export default {
       "pieceSelected",
       "pieceForm",
       "user",
-      "pieceFromList",
+      "objectFromList",
     ]),
     ...mapGetters([
       "getItemsNameByType",
@@ -993,9 +993,9 @@ export default {
     this.fetchPieces();
   },
   mounted() {
-    if (this.pieceFromList) {
-      this.loadPieceInfo(this.pieceFromList);
-        this.$store.commit('SET_PIECEFROMLIST', null);
+    if (this.objectFromList) {
+      this.loadPieceInfo(this.objectFromList);
+        this.$store.commit('SET_OBJECTFROMLIST', null);
     }
   }
 };

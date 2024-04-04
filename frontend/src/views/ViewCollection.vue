@@ -3,9 +3,11 @@
     <v-row>
       <v-col>
         <v-row>
-          <v-col cols="4">
-            <h1>View collection</h1>
+          <v-col class="d-flex justify-center">
+            <h1 class="text-h3">View collection</h1>
           </v-col>
+        </v-row>
+        <v-row>
           <v-col>
             <SearchBar
               :objects="this.getNameCollections"
@@ -13,7 +15,7 @@
               typeObject="collections"
             ></SearchBar>
           </v-col>
-        </v-row>
+        </v-row><br>
         <div>
           <template>
             <v-progress-linear
@@ -70,11 +72,11 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Selected date: {{ date }}</h2>
+                <h2 class="text-h5 text-center">Selected date: {{ date }}</h2>
               </v-col>
 
               <v-col cols="6">
-                <h2>Creators</h2>
+                <h2 class="text-h5">Creators</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFieldsCreators()" v-if="editing"
@@ -114,7 +116,7 @@
               </v-container>
 
               <v-col cols="6">
-                <h2>Contributors</h2>
+                <h2 class="text-h5">Contributors</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFields()" v-if="editing"
@@ -238,7 +240,7 @@
               </v-col>
 
               <v-col cols="12">
-                <h2>Spatial</h2>
+                <h2 class="text-h5 text-center">Spatial</h2>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -263,7 +265,7 @@
               </v-col>
 
               <v-col cols="12">
-                <h2>Temporal</h2>
+                <h2 class="text-h5 text-center">Temporal</h2>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -297,22 +299,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        <h2>Pieces</h2>
-                      </v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item v-for="(piece, index) in this.collectionForm.pieces" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        {{ piece.title }}
-                      </v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
+                <list-objects :list="this.collectionForm.pieces" redirect="viewPiece" title="List of pieces"/>
               </v-col>
             </v-row>
           </v-card-text>
@@ -320,7 +307,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              color="deep-purple lighten-2"
+              color="blue"
               text
               @click="saveCollection"
               v-if="editing"
@@ -328,7 +315,7 @@
               Save collection
             </v-btn>
             <v-btn
-              color="deep-purple lighten-2"
+              color="blue"
               text
               @click="editFields"
               v-else
@@ -346,11 +333,13 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 import { VDatePicker } from "vuetify/labs/VDatePicker";
 import SearchBar from "@/components/SearchBar.vue";
+import ListObjects from "@/components/ListObjects.vue";
 
 export default {
   components: {
     VDatePicker,
     SearchBar,
+    ListObjects,
   },
   data() {
     return {
@@ -362,7 +351,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["error", "collectionForm", "defaultSelections"]),
+    ...mapState(["error", "collectionForm", "defaultSelections", "objectFromList"]),
     ...mapGetters(["getItemsNameByType", "getNameCollections"]),
     title: {
       get() {
@@ -599,5 +588,11 @@ export default {
     this.resetCollectionForm();
     this.fetchCollections();
   },
+  mounted() {
+    if (this.objectFromList) {
+      this.loadCollectionInfo(this.objectFromList);
+      this.$store.commit('SET_OBJECTFROMLIST', null);
+    }
+  }
 };
 </script>

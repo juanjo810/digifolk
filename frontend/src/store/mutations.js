@@ -487,8 +487,8 @@ export default {
     state.error = error
   },
 
-  ['SET_PIECEFROMLIST'](state, piece) {
-    state.pieceFromList = piece
+  ['SET_OBJECTFROMLIST'](state, object) {
+    state.objectFromList = object
   },
 
   /**

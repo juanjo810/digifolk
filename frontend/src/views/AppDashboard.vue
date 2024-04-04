@@ -47,6 +47,9 @@
           </v-btn>
         </template>
         <v-list>
+          <v-list-item @click="$router.push({ name: 'listCollections' })">
+            <v-list-item-title>List of collections</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="$router.push({ name: 'viewCollection' })">
             <v-list-item-title> View collection </v-list-item-title>
           </v-list-item>
