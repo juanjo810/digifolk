@@ -241,5 +241,6 @@ export default {
     col_id: 1
   },
   collectionSelected: {},
+  pieceFromList: null,
   users: []
 }

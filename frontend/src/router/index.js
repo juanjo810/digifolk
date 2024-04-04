@@ -45,7 +45,7 @@ const router = createRouter({
         requiresAuth: true
       },
       redirect: () => {
-        return { name: 'viewPiece' }
+        return { name: 'listPieces' }
       },
       children: [
         {
@@ -53,9 +53,18 @@ const router = createRouter({
           name: 'pieces',
           children: [
             {
+              path: 'listPieces',
+              name: 'listPieces',
+              component: () => import('@/views/AppListPieces.vue'),
+              meta: {
+                requiresAuth: true
+              }
+            },
+            {
               path: 'viewPiece',
               name: 'viewPiece',
               component: () => import('@/views/ViewPiece.vue'),
+              props: route => ({ piece: route.params.piece }),
               meta: {
                 requiresAuth: true
               }

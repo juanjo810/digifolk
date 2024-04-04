@@ -487,6 +487,10 @@ export default {
     state.error = error
   },
 
+  ['SET_PIECEFROMLIST'](state, piece) {
+    state.pieceFromList = piece
+  },
+
   /**
    * Uploading data mutations: piece and collections
    */

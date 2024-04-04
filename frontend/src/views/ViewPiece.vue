@@ -4,18 +4,20 @@
     <v-row>
       <v-col>
         <v-row>
-          <v-col cols="4">
-            <h1>View piece</h1>
+          <v-col class="d-flex justify-center">
+            <h1 class="text-h3">View piece</h1>
           </v-col>
-          <v-col cols="8">
+        </v-row>
+        <v-row>
+          <v-col>
             <SearchBar
               :objects="this.getNamePieces"
               :getInfo="this.loadPieceInfo"
               typeObject="pieces"
             ></SearchBar>
           </v-col>
-        </v-row>
-        <h1>Information about the MusicXML file</h1>
+        </v-row><br>
+        <h2 class="text-h4 text-center">Information about the MusicXML file</h2>
         <div>
           <template>
             <v-progress-linear
@@ -72,7 +74,7 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Selected date: {{ date }}</h2>
+                <h2 class="text-h5 text-center">Selected date: {{ date }}</h2>
               </v-col>
 
               <v-col cols="6">
@@ -95,7 +97,7 @@
               </v-col>
 
               <v-col cols="6  ">
-                <h2>Contributors</h2>
+                <h2 class="text-h5">Contributors</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFields()" :disabled="!editing"
@@ -143,7 +145,7 @@
             </v-row>
           </v-card-text>
         </div>
-        <h1>Information about the musical piece</h1>
+        <h1 class="text-h4 text-center">Information about the musical piece</h1>
         <div>
           <template>
             <v-progress-linear
@@ -165,7 +167,7 @@
               </v-col>
 
               <v-col cols="6  ">
-                <h2>Creators</h2>
+                <h2 class="text-h5">Creators</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFieldsCreators()" :disabled="!editing"
@@ -224,7 +226,7 @@
                 ></v-date-picker>
               </v-col>
               <v-col cols="6">
-                <h2>Selected date: {{ date }}</h2>
+                <h2 class="text-h5 text-center">Selected date: {{ date }}</h2>
               </v-col>
 
               <v-col>
@@ -279,7 +281,7 @@
               </v-col>
 
               <v-col cols="6">
-                <h2>Contributors</h2>
+                <h2 class="text-h5">Contributors</h2>
               </v-col>
               <v-col cols="6">
                 <v-btn @click="addFieldsp()" :disabled="!editing">
@@ -409,7 +411,7 @@
               </v-col>
 
               <v-col cols="12">
-                <h2>Spatial</h2>
+                <h2 class="text-h5 text-center">Spatial</h2>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -434,7 +436,7 @@
               </v-col>
 
               <v-col cols="12">
-                <h2>Temporal</h2>
+                <h2 class="text-h5 text-center">Temporal</h2>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -521,7 +523,7 @@
               "
             >
               <v-btn
-                color="deep-purple lighten-2"
+                color="blue"
                 text
                 @click="saveFields"
                 v-if="editing"
@@ -529,7 +531,7 @@
                 Save piece
               </v-btn>
               <v-btn
-                color="deep-purple lighten-2"
+                color="blue"
                 text
                 @click="editFields"
                 v-else
@@ -537,7 +539,7 @@
                 Edit fields
               </v-btn>
               <v-btn
-                color="deep-purple lighten-2"
+                color="blue"
                 text
                 @click="this.delete"
                 v-if="!editing"
@@ -547,7 +549,7 @@
             </div>
             <v-btn
               v-if="pieceSelected"
-              color="deep-purple lighten-2"
+              color="blue"
               text
               @click="this.exportExcel"
             >
@@ -591,6 +593,7 @@ export default {
       "pieceSelected",
       "pieceForm",
       "user",
+      "pieceFromList",
     ]),
     ...mapGetters([
       "getItemsNameByType",
@@ -989,5 +992,11 @@ export default {
     this.creadores = structuredClone(this.creatorSheet);
     this.fetchPieces();
   },
+  mounted() {
+    if (this.pieceFromList) {
+      this.loadPieceInfo(this.pieceFromList);
+        this.$store.commit('SET_PIECEFROMLIST', null);
+    }
+  }
 };
 </script>

@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col>
-        <v-toolbar dense floating>
+        <v-toolbar dense floating min-width="100px">
           <v-text-field
             hide-details
             prepend-icon="mdi-magnify"
