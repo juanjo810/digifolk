@@ -231,6 +231,17 @@ const utils = {
     })
   },
   
+  async getFile(extensions, multiple = false) {
+    try {
+      const fileHandle = await window.showOpenFilePicker({ multiple: multiple, types: extensions });
+      const file = await fileHandle[0].getFile();
+      return file;
+    } catch (error) {
+      console.error("Error al leer el archivo:", error);
+      return '';
+    }
+  },
+  
   async readFileContents(extensions, multiple = false) {
     console.log("")
     try {

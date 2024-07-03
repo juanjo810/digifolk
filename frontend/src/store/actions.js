@@ -159,6 +159,7 @@ export default {
     combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = false
+    combinedForm.title_xml = "PRUEBA_XML"
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
@@ -473,6 +474,7 @@ export default {
   },
 
   importMultipleFiles ({commit, state}, { excelFile, xmlFiles, meiFiles }) {
+    debugger
     API.importMultipleFiles(excelFile, xmlFiles, meiFiles, state.user.userInfo.user_id)
       .then(() => {
         commit(types.IMPORT_DATA_SUCCESS)
@@ -506,6 +508,7 @@ export default {
     combinedForm.midi = await utils.parseFileToBase64(piece.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = true
+    combinedForm.title_xml = "PRUEBA_XML"
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)

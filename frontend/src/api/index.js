@@ -419,7 +419,7 @@ export default {
 
   importPieceFromExcel(file, id, xml, mei) {
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/PieceFromExcel', 
+      axios.post('http://digifolk.usal.es/api/ExcelToPiece', 
       {
         xml: xml,
         mei: mei,
@@ -478,13 +478,14 @@ export default {
   },
 
   importMultipleFiles(excel, mei, xml, user_id) {
+    if (mei === null) mei = JSON.stringify([])
+    if (xml === null) xml = JSON.stringify([])
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/ExcelController', 
+      axios.post(`http://digifolk.usal.es/api/ExcelController?user_id=${user_id}`, 
       {
         file: excel,
         mei: mei,
-        xml: xml,
-        user_id: user_id
+        xml: xml
       }, {
         headers: {
           'Content-Type': 'multipart/form-data'

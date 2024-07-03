@@ -158,7 +158,7 @@ export default {
           }
         }
       ]
-      var excelFile = await utils.readFileContents(extensions)
+      var excelFile = await utils.getFile(extensions)
       if (excelFile !== '') {
         if(window.confirm('Do you want to import XML Files?')){
           extensions = [

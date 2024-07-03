@@ -43,12 +43,12 @@ export default {
       const file = event.target.files[0];
       if (file && file.name.endsWith(".xlsx")) {
         const reader = new FileReader();
-        reader.onload = async (e) => {
+        reader.onload = async () => {
           if (window.confirm("Do you want to upload the corresponding XML File for this piece?"))
             var xml = await utils.readFileContents(".xml, .mxml, .musicxml")
           if (window.confirm("Do you want to upload the corresponding MEI File for this piece?"))
             var mei = await utils.readFileContents(".mei")
-          this.importDataFromExcel({ file: e.target.result, xml: xml ? xml : '', mei: mei ? mei : '' });
+          this.importDataFromExcel({ file: file, xml: xml ? xml : '', mei: mei ? mei : '' });
         };
         reader.readAsText(file);
       } else if (file && file.name.endsWith(".mei")) {
