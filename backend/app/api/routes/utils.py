@@ -4,7 +4,6 @@ import pickle
 import itertools
 
 from app.core.config import DATABASE_PATH
-from app.core.config import CODE_SEP,SEPARATOR as SEP
 
 def retrieve_score(name):
     music_path = os.sep.join(
