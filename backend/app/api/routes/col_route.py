@@ -55,10 +55,10 @@ def edit_col(col: PieceColSc):
 @router.delete("/removeCol")
 def delete_col(id: str):
     if id is not "":
-        n=db.session.query(PieceCol).filter(PieceCol.col_id == id)
-        col=n.first()
+        collection = db.session.query(PieceCol).filter(PieceCol.col_id == id).first()
          ## Retrieve pieces with col.id and remove them
-        pieces=db.session.query(Piece).filter(Piece.col_id==col.col_id).delete()
+        db.session.query(Piece).filter(Piece.col_id==collection.col_id).delete()
+        db.session.delete(collection)
         #pieces.delete()
         #n.delete()
         db.session.commit()

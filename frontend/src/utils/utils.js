@@ -243,7 +243,7 @@ const utils = {
   },
   
   async readFileContents(extensions, multiple = false) {
-    console.log("")
+    debugger
     try {
       console.log("Reading file...")
       const fileHandle = await window.showOpenFilePicker({ multiple: multiple, types: extensions });
@@ -252,7 +252,7 @@ const utils = {
       return contents;
     } catch (error) {
       console.error("Error al leer el archivo:", error);
-      return '';
+      return "";
     }
   }
 }

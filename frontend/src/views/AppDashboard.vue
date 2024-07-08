@@ -159,6 +159,8 @@ export default {
         }
       ]
       var excelFile = await utils.getFile(extensions)
+      var xmlFiles = []
+      var meiFiles = []
       if (excelFile !== '') {
         if(window.confirm('Do you want to import XML Files?')){
           extensions = [
@@ -169,7 +171,7 @@ export default {
               }
             }
           ]
-          var xmlFiles = await utils.readFileContents(extensions, true)
+          xmlFiles = await utils.readFileContents(extensions, true)
         }
         if(window.confirm('Do you want to import MEI Files?')) {
           extensions = [
@@ -180,7 +182,7 @@ export default {
               }
             }
           ]
-          var meiFiles = await utils.readFileContents(extensions, true)
+          meiFiles = await utils.readFileContents(extensions, true)
         }
         this.importMultipleFiles({excelFile: excelFile, xmlFiles: xmlFiles, meiFiles: meiFiles})
       }
