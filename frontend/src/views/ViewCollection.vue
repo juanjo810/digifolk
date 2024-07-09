@@ -322,6 +322,14 @@
             >
               Edit fields
             </v-btn>
+            <v-btn
+                color="blue"
+                text
+                @click="this.delete"
+                v-if="!editing"
+              >
+                Delete piece
+            </v-btn>
           </v-card-actions>
         </div>
       </v-col>
@@ -526,6 +534,7 @@ export default {
       "fetchCollections",
       "getCollectionInfo",
       "resetCollectionForm",
+      "deleteCollection",
     ]),
     saveCollection() {
       if (
@@ -574,6 +583,10 @@ export default {
     },
     editFields() {
       this.editing = true;
+    },
+    delete() {
+      this.deleteCollection(this.collectionForm.col_id);
+      this.resetCollectionForm();
     },
     loadCollectionInfo(selectedCollection) {
       this.getCollectionInfo({

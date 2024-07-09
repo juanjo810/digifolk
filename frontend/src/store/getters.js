@@ -58,7 +58,7 @@ export default {
   getNameCollectionsWithId: (state) => {
     return state.collections.map(collection => {
       const title = collection.title.join('|')
-      return `${collection.id}-${title}`
+      return `${collection.col_id}-${title}`
     })
   },
   getUserName: () => (user) => {
