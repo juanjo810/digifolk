@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, Request, Depends, File, UploadFile
 from fastapi_sqlalchemy import db
 from sqlalchemy import text, and_, or_
 from app.models.piece import Piece
@@ -54,17 +54,25 @@ def edit_col(col: PieceColSc):
 ## REMOVE COLLECTION
 @router.delete("/removeCol")
 def delete_col(id: str):
-    if id is not "":
-        collection = db.session.query(PieceCol).filter(PieceCol.col_id == id).first()
-         ## Retrieve pieces with col.id and remove them
-        db.session.query(Piece).filter(Piece.col_id==collection.col_id).delete()
-        db.session.delete(collection)
-        #pieces.delete()
-        #n.delete()
-        db.session.commit()
-        return [{"msg": "Rm done"}]
-    else:
-        return [{"msg": "Collection not found"}]
+    if not id:
+        raise HTTPException(status_code=400, detail="Collection ID is required")
+
+    # Usa la sesión de db de fastapi_sqlalchemy para buscar la colección
+    collection = db.session.query(PieceCol).filter(PieceCol.col_id == id).first()
+
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found")
+
+    # Elimina las piezas asociadas
+    db.session.query(Piece).filter(Piece.col_id == collection.col_id).delete()
+
+    # Elimina la colección
+    db.session.delete(collection)
+
+    # Confirma los cambios
+    db.session.commit()
+
+    return {"msg": "Collection and pieces removed successfully"}
 
 
 # GET COLLECTIONS
