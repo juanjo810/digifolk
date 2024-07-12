@@ -14,7 +14,9 @@ import evaluation.melodyGame as melodyGame
 
 file_name = "prueba.xlsx"
 with open(file_name, "r") as f:
-    excel_controller(f, user_id=1)
+    mei = ["IE_1797_BT_EB_01.mei", "IE_1797_BT_EB_02.mei", "IE_1797_BT_EB_03.mei"]
+    xml = []
+    excel_controller(f, mei=mei, xml=xml, user_id=1)
 
 
 

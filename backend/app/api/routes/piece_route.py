@@ -1,3 +1,4 @@
+import base64
 import datetime
 from app.api.schemas.col_schema import PieceColSc
 from app.models.items import ListItem
@@ -9,7 +10,7 @@ from app.models.piece import Piece
 from app.models.collection import PieceCol
 from app.api.schemas.piece_schema import PieceSc
 from app.api.parsers.mtc_extractor import MTCExtractor
-from typing import Dict
+from typing import Dict, List
 from app.api.routes.col_route import get_col
 from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
@@ -20,8 +21,9 @@ from typing import Optional
 from io import BytesIO
 from app.api.routes.utils import piece_model_to_dict, split_cell, get_cell
 import subprocess
-import json
-import base64
+import os
+import aiofiles
+
 
 
 NAME_SPACE = {'mei': 'http://www.music-encoding.org/ns/mei'}
@@ -106,7 +108,7 @@ def edit_piece(piece: PieceSc):
 def delete_piece(id: str):
     if id != "":
         if db.session.query(Piece).filter(Piece.music_id == id).count() > 0:
-            a=db.session.query(Piece).filter(Piece.music_id == id).delete()
+            db.session.query(Piece).filter(Piece.music_id == id).delete()
             db.session.commit()
             return [{"msg": "Rm done"}]
     
@@ -254,19 +256,19 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
     5.- The function imports the pieces to the database
 """
 @router.post("/ExcelController")
-def excel_controller(file: UploadFile = File(...), mei: list = None , xml: list = None, user_id: int = None):
+def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None , xml: List[UploadFile] = None, user_id: int = None):
     # Read the Excel File
-    #excel_file= file.file.read()
-    excel_file="prueba.xlsx"
+    excel_file= file.file.read()
+    # excel_file="prueba.xlsx"
 
     # Read the Collections from the file
     sheet_name="Collections"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
     df_c = df.iloc[:, :]  # Columns A to AJ
-    #duplicated_columns = df_c.columns[df_c.columns.duplicated()]
+    
     col_list=list()
-    new_col_list=list()
-    #return json.dumps(str(df_c.dtypes))#to_json(orient='records')
+    new_col_list=dict()
+
     ##CHECK if collection exists:
     for index, row in df_c.iterrows():
         print(row)
@@ -290,7 +292,6 @@ def excel_controller(file: UploadFile = File(...), mei: list = None , xml: list 
         tl=split_cell(row["SpatialC"], SEP)
         spat=dict(country=tl[0],state=tl[1],location=tl[2])
 
-        #return col_list
         col = PieceColSc(title=split_cell(row["SourceTitle"],SEP), rights=split_cell(row["RightsC"], CODE_SEP)[0], extent=get_cell(row["Extent"]),
                     date=get_cell(row["DateC"]), subject=split_cell(row["SubjectC"], SEP),language=get_cell(row["LanguageC"]),
                     contributor_role=cont_role, creator_role=c_role, publisher=get_cell(row["PublisherC"]),source=row["Source"], description=row["DescriptionC"],
@@ -302,12 +303,13 @@ def excel_controller(file: UploadFile = File(...), mei: list = None , xml: list 
         col_list.append(item)
         print(item.code)
         
-        #db.session.add(item)
+        db.session.add(item)
       
-    #db.session.commit()
+        db.session.commit()
+
+        new_col_list[item.code]=item.col_id
 
     # Extract pieces from the file
-    # piece_excel_to_sqlalchemy(file=file, user_id=user_id, xml="", mei="", midi="", col_id_list=new_col_list, excel_file=excel_file)
 
     sheet_name="Pieces"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4],index_col=None,dtype=str)
@@ -348,14 +350,35 @@ def excel_controller(file: UploadFile = File(...), mei: list = None , xml: list 
         tl = split_cell(row["Spatial"], SEP)
         spat=dict(country=tl[0],state=tl[1],location=tl[2])
 
-        colect_id=int(row["Col_id"])
+        colect_id=new_col_list[row["Col_id"]]
 
+        title_xml = row["Identifier"]
+
+        # Assign the mei and xml files to the piece if the filename matches with title_xml
+        piece_mei = ""
+        piece_xml = ""
+        if mei is not None:
+            for m in mei:
+                file_name = m.filename.split(".")[0]    
+                if title_xml == file_name:
+                    piece_mei = m.file.read()
+                    print(piece_mei)
+                    piece_mei = base64.b64encode(piece_mei).decode('utf-8')
+                    break
+        if xml is not None:
+            for x in xml:
+                file_name = x.filename.split(".")[0]
+                if title_xml == file_name:
+                    piece_xml = x.file.read()
+                    break
+        
+        
         pc = PieceSc(publisher=get_cell(row["Publisher"]),contributor_role=cont_role,creator=get_cell(row["Creator"]),title=split_cell(row["Title"], SEP),rights=split_cell(row["Rights"], CODE_SEP)[0],
                      date=get_cell(row["Date"]),type_file=split_cell(row["Type"], CODE_SEP)[0], desc=get_cell(row["Description"]),rightsp=split_cell(row["RightsP"], CODE_SEP)[0],contributorp_role=cont2_role, 
                      creatorp_role=c_role,alt_title=get_cell(row["AlternativeTitle"]), datep=get_cell(row["DateP"]),descp=get_cell(row["DescriptionP"]),type_piece=split_cell(row["TypeP"], CODE_SEP)[0],
                      formattingp=get_cell(row["FormatP"]),hasVersion=split_cell(row["HasVersion"],SEP),subject=split_cell(row["Subject"], SEP),language=get_cell(row["Language"]), spatial=spat, temporal=temp,
                      isVersionOf=split_cell(row["IsVersionOf"], SEP),coverage=get_cell(row["Coverage"]), relationp=split_cell(row["Relation"], SEP), real_key=get_cell(row["Key"]), mode=get_cell(row["Mode"]),
-                     meter=get_cell(row["Metre"]), tempo=get_cell(row["Tempo"]), genre=split_cell(row["Genre"], SEP),instruments=split_cell(row["Instrument"], SEP),xml=xml,mei=mei,midi="",audio="",
+                     meter=get_cell(row["Metre"]), tempo=get_cell(row["Tempo"]), genre=split_cell(row["Genre"], SEP),instruments=split_cell(row["Instrument"], SEP),xml=piece_xml,mei=piece_mei,midi="",audio="",
                      video="",user_id=user_id,col_id=colect_id,review=True,title_xml=get_cell(row["Identifier"]))
         
         
