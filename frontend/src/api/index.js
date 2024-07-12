@@ -477,16 +477,23 @@ export default {
     });
   },
 
-  importMultipleFiles(excel, mei, xml, user_id) {
-    if (mei === null) mei = JSON.stringify([])
-    if (xml === null) xml = JSON.stringify([])
-    return new Promise((resolve, reject) => {
+  importMultipleFiles(excel, xml, mei, user_id) {
+    debugger
+    const formData = new FormData();
+    formData.append('file', excel);
+    if (mei.lenght == 0)
+      formData.append('mei', '');
+    else
+      mei.forEach((file) => {
+        formData.append(`mei`, file);
+      });
+    xml.forEach((file) => {
+      formData.append(`xml`, file);
+    });
+    formData.append('user_id', user_id);
+      return new Promise((resolve, reject) => {
       axios.post(`http://digifolk.usal.es/api/ExcelController?user_id=${user_id}`, 
-      {
-        file: excel,
-        mei: mei,
-        xml: xml
-      }, {
+      formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

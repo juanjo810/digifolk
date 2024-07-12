@@ -234,7 +234,12 @@ const utils = {
   async getFile(extensions, multiple = false) {
     try {
       const fileHandle = await window.showOpenFilePicker({ multiple: multiple, types: extensions });
-      const file = await fileHandle[0].getFile();
+      var file = [];
+      for (var f of fileHandle) {
+        var temp = await f.getFile();
+        file.push(temp)
+      }
+      debugger
       return file;
     } catch (error) {
       console.error("Error al leer el archivo:", error);
