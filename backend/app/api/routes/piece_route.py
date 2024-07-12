@@ -362,7 +362,6 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
                 file_name = m.filename.split(".")[0]    
                 if title_xml == file_name:
                     piece_mei = m.file.read()
-                    print(piece_mei)
                     piece_mei = base64.b64encode(piece_mei).decode('utf-8')
                     break
         if xml is not None:
@@ -370,6 +369,7 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
                 file_name = x.filename.split(".")[0]
                 if title_xml == file_name:
                     piece_xml = x.file.read()
+                    piece_xml = piece_xml.decode('utf-8')
                     break
         
         
