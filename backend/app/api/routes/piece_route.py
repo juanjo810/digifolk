@@ -39,15 +39,22 @@ def convert_xml_to_mei(xml: str):
     # Convert the XML file to MEI
     xml_path = "./input.xml"
     mei_path = "./output.mei"
-    #Write xml to file
-    with open(xml_path, "w") as file:
-        file.write(xml)
+    xml_decoded = base64.b64decode(xml)
+    
+    # Write xml to file
+    with open(xml_path, "wb") as file:
+        file.write(xml_decoded)
+    # with open(xml_path, "w") as file:
+    #    file.write(xml)
 
-    subprocess.run("verovio -t xml " + xml_path + " -o " + mei_path, shell=True)
+    
+
+    subprocess.run("verovio -t mei " + xml_path + " -o " + mei_path, shell=True)
     
     # Read the MEI file
     with open(mei_path, "r") as file:
-        mei = file.read()
+        piece_mei = file.read()
+        mei = base64.b64encode(piece_mei.encode("utf-8")).decode('utf-8')
 
     # Remove both files
     subprocess.run("rm " + xml_path, shell=True)
@@ -93,6 +100,8 @@ def edit_piece(piece: PieceSc):
         midi_data = midi.read()
         piece.midi=midi_data"""
     if old_music is not None:
+        if piece.xml != old_music.xml:
+            piece.mei = convert_xml_to_mei(piece.xml)
         update_data = piece.dict(exclude_unset=True)
         for key, value in update_data.items():
             setattr(old_music, key, value)
@@ -369,7 +378,7 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
                 file_name = x.filename.split(".")[0]
                 if title_xml == file_name:
                     piece_xml = x.file.read()
-                    piece_xml = piece_xml.decode('utf-8')
+                    piece_xml = base64.b64encode(piece_xml).decode('utf-8')
                     break
         
         
