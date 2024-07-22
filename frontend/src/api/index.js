@@ -460,12 +460,16 @@ export default {
     });
   },
 
-  importDataFromMEI(json) {
+  importDataFromMEI(user_id, meiFile) {
+    debugger
+    const formData = new FormData();
+    formData.append('mei', meiFile);
     return new Promise((resolve, reject) => {
-      axios.post('http://digifolk.usal.es/api/MeiToCsv', json, {
+      axios.post(`http://digifolk.usal.es/api/MeiToCsv?user_id=${user_id}`, 
+        formData
+        , {
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       })
         .then(response => {

@@ -134,9 +134,9 @@ const utils = {
       if (contribuidores) contribuidores.push(structuredClone(temp))
       return temp
     })
-    temp = itemsIDs.find(i => i.id === parseInt(final.rightsp)).name
+    temp = itemsIDs.find(i => i.id === parseInt(final.rightsp))
     if (temp)
-      final.rightsp = temp
+      final.rightsp = temp.name
     else
       final.rightsp = ''
     final.creatorp_role = final.creatorp_role.map((c) => {

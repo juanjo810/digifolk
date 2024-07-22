@@ -52,11 +52,7 @@ export default {
         };
         reader.readAsText(file);
       } else if (file && file.name.endsWith(".mei")) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.importDataFromMEI({ file: e.target.result });
-        };
-        reader.readAsText(file);
+        this.importDataFromMEI({ file: file });
       } else if (file && (file.name.endsWith(".xml") || file.name.endsWith(".mxml") || file.name.endsWith(".musicxml"))) {
         const reader = new FileReader();
         reader.onload = (e) => {

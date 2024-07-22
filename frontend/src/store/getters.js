@@ -31,7 +31,6 @@ export default {
   getNamePieces: (state) => {
     var pieces = state.pieces.filter(piece => piece.review)
     return pieces.map(piece => {
-      debugger
       const title = piece.title.join('|')
       return {
         id: piece.music_id,

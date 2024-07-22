@@ -70,19 +70,16 @@ export default {
         .then(() => {
           API.deleteAccount(email, state.user.userInfo.user_id, state.user.userInfo.username)
             .then(() => {
-              debugger
               commit(types.DELETE_ACCOUNT_SUCCESS)
 
               resolve()
             })
             .catch((error) => {
-              debugger
               commit(types.DELETE_ACCOUNT_FAILURE, { error: error })
               reject()
             })
         })
         .catch(() => {
-          debugger
           commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Incorrect password' })
           reject()
         })
@@ -104,7 +101,6 @@ export default {
       commit(types.UPLOAD_COLLECTION_REQUEST)
       API.uploadCollection(json)
         .then(() => {
-          debugger
           commit(types.UPLOAD_COLLECTION_SUCCESS)
           resolve()
         })
@@ -151,7 +147,6 @@ export default {
   },
 
   async editPiece({ commit, getters, state }) {
-    debugger
     var combinedForm = await utils.parsePieceToJSON(state.pieceForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     combinedForm.xml = await utils.parseFileToBase64(state.pieceForm.xml[0])
     combinedForm.mei = await utils.parseFileToBase64(state.pieceForm.mei[0])
@@ -159,7 +154,6 @@ export default {
     combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = false
-    combinedForm.title_xml = "PRUEBA_XML"
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
@@ -176,7 +170,6 @@ export default {
 
   // Function called editCollection which is used to edit a collection. The process is similar to editPiece, but using the fields of the collection form, which can be found in the state.
   editCollection({ commit, getters, state }) {
-    debugger
     var collectionTemp = utils.parseCollectionToJSON(state.collectionForm, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
     console.log(collectionTemp)
     const json = JSON.stringify(collectionTemp);
@@ -329,6 +322,7 @@ export default {
     return new Promise((resolve, reject) => {
       API.getPiece(piece)
         .then((res) => {
+          debugger
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
           final.mei = utils.parseBase64ToFile(final.mei, final.title_xml + '.mei',)
           final.xml = utils.parseBase64ToFile(final.xml, final.title_xml + '.xml', 'text/xml')
@@ -409,7 +403,6 @@ export default {
     return new Promise((resolve, reject) => {
       if (type === 'pieces') {
         var pieceQuery = utils.parsePieceToJSON(query, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-        debugger
         API.advancedSearchPieces(pieceQuery)
           .then((res) => {
             resolve(res)
@@ -433,7 +426,6 @@ export default {
   },
 
   importDataFromExcel({ commit, state }, { file, xml, mei }) {
-    debugger
     API.importPieceFromExcel(file, state.user.userInfo.user_id, xml, mei)
       .then(() => {
         commit(types.IMPORT_DATA_SUCCESS)
@@ -443,8 +435,9 @@ export default {
       })
   },
 
-  importDataFromMEI({ commit }, { file }) {
-    API.importDataFromMEI(file)
+  async importDataFromMEI({ commit, state }, { file }) {
+    const user_id = state.user.userInfo.user_id
+    API.importDataFromMEI(user_id, file)
       .then((res) => {
         commit(types.IMPORT_DATA_SUCCESS, res)
       })
@@ -474,7 +467,6 @@ export default {
   },
 
   importMultipleFiles ({commit, state}, { excelFile, xmlFiles, meiFiles }) {
-    debugger
     API.importMultipleFiles(excelFile, xmlFiles, meiFiles, state.user.userInfo.user_id)
       .then(() => {
         commit(types.IMPORT_DATA_SUCCESS)
@@ -508,7 +500,6 @@ export default {
     combinedForm.midi = await utils.parseFileToBase64(piece.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
     combinedForm.review = true
-    combinedForm.title_xml = "PRUEBA_XML"
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
@@ -536,7 +527,6 @@ export default {
   validateCollection({ commit, state, getters }, collection) {
     collection.review = true
     var collectionTemp = utils.parseCollectionToJSON(collection, state.separator, state.defaultSelections.itemsIDs, getters.getItemId)
-    debugger
     return new Promise((resolve, reject) => {
       commit(types.EDIT_COLLECTION_REQUEST)
       API.editCollection(collectionTemp)
