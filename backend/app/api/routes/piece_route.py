@@ -1,28 +1,21 @@
 import base64
 import datetime
 from app.api.schemas.col_schema import PieceColSc
-from app.models.items import ListItem
-from fastapi import APIRouter, Request, Depends, UploadFile, File
+from fastapi import APIRouter, Body, UploadFile, File
 from fastapi_sqlalchemy import db
-from sqlalchemy import text, and_, or_
-from fastapi.responses import Response, FileResponse
+from sqlalchemy import and_, or_
+from fastapi.responses import FileResponse
 from app.models.piece import Piece
 from app.models.collection import PieceCol
 from app.api.schemas.piece_schema import PieceSc
-from app.api.parsers.mtc_extractor import MTCExtractor
-from typing import Dict, List
-from app.api.routes.col_route import get_col
+from typing import List
 from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
 import music21 as m21
-import csv
 from xml.etree import ElementTree as ET
-from typing import Optional
-from io import BytesIO
-from app.api.routes.utils import piece_model_to_dict, split_cell, get_cell
+from app.api.routes.utils import split_cell, get_cell
 import subprocess
 import os
-import aiofiles
 
 
 
@@ -517,10 +510,15 @@ def piece_to_csv(piece_id: int=None):
 
 
 @router.post("/MeiToCsv")
-def parse_mei_to_metadata(mei: str):
-    mei_path="IT-1952-RO-CO-047.mei"
-    # score=parseEndings(mei_path)
-    #score = MTCExtractor(mei_path,ET.parse(mei_path))
+def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
+    # Write the MEI file to disk
+    mei_path = "./input.mei"
+
+    data = mei.file.read()
+    data_encoded = base64.b64encode(data).decode('utf-8')
+    with open(mei_path, "wb") as file:
+        file.write(data)
+
     # Parse the XML file
     import xml.etree.ElementTree as ET
 
@@ -543,8 +541,7 @@ def parse_mei_to_metadata(mei: str):
         title_type = title.get('type')
         if title_type == 'main':
             title_main = title.text if title.text else "Unknown"
-            id = title.get(f'{XML_NS}id')
-            print(id)
+            id = title.get(f'{XML_NS}id') if title.get(f'{XML_NS}id') else "Unknown"
         elif title_type == 'subtitle':
             title_subtitle = title.text if title.text else "Unknown"
     # Extract contributors
@@ -564,60 +561,67 @@ def parse_mei_to_metadata(mei: str):
             gender = persName.get('gender') if persName.get('gender') else "Unknown"
             contributors.append({"name": name, "role": role, "gender": gender})
     
-    publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}publisher').text
-    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date').text
-    # source_title = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}sourceDesc/{MEI_NS}source/{MEI_NS}biblStruct/{MEI_NS}monogr/{MEI_NS}imprint/{MEI_NS}title').text
-    author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author').text if root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author') is not None else "Unknown"
+    publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}publisher')
+    publisher = publisher.text if publisher is not None else "Unknown"
+
+    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date')
+    creation_date = creation_date.text if creation_date is not None else "Unknown"
+
+    author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author')
+    author = author.text if author is not None else "Unknown"
+    
     key = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}key')
-    mode = key.get('mode')
-    key = key.text
-    meter = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}meter').text
-    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo').text
+    mode = key.get('mode') if key is not None else "Unknown"
+    key = key.text if key is not None else "Unknown"
+
+    meter = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}meter')
+    meter = meter.text if meter is not None else "Unknown"
+
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
+    tempo = tempo.text if tempo is not None else "Unknown"
+
     terms_elements = root.findall(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}classification/{MEI_NS}termList/{MEI_NS}term')
     terms = {}   
     for term in terms_elements:
-        term_type = term.get('type')
-        term_value = term.text if term.text is not None else "Unknown"
-        terms[term_type] = term_value
-    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo').text
+        if term is not None:
+            term_type = term.get('type')
+            term_value = term.text
+            terms[term_type] = term_value
 
+    genre = []
+    genre.append(terms["genre"])
 
-    # Print metadata
-    # print("ID:", id)
-    # print("Main Title:", title_main)
-    # print("Subtitle:", title_subtitle)
-    # print("Contributors:", contributors)
-    # print("Creation Date:", creation_date)
-    # print("Publisher:", publisher)
-    # print("Availability:", availability)
-    # print("Source Title:", source_title)
-    # print("Source Publisher:", source_publisher)
-    # print("Source Publication Place:", source_pubPlace)
-    # print("Source Date:", source_date)
-    # print("Author:", author)
-    # print("Key:", key)
-    # print("Mode:", mode)
-    # print("Meter:", meter)
-    # print("Tempo:", tempo)
-    # print("Terms:", terms)
+    print(terms)
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
+    tempo = tempo.text if tempo is not None else "Unknown"
+    
+    # Close and remove the MEI file
+    os.remove(mei_path)
 
     # Create a dictionary to store the metadata
     # Current date in format Day of Month Year
     current_date = datetime.datetime.now().strftime("%d %B %Y")
-    year_str = id.split("-")[1]
+    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
+    year_str = id.split("-")
+    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
+    if year_str == "Unknown":
+        id = mei.filename.split(".")[0]
+        year_str = id.split("-")[1]
+
     # Obtener el siglo
     century = str(int(year_str[:2]) + 1)
     # Obtener la década
     decade = f"{year_str[2]}0s"
     # Obtener el año
     year = year_str
+
     metadata = {
         "publisher": publisher,
         "creator": author,
         "title": [title_main, title_subtitle],
         "rights": 0,
         "date": current_date,
-        "type_file": "Unknown",
+        "type_file": 0,
         "contributor_role": contributors,
         "desc": "",
         "rightsp": 0,
@@ -635,8 +639,8 @@ def parse_mei_to_metadata(mei: str):
         "isVersionOf": [],
         "coverage": "Unknown",
         "temporal": {"century": f"{century}th", "decade": decade, "year": year},
-        "spatial": {"country": "Italy", "state": terms["region"], "location": terms["district"] + ", " + terms["city"]},
-        "genre": terms["genre"],
+        "spatial": {"country": "Unknown", "state": terms["region"], "location": terms["district"] or terms["city"]},
+        "genre": genre,
         "meter": meter,
         "tempo": tempo,
         "real_key": key,
@@ -644,28 +648,25 @@ def parse_mei_to_metadata(mei: str):
         "instruments": [],
         "title_xml": id,
         "xml": "",
-        "mei": mei,
-        "midi": "",
+        "mei": data_encoded,
         "audio": "",
         "video": "",
         "review": True,
-        "user_id": 0,
-        "col_id": 0
+        "user_id": user_id,
+        # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
     }
-    print(metadata)
+    
     db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
     type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],
     creatorp_role=metadata["creatorp_role"],contributorp_role=metadata["contributorp_role"], alt_title=metadata["alt_title"], datep=metadata["datep"], descp=metadata["descp"], type_piece=metadata["type_piece"],
     formattingp=metadata["formattingp"],subject=metadata["subject"], language=metadata["language"], relationp=metadata["relationp"], hasVersion=metadata["hasVersion"], isVersionOf=metadata["isVersionOf"],
-    coverage=metadata["coverage"],genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
-    xml=metadata["xml"], mei=metadata["mei"], midi=metadata["midi"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"],col_id=metadata["col_id"])
-    try:
-        db.session.add(db_music)
-        db.session.commit()
-        db.session.refresh(db_music)
-    except Exception as e:
-        db.session.rollback()
-        return {"error": str(e)}  # Return an error message
+    coverage=metadata["coverage"], temporal=metadata["temporal"], spatial=metadata["spatial"], genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
+    xml=metadata["xml"], mei=metadata["mei"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"])
+    
+    db.session.add(db_music)
+    
+    db.session.commit()
+
     return db_music
 
 def parseEndings(song):

@@ -1,6 +1,6 @@
 
 # from app.api.routes.games import melodyGame
-from app.api.routes.piece_route import excel_controller
+from app.api.routes.piece_route import parse_mei_to_metadata
 from fastapi import UploadFile
 import io
 import sys
@@ -12,11 +12,7 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-file_name = "prueba.xlsx"
-with open(file_name, "r") as f:
-    mei = ["IE_1797_BT_EB_01.mei", "IE_1797_BT_EB_02.mei", "IE_1797_BT_EB_03.mei"]
-    xml = []
-    excel_controller(f, mei=mei, xml=xml, user_id=1)
+parse_mei_to_metadata(5)
 
 
 
