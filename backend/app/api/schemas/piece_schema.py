@@ -44,7 +44,7 @@ class PieceSc(BaseModel):
 
     xml : str
     mei : str
-    midi : bytes = None
+    midi : str
     audio : str
     video : str
     user_id :int

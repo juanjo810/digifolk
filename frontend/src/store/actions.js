@@ -151,9 +151,8 @@ export default {
     combinedForm.xml = await utils.parseFileToBase64(state.pieceForm.xml[0])
     combinedForm.mei = await utils.parseFileToBase64(state.pieceForm.mei[0])
     combinedForm.midi = await utils.parseFileToBase64(state.pieceForm.midi[0])
-    combinedForm.midi_obj = combinedForm.midi
     combinedForm.user_id = state.user.userInfo.user_id
-    combinedForm.review = false
+    combinedForm.review = true
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)
@@ -327,6 +326,7 @@ export default {
           final.mei = utils.parseBase64ToFile(final.mei, final.title_xml + '.mei',)
           final.xml = utils.parseBase64ToFile(final.xml, final.title_xml + '.xml', 'text/xml')
           final.midi = utils.parseBase64ToFile(final.midi, final.title_xml + '.mid', 'audio/mid')
+
           commit(types.GET_PIECE_SUCCESS, final)
           resolve()
         })

@@ -51,7 +51,7 @@ class Piece(Base):
     title_xml=sa.Column(sa.String)
     xml = sa.Column(sa.String)
     mei = sa.Column(sa.String)
-    midi = sa.Column(sa.LargeBinary, server_default=sa.text("''::bytea"))
+    midi = sa.Column(sa.String)
     audio = sa.Column(sa.String)
     video = sa.Column(sa.String)
     review = sa.Column(sa.Boolean)
