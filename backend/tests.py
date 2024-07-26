@@ -1,6 +1,6 @@
 
 # from app.api.routes.games import melodyGame
-from app.api.routes.piece_route import parse_mei_to_metadata
+from app.api.routes.piece_route import parse_xml_to_metadata
 from fastapi import UploadFile
 import io
 import sys
@@ -12,7 +12,7 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-parse_mei_to_metadata(5)
+parse_xml_to_metadata(5)
 
 
 

@@ -566,6 +566,7 @@ export default {
     const newPiece = {
       music_id: id,
       title: piece.title,
+      review: piece.review,
     }
     state.pieces.push(newPiece)
     state.fetchingPiece = false

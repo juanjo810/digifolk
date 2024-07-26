@@ -12,7 +12,7 @@ from typing import List
 from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
 import music21 as m21
-from xml.etree import ElementTree as ET
+import xml.etree.ElementTree as ET
 from app.api.routes.utils import split_cell, get_cell
 import subprocess
 import os
@@ -93,7 +93,7 @@ def edit_piece(piece: PieceSc):
         midi_data = midi.read()
         piece.midi=midi_data"""
     if old_music is not None:
-        if piece.xml != old_music.xml:
+        if piece.xml != old_music.xml and piece.xml != "":
             piece.mei = convert_xml_to_mei(piece.xml)
         update_data = piece.dict(exclude_unset=True)
         for key, value in update_data.items():
@@ -192,61 +192,6 @@ def upload_midi(piece_id: int, file: UploadFile = File(...)):
     db.session.refresh(piece)
     return {"msg": "Midi uploaded"}
 
-
-""" 
-#MAP FROM EXCEL FILE
-@router.post("/PieceFromExcel")
-def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str=None, mei: str=None, midi: bytes=None):
-    excel_file= file.file.read()
-    #excel_file="Metadatadummy.xlsx"
-    sheet_name="Pieces"
-    df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
-    df = df.drop([0,1,3,4,5])
-    df_header=df.iloc[0].values
-    df.columns=df_header
-
-    df_p = df.iloc[:, :]  # Columns A to AJ
-    #df_c = df.iloc[:, 36:]
-    
-    #duplicated_columns = df_c.columns[df_c.columns.duplicated()]
-    lpieces=list()
-    #return json.dumps(str(df_c.dtypes))#to_json(orient='records')
-    ##CHECK if collection exists:
-    for index, row in df_p.iterrows():
-            
-     
-        row=df_p.iloc[index]
-
-        cont= row["Contributor"].split(SEP)
-        roles=row["Role"].split(SEP)
-        cont_role=list()
-        for ci,ri in zip(cont,roles):
-            ri=ri.split(CODE_SEP)[0]
-            cont_role.append(dict(name=ci,role=int(ri)))
-
-        cont= row["ContributorP"].split(SEP)
-        roles=row["RoleCP"].split(SEP)
-        gend=row["GenderCP"].split(SEP)
-        cont2_role=list()
-        for ci,ri in zip(cont,roles):
-            ri=ri.split(CODE_SEP)[0]
-            cont2_role.append(dict(name=ci,role=int(ri),gender=gend))
-        
-        creators= row["CreatorP"].split(SEP)
-        roles=row["RoleP"].split(SEP)
-        gend=row["GenderP"].split(SEP)
-        c_role=list()
-        for ci,ri in zip(creators,roles):
-            ri=ri.split(CODE_SEP)[0]
-            c_role.append(dict(name=ci,role=int(ri),gender=gend))
-
-        tl=row["Temporal"].split(SEP)
-        temp=dict(century=tl[0],decade=tl[1],year=tl[2])
-
-        tl=row["Spatial"].split(SEP)
-        spat=dict(country=tl[0],state=tl[1],location=tl[2])
-        #return col_list
-"""
 """
     EXCEL CONTROLLER
     Function to import data from an excel file to the database.
@@ -519,11 +464,6 @@ def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
     with open(mei_path, "wb") as file:
         file.write(data)
 
-    # Parse the XML file
-    import xml.etree.ElementTree as ET
-
-
-
     tree = ET.parse(mei_path)
     root = tree.getroot()
     
@@ -655,6 +595,135 @@ def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
         "user_id": user_id,
         # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
     }
+    
+    db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
+    type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],
+    creatorp_role=metadata["creatorp_role"],contributorp_role=metadata["contributorp_role"], alt_title=metadata["alt_title"], datep=metadata["datep"], descp=metadata["descp"], type_piece=metadata["type_piece"],
+    formattingp=metadata["formattingp"],subject=metadata["subject"], language=metadata["language"], relationp=metadata["relationp"], hasVersion=metadata["hasVersion"], isVersionOf=metadata["isVersionOf"],
+    coverage=metadata["coverage"], temporal=metadata["temporal"], spatial=metadata["spatial"], genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
+    xml=metadata["xml"], mei=metadata["mei"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"])
+    
+    db.session.add(db_music)
+    
+    db.session.commit()
+
+    return db_music
+
+@router.post("/XMLToCsv")
+def parse_xml_to_metadata(user_id: int, xml: UploadFile = File(...)):
+    
+    xml_data = xml.file.read()
+    xml_data = base64.b64encode(xml_data).decode('utf-8')
+    
+    data_encoded = convert_xml_to_mei(xml_data)
+
+    mei_path = "./input.mei"
+    mei_data = base64.b64decode(data_encoded)
+    with open(mei_path, "wb") as file:
+        file.write(mei_data)
+    
+
+    # mei_path = "./PRUEBA_XML.mei"
+
+    tree = ET.parse(mei_path)
+    root = tree.getroot()
+    
+    # Define the namespace
+    MEI_NS = '{http://www.music-encoding.org/ns/mei}'
+    # Start exploring from the root element
+    # score.explore_xml_element(root)
+    
+    
+    # Load the MEI file
+    # Find the metadata elements
+    title_main = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
+    if title_main is not None:
+        title_main = title_main.text
+    else:
+        title_main = "Unknown"
+    
+
+    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date')
+    creation_date = creation_date.text if creation_date is not None else "Unknown"
+    # Format date from YYYY-MM-DD to Day of Month Year
+    creation_date = datetime.datetime.strptime(creation_date, "%Y-%m-%d").strftime("%d %B %Y")
+
+    # Obtener el keySig
+    key_sig = root.find(f'.//{MEI_NS}staffDef/{MEI_NS}keySig')
+    mode = key_sig.get('mode') if key_sig is not None else 'Unknown'
+    key = key_sig.get('sig') if key_sig is not None else 'Unknown'
+
+    # Obtener el meterSig
+    meter_sig = root.find(f'.//{MEI_NS}staffDef/{MEI_NS}meterSig')
+    meter_sig_count = meter_sig.get('count') if meter_sig is not None else 'No meterSig count found'
+    meter_sig_unit = meter_sig.get('unit') if meter_sig is not None else 'No meterSig unit found'
+    meter = f'{meter_sig_count}/{meter_sig_unit}'
+
+    
+    # Close and remove the MEI file
+    os.remove(mei_path)
+
+    # Create a dictionary to store the metadata
+    # Current date in format Day of Month Year
+    current_date = datetime.datetime.now().strftime("%d %B %Y")
+    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
+    id = xml.filename.split(".")[0]
+    # id = "ES-1913"
+    year_str = id.split("-")
+    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
+    if year_str == "Unknown":
+        id = xml.filename.split(".")[0]
+        year_str = id.split("-")[1]
+
+    # Obtener el siglo
+    century = str(int(year_str[:2]) + 1)
+    # Obtener la década
+    decade = f"{year_str[2]}0s"
+    # Obtener el año
+    year = year_str
+
+    metadata = {
+        "publisher": [],
+        "creator": "",
+        "title": [title_main],
+        "rights": 0,
+        "date": current_date,
+        "type_file": 0,
+        "contributor_role": [],
+        "desc": "",
+        "rightsp": 0,
+        "contributorp_role": [],
+        "creatorp_role": [],
+        "alt_title": "",
+        "datep": creation_date,
+        "descp": "",
+        "type_piece": 0,
+        "formattingp": "XML",
+        "subject": [],
+        "language": id.split("-")[0],
+        "relationp": [],
+        "hasVersion": [],
+        "isVersionOf": [],
+        "coverage": "",
+        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
+        "spatial": {"country": "Unknown", "state": "Unknown", "location": "Unknown"},
+        "genre": [],
+        "meter": meter,
+        "tempo": "",
+        "real_key": key,
+        "mode": mode,
+        "instruments": [],
+        "title_xml": id,
+        "xml": xml_data,
+        "mei": data_encoded,
+        "audio": "",
+        "video": "",
+        "review": True,
+        "user_id": user_id,
+        # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
+    }
+
+    print(metadata)
     
     db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
     type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],

@@ -481,6 +481,27 @@ export default {
     });
   },
 
+  importDataFromXML(user_id, xmlFile) {
+    debugger
+    const formData = new FormData();
+    formData.append('xml', xmlFile);
+    return new Promise((resolve, reject) => {
+      axios.post(`http://digifolk.usal.es/api/XMLToCsv?user_id=${user_id}`, 
+        formData
+        , {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+
   importMultipleFiles(excel, xml, mei, user_id) {
     debugger
     const formData = new FormData();
