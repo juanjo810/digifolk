@@ -14,7 +14,7 @@
           <v-row>
             <v-col cols="6">
               <v-text-field
-                v-model="this.pieceForm.identifier"
+                v-model="this.pieceForm.title_xml"
                 label="Identifier"
               ></v-text-field>
             </v-col>
@@ -205,10 +205,17 @@
               </v-row>
             </v-container>
 
-            <v-col cols="12">
+            <v-col cols="6">
               <v-text-field
                 v-model="this.pieceForm.alt_title"
                 label="Alternative title"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="6">
+              <v-text-field
+                v-model="this.pieceForm.mode"
+                label="Mode"
               ></v-text-field>
             </v-col>
 
@@ -336,6 +343,7 @@
                 v-model="this.pieceForm.xml"
                 label="XML File"
               ></v-file-input>
+              <v-btn @click="saveXMLFile" :disabled="this.xml == ''">Download</v-btn>
             </v-col>
 
             <v-col cols="4">
@@ -344,6 +352,7 @@
                 v-model="this.pieceForm.mei"
                 label="MEI File"
               ></v-file-input>
+              <v-btn @click="saveMEIFile" :disabled="this.mei == ''">Download</v-btn>
             </v-col>
 
             <v-col cols="4">
@@ -352,6 +361,7 @@
                 v-model="this.pieceForm.midi"
                 label="MIDI File"
               ></v-file-input>
+              <v-btn @click="saveMIDIFile" :disabled="this.midi == ''">Download</v-btn>
             </v-col>
 
             <v-col cols="4">
@@ -406,13 +416,10 @@ export default {
   },
   computed: {
     ...mapGetters(["getItemsNameByType"]),
-    id: {
+    title_xml: {
       get() {
-        return this.pieceForm.identifier;
-      },
-      set(value) {
-        this.$store.commit("UPDATE_USER_ID", value);
-      },
+        return this.pieceForm.title_xml;
+      }
     },
     title: {
       get() {
@@ -703,7 +710,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["validatePiece", "deletePiece"]),
+    ...mapActions(["validatePiece",
+                   "deletePiece",
+                   "saveFile"]),
     validate() {
       this.validatePiece(this.pieceForm);
       this.$emit("hide");
@@ -711,6 +720,15 @@ export default {
     reject() {
       this.deletePiece(this.pieceForm.music_id);
       this.$emit("hide");
+    },
+    saveXMLFile() {
+      this.saveFile( {content: this.xml[0], extension: ".xml"} )
+    },
+    saveMEIFile() {
+      this.saveFile( {content: this.mei[0], extension: ".mei"} )
+    },
+    saveMIDIFile() {
+      this.saveFile( {content: this.midi[0], extension: ".mid"} )
     },
   },
   created() {

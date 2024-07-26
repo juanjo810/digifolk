@@ -17,7 +17,7 @@
             <span>Import from file</span>
             <v-icon>mdi-file</v-icon>
           </v-btn>
-          <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml"
+          <input type="file" ref="fileInput" class="d-none" accept=".xlsx, .xls, .mei, .mxml, .xml, .musicxml"
             @change="handleFileChange" />
         </v-bottom-navigation>
 
@@ -54,11 +54,7 @@ export default {
       } else if (file && file.name.endsWith(".mei")) {
         this.importDataFromMEI({ file: file });
       } else if (file && (file.name.endsWith(".xml") || file.name.endsWith(".mxml") || file.name.endsWith(".musicxml"))) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.importDataFromXML({ file: e.target.result });
-        };
-        reader.readAsText(file);
+        this.importDataFromXML({ file: file });
       }
       console.log("Archivo seleccionado:", file);
     },

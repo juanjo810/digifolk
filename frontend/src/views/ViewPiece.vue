@@ -319,12 +319,21 @@
                 </v-row>
               </v-container>
 
-              <v-col cols="12">
+              <v-col cols="6">
                 <v-text-field
                   v-model="altTitle"
                   label="Alternative title"
                   :disabled="!editing"
                 ></v-text-field>
+              </v-col>
+
+              <v-col cols="6">
+                <v-select
+                  v-model="mode"
+                  label="Mode"
+                  :disabled="!editing"
+                  :items="getItemsNameByType(14)"
+                ></v-select>
               </v-col>
 
               <v-col cols="12">
@@ -462,11 +471,12 @@
 
               <v-col cols="4">
                 <v-file-input
-                  accept=".xml"
+                  accept=".xml, .musicxml"
                   v-model="xml"
                   label="XML File"
                   :disabled="!editing"
                 ></v-file-input>
+                <v-btn @click="saveXMLFile" :disabled="this.xml == ''">Download</v-btn>
               </v-col>
 
               <v-col cols="4">
@@ -476,6 +486,7 @@
                   label="MEI File"
                   :disabled="!editing"
                 ></v-file-input>
+                <v-btn @click="saveMEIFile" :disabled="this.mei == ''">Download</v-btn>
               </v-col>
 
               <v-col cols="4">
@@ -485,6 +496,7 @@
                   label="MIDI File"
                   :disabled="!editing"
                 ></v-file-input>
+                <v-btn @click="saveMIDIFile" :disabled="this.midi == ''">Download</v-btn>
               </v-col>
 
               <v-col cols="4">
@@ -725,6 +737,14 @@ export default {
         this.$store.commit("UPDATE_SHEET_ALTTITLE", value);
       },
     },
+    mode: {
+      get() {
+        return this.pieceForm.mode;
+      },
+      set(value) {
+        this.$store.commit("UPDATE_SHEET_MODE", value);
+      },
+    },
     descriptionSheet: {
       get() {
         return this.pieceForm.descp;
@@ -909,7 +929,8 @@ export default {
       "editPiece",
       "resetPieceForm",
       "deletePiece",
-      "exportPieceToExcel"
+      "exportPieceToExcel",
+      "saveFile",
     ]),
     importFile() {
       this.$refs.fileInput.click();
@@ -983,7 +1004,16 @@ export default {
     },
     exportExcel() {
       this.exportPieceToExcel(this.pieceForm.music_id);
-    }
+    },
+    saveXMLFile() {
+      this.saveFile( {content: this.xml[0], extension: ".xml"} )
+    },
+    saveMEIFile() {
+      this.saveFile( {content: this.mei[0], extension: ".mei"} )
+    },
+    saveMIDIFile() {
+      this.saveFile( {content: this.midi[0], extension: ".mid"} )
+    },
   },
   created() {
     this.resetPieceForm();

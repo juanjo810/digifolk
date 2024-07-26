@@ -259,6 +259,27 @@ const utils = {
       console.error("Error al leer el archivo:", error);
       return "";
     }
+  },
+  
+  saveInfoToFile(content, filename) {
+    debugger
+    const blob = new Blob([content]);
+
+    // Crear un objeto URL para el Blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un elemento <a> para el enlace de descarga
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename; // Nombre del archivo que se descargará
+
+    // Agregar el elemento <a> al documento y simular un clic para iniciar la descarga
+    document.body.appendChild(a);
+    a.click();
+
+    // Eliminar el elemento <a> y liberar el objeto URL después de la descarga
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 }
 
