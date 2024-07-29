@@ -152,7 +152,10 @@ export default {
     combinedForm.mei = await utils.parseFileToBase64(state.pieceForm.mei[0])
     combinedForm.midi = await utils.parseFileToBase64(state.pieceForm.midi[0])
     combinedForm.user_id = state.user.userInfo.user_id
-    combinedForm.review = true
+    if (state.user.userInfo.is_admin === true)
+      combinedForm.review = true
+    else
+      combinedForm.review = false
     return new Promise((resolve, reject) => {
       commit(types.EDIT_PIECE_REQUEST)
       API.editPiece(combinedForm)

@@ -1,4 +1,0 @@
-To-do
- - Parsear el XML (XML to MEI y después MEI to metadata)
- - Permitir descarga de MEI y XML
- - Revisar la subida de MIDI
