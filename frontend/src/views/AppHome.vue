@@ -5,7 +5,7 @@
 
         <!-- First section -->
         <section>
-            <v-img src="@/assets/logoCuadrado.png" alt="Static Image" cover max-height="500" />
+            <v-img src="@/assets/black.svg" alt="Static Image" cover max-height="500" />
         </section>
         <!-- Second section -->
         <section class="negative">
