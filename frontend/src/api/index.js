@@ -388,12 +388,10 @@ export default {
         }
       })
         .then(response => {
-          debugger
           resolve(response.data);
         }
         )
         .catch(error => {
-          debugger
           reject(error);
         }
         );
@@ -405,12 +403,10 @@ export default {
         params: query
       })
         .then(response => {
-          debugger
           resolve(response.data);
         }
         )
         .catch(error => {
-          debugger
           reject(error);
         }
         );
@@ -450,18 +446,15 @@ export default {
         }
       })
         .then(() => {
-          debugger
           resolve();
         })
         .catch(error => {
-          debugger
           reject(error);
         });
     });
   },
 
   importDataFromMEI(user_id, meiFile) {
-    debugger
     const formData = new FormData();
     formData.append('mei', meiFile);
     return new Promise((resolve, reject) => {
@@ -482,7 +475,6 @@ export default {
   },
 
   importDataFromXML(user_id, xmlFile) {
-    debugger
     const formData = new FormData();
     formData.append('xml', xmlFile);
     return new Promise((resolve, reject) => {
@@ -503,7 +495,6 @@ export default {
   },
 
   importMultipleFiles(excel, xml, mei, user_id) {
-    debugger
     const formData = new FormData();
     formData.append('file', excel);
     if (mei.lenght == 0)
@@ -561,5 +552,22 @@ export default {
           reject(error);
         });
     })
-  }  
+  },
+
+  exportAllPieces() {
+    return new Promise((resolve, reject) => {
+      axios.post('http://digifolk.usal.es/api/piecesToCsv', {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    })
+  }
 }

@@ -238,7 +238,6 @@ export default {
     },
     formatDate() {
       if (this.selectedDate.length > 0) {
-        debugger
         this.formatAndSaveDate({ date: this.selectedDate, form: "User" });
       } else {
         alert("Please select a date");

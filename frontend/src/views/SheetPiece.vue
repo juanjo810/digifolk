@@ -86,7 +86,6 @@ export default {
   methods: {
     ...mapActions(["getPieceInfo"]),
     handleFileChange2(event) {
-      debugger;
       const file = event.target.files[0];
       const reader = new FileReader();
       reader.onload = () => {
@@ -99,7 +98,6 @@ export default {
       this.midiFilePath = await this.getMidi;
     },
     async loadPieceInfo(selectedPiece) {
-      debugger
       await this.getPieceInfo({ piece: selectedPiece });
       this.loadMedia();
     },

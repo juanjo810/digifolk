@@ -886,7 +886,6 @@ export default {
         return this.pieceForm.midi;
       },
       set(value) {
-        debugger;
         this.$store.commit("UPDATE_SHEET_MIDI", value);
       },
     },
@@ -911,7 +910,6 @@ export default {
         return this.pieceForm.col_id;
       },
       set(value) {
-        debugger
         this.$store.commit("UPDATE_SHEET_COLID", value);
       },
     },

@@ -755,7 +755,6 @@ export default {
       this.datep = format(this.selectedDatep[0], "d MMMM yyyy");
     },
     searchFilter() {
-      debugger
       if (this.typeObject === "collections") {
         const query = {
           title: this.title,

@@ -321,12 +321,10 @@ export default {
     return new Promise((resolve, reject) => {
       API.getPiece(piece)
         .then((res) => {
-          debugger
           var final = utils.parseJSONToPiece(res, state.separator, state.defaultSelections.items, state.collections, creadores, contribuidores, contribuidoresp)
           final.mei = utils.parseBase64ToFile(final.mei, final.title_xml + '.mei',)
           final.xml = utils.parseBase64ToFile(final.xml, final.title_xml + '.xml', 'text/xml')
           final.midi = utils.parseBase64ToFile(final.midi, final.title_xml + '.mid', 'audio/mid')
-
           commit(types.GET_PIECE_SUCCESS, final)
           resolve()
         })
@@ -567,6 +565,17 @@ export default {
       .then((res) => {
         const title_xml = context.state.pieceForm.title_xml
         const fileName = title_xml + '.csv'
+        utils.saveInfoToFile(res, fileName)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  },
+
+  exportAllPieces() {
+    API.exportAllPieces()
+      .then((res) => {
+        const fileName = 'all_pieces.csv'
         utils.saveInfoToFile(res, fileName)
       })
       .catch((err) => {

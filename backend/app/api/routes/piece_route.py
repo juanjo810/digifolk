@@ -196,7 +196,7 @@ def upload_midi(piece_id: int, file: UploadFile = File(...)):
     EXCEL CONTROLLER
     Function to import data from an excel file to the database.
     The Excel file contains the metadata of the pieces and the collections that belongs to.
-    1.- The function reads the file
+    1.- The function reads the Excel file
     2.- The function reads the collections from the file
     3.- The function imports the collections to the database
     4.- The function reads the pieces from the file
@@ -433,7 +433,7 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
 def piece_to_csv(piece_id: int=None):
 
     #get piece from db
-    if piece_id== None:
+    if piece_id is None:
         piece=db.session.query(Piece).all()
         update_data = [item.__dict__ for item in piece]
         #return json.dumps(pd.DataFrame([update_data]).columns.to_list())

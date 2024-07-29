@@ -502,7 +502,6 @@ export default {
       this.creadores.splice(index, 1);
     },
     updateContributor() {
-      debugger
       this.$store.commit("UPDATE_COLLECTION_CONTRIBUTOR", this.contribuidores);
     },
     updateCreator() {

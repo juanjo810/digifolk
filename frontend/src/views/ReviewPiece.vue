@@ -77,7 +77,6 @@ export default {
     },
     goToCollectionPage(item) {
       this.getReviewCollection(item.id).then((c) => {
-        debugger;
         this.selectedItem = c;
         if (c) this.visibleCollection = true;
       });

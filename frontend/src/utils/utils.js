@@ -14,12 +14,10 @@ const utils = {
     })
   },
   parseFileToBase64(file) {
-    debugger
     return new Promise((resolve) => {
       if (file && file !== '') {
         const reader = new FileReader();
         reader.onload = () => { 
-          debugger
           const base64 = btoa(reader.result)
           resolve(base64)
         }
@@ -189,7 +187,6 @@ const utils = {
   },
 
   parseJSONToCollection(fields, separator, itemsIDs, creadores, contribuidores) {
-    debugger
     var final = structuredClone(fields)
     final.title = final ? final.title.join(separator) : ''
     var item = itemsIDs.find(i => i.id === parseInt(final.rights))
@@ -239,7 +236,6 @@ const utils = {
         var temp = await f.getFile();
         file.push(temp)
       }
-      debugger
       return file;
     } catch (error) {
       console.error("Error al leer el archivo:", error);
@@ -248,7 +244,6 @@ const utils = {
   },
   
   async readFileContents(extensions, multiple = false) {
-    debugger
     try {
       console.log("Reading file...")
       const fileHandle = await window.showOpenFilePicker({ multiple: multiple, types: extensions });
@@ -262,7 +257,6 @@ const utils = {
   },
   
   saveInfoToFile(content, filename) {
-    debugger
     const blob = new Blob([content]);
 
     // Crear un objeto URL para el Blob
