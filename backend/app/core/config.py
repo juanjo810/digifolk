@@ -17,6 +17,9 @@ VERSION = "1.0.0"
 SEPARATOR ="|"
 CODE_SEP=":"
 
+MEI_NS = '{http://www.music-encoding.org/ns/mei}'
+XML_NS = '{http://www.w3.org/XML/1998/namespace}'
+
 config = Config(".env")
 
 DEBUG: bool = config("DEBUG", cast=bool, default=False)
