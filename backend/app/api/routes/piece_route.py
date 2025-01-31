@@ -13,7 +13,7 @@ from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
 import music21 as m21
 import xml.etree.ElementTree as ET
-from app.api.routes.utils import split_cell, get_cell
+from app.api.routes.utils import split_cell, get_cell, extract_excel_piece_fields, extract_excel_collection_fields
 import subprocess
 import os
 
@@ -36,11 +36,7 @@ def convert_xml_to_mei(xml: str):
     
     # Write xml to file
     with open(xml_path, "wb") as file:
-        file.write(xml_decoded)
-    # with open(xml_path, "w") as file:
-    #    file.write(xml)
-
-    
+        file.write(xml_decoded)    
 
     subprocess.run("verovio -t mei " + xml_path + " -o " + mei_path, shell=True)
     
@@ -219,7 +215,7 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
     ##CHECK if collection exists:
     for index, row in df_c.iterrows():
         print(row)
-        columns = df.columns.tolist()
+        
         # Convert the column names to JSON
         cont = split_cell(row["ContributorC"], SEP)
         roles = split_cell(row["RoleCC"], SEP)
@@ -244,6 +240,11 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
                     contributor_role=cont_role, creator_role=c_role, publisher=get_cell(row["PublisherC"]),source=row["Source"], description=row["DescriptionC"],
                     source_type=split_cell(row["TypeC"], CODE_SEP)[0], formatting=get_cell(row["FormatC"]), relation=split_cell(row["RelationC"], SEP),
                     spatial=spat, temporal=temp, rights_holder=get_cell(row["RightsHolder"]),coverage=get_cell(row["CoverageC"]),code=get_cell(row["CodeC"]),review=True)
+        
+        # We create the PieceColSc from the dictionary returned by extract_excel_fields
+        col = PieceColSc(**collection_fields)
+        
+        # We create the PieceCol object from the PieceColSc object
         item = PieceCol(title=col.title, rights=col.rights, extent=col.extent, subject=col.subject, date=col.date, language=col.language, creator_role=col.creator_role,
             contributor_role=col.contributor_role, publisher=col.publisher, source=col.source, source_type=col.source_type, description=col.description,
             formatting=col.formatting, relation=col.relation, spatial=col.spatial,temporal=col.temporal,rights_holder=col.rights_holder,coverage=col.coverage,review=col.review,code=col.code)
@@ -263,7 +264,6 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
     
     df_p = df.iloc[:, :]  # Columns A to AJ
 
-    lpieces=list()
     for index, row in df_p.iterrows():
         
         row=df_p.iloc[index]
@@ -336,83 +336,41 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
             coverage=pc.coverage,genre=pc.genre,meter=pc.meter,tempo=pc.tempo,real_key=pc.real_key,mode=pc.mode,instruments=pc.instruments, temporal=pc.temporal,spatial=pc.spatial,
             xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio,video=pc.video,user_id=pc.user_id,col_id=pc.col_id,review=pc.review,title_xml=pc.title_xml)#,col_id=pc.col_id)
  
-            
-        lpieces.append(item)
         db.session.add(item)
     
     db.session.commit()
-    print(lpieces)
     
     return {"msg": "Information uploaded"}
 
 
 @router.post("/ExcelToPiece")
-def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str=None, mei: str=None, midi: bytes=None, col_id_list: list=None, excel_file: bytes=None):
-    if(excel_file==None):
+def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str="", mei: str="", midi: str="", col_id_list: list=None, excel_file: bytes=None):
+    if(excel_file!=None):
         excel_file= file.file.read()
-    #excel_file="Metadatadummy.xlsx"
+    excel_file="Metadata template - IE_1797_BT_EB.xlsx"
     sheet_name="Pieces"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
-    """df = df.drop([0,1,3,4,5])
-    df_header=df.iloc[0].values
-    df.columns=df_header"""
+    
 
     df_p = df.iloc[:, :]  # Columns A to AJ
-    #df_c = df.iloc[:, 36:]
     
-    #duplicated_columns = df_c.columns[df_c.columns.duplicated()]
     lpieces=list()
-    #return json.dumps(str(df_c.dtypes))#to_json(orient='records')
-    ##CHECK if collection exists:
+
+    # Extract pieces from the file:
     for index, row in df_p.iterrows():
             
-     
+        # Extract the metadata fields from the Excel file
         row=df_p.iloc[index]
+        fields = extract_excel_piece_fields(row)
 
-        cont=split_cell(row["Contributor"], SEP)
-        roles=split_cell(row["Role"], SEP)
-        cont_role=list()
-        for ci,ri in zip(cont,roles):
-            cont_role.append(dict(name=ci,role=split_cell(ri, CODE_SEP)[0]))
-
-        cont = split_cell(row["ContributorP"], SEP)
-        roles = split_cell(row["RoleCP"], SEP)
-        gend = split_cell(row["GenderCP"], SEP)
-        cont2_role=list()
-        for ci,ri,ge in zip(cont,roles,gend):
-            ri=split_cell(ri, CODE_SEP)[0]
-            cont2_role.append(dict(name=ci,role=int(ri),gender=ge))
-        
-
-        creators= split_cell(row["CreatorP"], SEP)
-        roles=split_cell(row["RoleP"], SEP)
-        gend = split_cell(row["GenderP"], SEP)
-        c_role=list()
-        for ci,ri,ge in zip(creators,roles,gend):
-            ri=split_cell(ri, CODE_SEP)[0]
-            c_role.append(dict(name=ci,role=int(ri),gender=ge))
-
-        tl = split_cell(row["Temporal"], SEP)
-        temp=dict(century=tl[0],decade=tl[1],year=tl[2])
-
-        tl = split_cell(row["Spatial"], SEP)
-        spat=dict(country=tl[0],state=tl[1],location=tl[2])
-
-        #get col_id from Collection where code=row["col_id"] with sqlalchemy query
-        # colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
-        #return col_list
-        colect_id=int(row["Col_id"])
-        # colect_id=db.session.query(PieceCol.col_id).filter(PieceCol.code==row["Col_id"]).first()
-
-        pc = PieceSc(publisher=get_cell(row["Publisher"]),contributor_role=cont_role,creator=get_cell(row["Creator"]),title=split_cell(row["Title"], SEP),rights=split_cell(row["Rights"], CODE_SEP)[0],
-                     date=get_cell(row["Date"]),type_file=split_cell(row["Type"], CODE_SEP)[0], desc=get_cell(row["Description"]),rightsp=split_cell(row["RightsP"], CODE_SEP)[0],contributorp_role=cont2_role, 
-                     creatorp_role=c_role,alt_title=get_cell(row["AlternativeTitle"]), datep=get_cell(row["DateP"]),descp=get_cell(row["DescriptionP"]),type_piece=split_cell(row["TypeP"], CODE_SEP)[0],
-                     formattingp=get_cell(row["FormatP"]),hasVersion=split_cell(row["HasVersion"],SEP),subject=split_cell(row["Subject"], SEP),language=get_cell(row["Language"]), spatial=spat, temporal=temp,
-                     isVersionOf=split_cell(row["IsVersionOf"], SEP),coverage=get_cell(row["Coverage"]), relationp=split_cell(row["Relation"], SEP), real_key=get_cell(row["Key"]), mode=get_cell(row["Mode"]),
-                     meter=get_cell(row["Metre"]), tempo=get_cell(row["Tempo"]), genre=split_cell(row["Genre"], SEP),instruments=split_cell(row["Instrument"], SEP),xml=xml,mei=mei,midi=midi,audio="",
-                     video="",user_id=user_id,col_id=colect_id,review=True,title_xml=get_cell(row["Identifier"]))
-        
-        
+        # We create the PieceSC from the dictionary returned by extract_excel_fields, and we add the user_id, xml, mei and midi
+        fields["user_id"] = user_id
+        fields["xml"] = xml
+        fields["mei"] = mei
+        fields["midi"] = midi
+        pc = PieceSc(**fields)
+        print(pc)
+        # We create the Piece object from the PieceSC object    
         item = Piece(publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
             type_file=pc.type_file, contributor_role=pc.contributor_role,desc=pc.desc, rightsp=pc.rightsp,
             creatorp_role=pc.creatorp_role,contributorp_role=pc.contributorp_role, alt_title=pc.alt_title, datep=pc.datep, descp=pc.descp, type_piece=pc.type_piece, 
@@ -425,7 +383,6 @@ def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, x
         db.session.add(item)
     
     db.session.commit()
-    print(lpieces)
         
     return {"msg": "Pieces added"}
 
@@ -771,7 +728,3 @@ def parseEndings(song):
             mei_string, format='mei', forceSource=True)
         ending_streams[end[0].get('n')] = (score, end.get('n'))
     return ending_streams
-
-    
-
-

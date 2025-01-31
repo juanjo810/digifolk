@@ -9,7 +9,7 @@ from typing import Dict
 from sqlalchemy import text
 from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
-from app.api.routes.utils import is_empty
+from app.api.routes.utils import extract_excel_collection_fields, is_empty
 
 
 router = APIRouter()
@@ -152,8 +152,8 @@ def get_pieces_from_col(id:str):
 #MAP FROM EXCEL FILE
 @router.post("/ExcelToCol")
 def col_excel_to_sqlalchemy(file: UploadFile = File(...)):
-    excel_file= file.file.read()
-    #excel_file="Metadatadummy.xlsx"
+    #excel_file= file.file.read()
+    excel_file="Metadata template - IE_1797_BT_EB.xlsx"
     sheet_name="Collections"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
     """df = df.drop([0,1,3,4,5])
@@ -161,65 +161,22 @@ def col_excel_to_sqlalchemy(file: UploadFile = File(...)):
     df.columns=df_header"""
 
     df_c = df.iloc[:, :]
-    
-    #duplicated_columns = df_c.columns[df_c.columns.duplicated()]
-    col_list=list()
-    #return json.dumps(str(df_c.dtypes))#to_json(orient='records')
+
     ##CHECK if collection exists:
     for index, row in df_c.iterrows():
-        columns = df.columns.tolist()
+        row = df_c.iloc[index]
+        collection_fields = extract_excel_collection_fields(row)
 
-        # Convert the column names to JSON
-      
-       
-        # Supposing we are working with numbers directly
-
-        if is_empty(row["ContributorC"]):
-            cont = row["ContributorC"].split(SEP)
-        else:
-            cont = []
-        if is_empty(row["RoleCC"]):
-            roles = row["RoleCC"].split(SEP)
-        else:
-            roles = []
-        cont_role=list()
-        for ci,ri in zip(cont,roles):
-            cont_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
+        # We create the PieceColSc from the dictionary returned by extract_excel_fields
+        col = PieceColSc(**collection_fields)
         
-        if is_empty(row["CreatorC"]):
-            creators= row["CreatorC"].split(SEP)
-        else:
-            creators=[]
-        if is_empty(row["RoleC"]):
-            roles=row["RoleC"].split(SEP)
-        else:
-            roles=[]
-        c_role=list()
-        for ci,ri in zip(creators,roles):
-            c_role.append(dict(name=ci,role=ri.split(CODE_SEP)[0]))
-        
-        if is_empty(row["TemporalC"]):
-            tl=row["TemporalC"].split(SEP)
-            temp=dict(century=tl[0],decade=tl[1],year=tl[2])
-        else:
-            temp=dict(century="",decade="",year="")
-
-        if is_empty(row["SpatialC"]):
-            tl=row["SpatialC"].split(SEP)
-            spat=dict(country=tl[0],state=tl[1],location=tl[2])
-        else:
-            spat=dict(country="",state="",location="")
-        
-        col=PieceColSc(title=row["SourceTitle"].split(SEP), rights=row["RightsC"].split(CODE_SEP)[0], extent=row["Extent"],
-                    date=row["DateC"], subject=row["SubjectC"].split(SEP),language=row["LanguageC"],
-                    contributor_role=cont_role, creator_role=c_role, publisher=row["PublisherC"],source=row["Source"], description=row["DescriptionC"],
-                    source_type=row["TypeC"].split(CODE_SEP)[0], formatting=row["FormatC"], relation=row["RelationC"].split(SEP),
-                    spatial=spat, temporal=temp, rights_holder=row["RightsHolder"],coverage=row["CoverageC"],code=row["CodeC"],review=True)
-        
+        # We create the PieceCol object from the PieceColSc object
         db_col  = PieceCol(title=col.title, rights=col.rights, extent=col.extent, subject=col.subject, date=col.date, language=col.language, creator_role=col.creator_role,
             contributor_role=col.contributor_role, publisher=col.publisher, source=col.source, source_type=col.source_type, description=col.description,
             formatting=col.formatting, relation=col.relation, spatial=col.spatial,temporal=col.temporal,rights_holder=col.rights_holder,coverage=col.coverage,review=col.review,code=col.code)
         
+        print(col)
+
         db.session.add(db_col)
     db.session.commit()
 
