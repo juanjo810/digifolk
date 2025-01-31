@@ -3,8 +3,7 @@ import bz2
 import pickle
 import itertools
 
-from app.core.config import DATABASE_PATH
-from app.core.config import CODE_SEP,SEPARATOR as SEP
+from app.core.config import DATABASE_PATH,CODE_SEP,SEPARATOR as SEP,MEI_NS,XML_NS
 
 def retrieve_score(name):
     music_path = os.sep.join(
@@ -305,4 +304,119 @@ def extract_excel_collection_fields(row):
 
     return collection_dict
 
+def extract_mei_piece_fields(root, mei_name):
+    # Find the metadata elements
+    titles = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
+    for title in titles:
+        title_type = title.get('type')
+        if title_type == 'main':
+            title_main = title.text if title.text else "Unknown"
+            id = title.get(f'{XML_NS}id') if title.get(f'{XML_NS}id') else "Unknown"
+        elif title_type == 'subtitle':
+            title_subtitle = title.text if title.text else "Unknown"
+    # Extract contributors
+    contributors = []
+
+    # Find all respStmt elements
+    respStmt_elements = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}respStmt')
+
+    # Iterate over respStmt elements
+    for respStmt in respStmt_elements:
+        # Find all persName elements within respStmt
+        persName_elements = respStmt.findall(f'.//{MEI_NS}persName')
+        # Iterate over persName elements
+        for persName in persName_elements:
+            name = persName.text if persName.text else "Unknown"
+            role = persName.get('role') if persName.get('role') else "Unknown"
+            gender = persName.get('gender') if persName.get('gender') else "Unknown"
+            contributors.append({"name": name, "role": role, "gender": gender})
+    
+    publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}publisher')
+    publisher = publisher.text if publisher is not None else "Unknown"
+
+    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date')
+    creation_date = creation_date.text if creation_date is not None else "Unknown"
+
+    author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author')
+    author = author.text if author is not None else "Unknown"
+    
+    key = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}key')
+    mode = key.get('mode') if key is not None else "Unknown"
+    key = key.text if key is not None else "Unknown"
+
+    meter = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}meter')
+    meter = meter.text if meter is not None else "Unknown"
+
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
+    tempo = tempo.text if tempo is not None else "Unknown"
+
+    terms_elements = root.findall(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}classification/{MEI_NS}termList/{MEI_NS}term')
+    terms = {}   
+    for term in terms_elements:
+        if term is not None:
+            term_type = term.get('type')
+            term_value = term.text
+            terms[term_type] = term_value
+
+    genre = []
+    genre.append(terms["genre"])
+    
+    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
+    tempo = tempo.text if tempo is not None else "Unknown"
+    
+    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
+    year_str = id.split("-")
+    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
+    if year_str == "Unknown":
+        id = mei_name.split(".")[0]
+        year_str = id.split("-")[1]
+
+    # Obtain the century
+    century = str(int(year_str[:2]) + 1)
+    # Obtain the decade
+    decade = f"{year_str[2]}0s"
+    # Obtain the year
+    year = year_str
+    
+    # Create the metadata dictionary
+    metadata = {
+        "publisher": publisher,
+        "creator": author,
+        "title": [title_main, title_subtitle],
+        "rights": 0,
+        "type_file": 0,
+        "contributor_role": contributors,
+        "desc": "",
+        "rightsp": 0,
+        "contributorp_role": [],
+        "creatorp_role": [],
+        "alt_title": "Unknown",
+        "datep": creation_date,
+        "descp": "",
+        "type_piece": 0,
+        "formattingp": "MEI",
+        "subject": [],
+        "language": id.split("-")[0],
+        "relationp": [],
+        "hasVersion": [],
+        "isVersionOf": [],
+        "coverage": "Unknown",
+        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
+        "spatial": {"country": "Unknown", "state": terms["region"], "location": terms["district"] or terms["city"]},
+        "genre": genre,
+        "meter": meter,
+        "tempo": tempo,
+        "real_key": key,
+        "mode": mode,
+        "instruments": [],
+        "title_xml": id,
+        "xml": "",
+        "midi": "",
+        "audio": "",
+        "video": "",
+        "review": True,
+        # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
+    }
+
+    return metadata
 

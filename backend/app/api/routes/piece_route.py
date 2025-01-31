@@ -9,11 +9,10 @@ from app.models.piece import Piece
 from app.models.collection import PieceCol
 from app.api.schemas.piece_schema import PieceSc
 from typing import List
-from app.core.config import CODE_SEP,SEPARATOR as SEP
 import pandas as pd
 import music21 as m21
 import xml.etree.ElementTree as ET
-from app.api.routes.utils import split_cell, get_cell, extract_excel_piece_fields, extract_excel_collection_fields
+from app.api.routes.utils import extract_excel_piece_fields, extract_excel_collection_fields, extract_mei_piece_fields
 import subprocess
 import os
 
@@ -272,7 +271,7 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
             creatorp_role=pc.creatorp_role,contributorp_role=pc.contributorp_role, alt_title=pc.alt_title, datep=pc.datep, descp=pc.descp, type_piece=pc.type_piece, 
             formattingp=pc.formattingp,subject=pc.subject, language=pc.language, relationp=pc.relationp, hasVersion=pc.hasVersion, isVersionOf=pc.isVersionOf,
             coverage=pc.coverage,genre=pc.genre,meter=pc.meter,tempo=pc.tempo,real_key=pc.real_key,mode=pc.mode,instruments=pc.instruments, temporal=pc.temporal,spatial=pc.spatial,
-            xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio,video=pc.video,user_id=pc.user_id,col_id=pc.col_id,review=pc.review,title_xml=pc.title_xml)#,col_id=pc.col_id)
+            xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio,video=pc.video,user_id=pc.user_id,col_id=pc.col_id,review=pc.review,title_xml=pc.title_xml)
  
         db.session.add(item)
     
@@ -348,6 +347,7 @@ def piece_to_csv(piece_id: int=None):
 def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
     # Write the MEI file to disk
     mei_path = "./input.mei"
+    # mei_path = "./ES-1913-B-JSV-001.mei"
 
     data = mei.file.read()
     data_encoded = base64.b64encode(data).decode('utf-8')
@@ -357,142 +357,31 @@ def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
     tree = ET.parse(mei_path)
     root = tree.getroot()
     
-    # Define the namespace
-    MEI_NS = '{http://www.music-encoding.org/ns/mei}'
-    XML_NS = '{http://www.w3.org/XML/1998/namespace}'
-    # Start exploring from the root element
-    # score.explore_xml_element(root)
-    
-    
-    # Load the MEI file
-    # Find the metadata elements
-    titles = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
-    for title in titles:
-        title_type = title.get('type')
-        if title_type == 'main':
-            title_main = title.text if title.text else "Unknown"
-            id = title.get(f'{XML_NS}id') if title.get(f'{XML_NS}id') else "Unknown"
-        elif title_type == 'subtitle':
-            title_subtitle = title.text if title.text else "Unknown"
-    # Extract contributors
-    contributors = []
+    # Extract the metadata fields from the MEI file
+    metadata = extract_mei_piece_fields(root, mei.filename)
+    # metadata = extract_mei_piece_fields(root, "ES-1913-B-JSV-001.mei")
 
-    # Find all respStmt elements
-    respStmt_elements = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}respStmt')
-
-    # Iterate over respStmt elements
-    for respStmt in respStmt_elements:
-        # Find all persName elements within respStmt
-        persName_elements = respStmt.findall(f'.//{MEI_NS}persName')
-        # Iterate over persName elements
-        for persName in persName_elements:
-            name = persName.text if persName.text else "Unknown"
-            role = persName.get('role') if persName.get('role') else "Unknown"
-            gender = persName.get('gender') if persName.get('gender') else "Unknown"
-            contributors.append({"name": name, "role": role, "gender": gender})
-    
-    publisher = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}publisher')
-    publisher = publisher.text if publisher is not None else "Unknown"
-
-    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date')
-    creation_date = creation_date.text if creation_date is not None else "Unknown"
-
-    author = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}author')
-    author = author.text if author is not None else "Unknown"
-    
-    key = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}key')
-    mode = key.get('mode') if key is not None else "Unknown"
-    key = key.text if key is not None else "Unknown"
-
-    meter = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}meter')
-    meter = meter.text if meter is not None else "Unknown"
-
-    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
-    tempo = tempo.text if tempo is not None else "Unknown"
-
-    terms_elements = root.findall(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}classification/{MEI_NS}termList/{MEI_NS}term')
-    terms = {}   
-    for term in terms_elements:
-        if term is not None:
-            term_type = term.get('type')
-            term_value = term.text
-            terms[term_type] = term_value
-
-    genre = []
-    genre.append(terms["genre"])
-
-    print(terms)
-    tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
-    tempo = tempo.text if tempo is not None else "Unknown"
-    
-    # Close and remove the MEI file
-    os.remove(mei_path)
-
-    # Create a dictionary to store the metadata
-    # Current date in format Day of Month Year
+    # We define the current date in format Day of Month Year
     current_date = datetime.datetime.now().strftime("%d %B %Y")
-    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
-    year_str = id.split("-")
-    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
-    if year_str == "Unknown":
-        id = mei.filename.split(".")[0]
-        year_str = id.split("-")[1]
-
-    # Obtener el siglo
-    century = str(int(year_str[:2]) + 1)
-    # Obtener la década
-    decade = f"{year_str[2]}0s"
-    # Obtener el año
-    year = year_str
-
-    metadata = {
-        "publisher": publisher,
-        "creator": author,
-        "title": [title_main, title_subtitle],
-        "rights": 0,
+    # We add the user_id, date and mei to the metadata dictionary
+    metadata.update({
         "date": current_date,
-        "type_file": 0,
-        "contributor_role": contributors,
-        "desc": "",
-        "rightsp": 0,
-        "contributorp_role": [],
-        "creatorp_role": [],
-        "alt_title": "Unknown",
-        "datep": creation_date,
-        "descp": "",
-        "type_piece": 0,
-        "formattingp": "MEI",
-        "subject": [],
-        "language": id.split("-")[0],
-        "relationp": [],
-        "hasVersion": [],
-        "isVersionOf": [],
-        "coverage": "Unknown",
-        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
-        "spatial": {"country": "Unknown", "state": terms["region"], "location": terms["district"] or terms["city"]},
-        "genre": genre,
-        "meter": meter,
-        "tempo": tempo,
-        "real_key": key,
-        "mode": mode,
-        "instruments": [],
-        "title_xml": id,
-        "xml": "",
         "mei": data_encoded,
-        "audio": "",
-        "video": "",
-        "review": True,
         "user_id": user_id,
-        # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
-    }
-    
-    db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
-    type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],
-    creatorp_role=metadata["creatorp_role"],contributorp_role=metadata["contributorp_role"], alt_title=metadata["alt_title"], datep=metadata["datep"], descp=metadata["descp"], type_piece=metadata["type_piece"],
-    formattingp=metadata["formattingp"],subject=metadata["subject"], language=metadata["language"], relationp=metadata["relationp"], hasVersion=metadata["hasVersion"], isVersionOf=metadata["isVersionOf"],
-    coverage=metadata["coverage"], temporal=metadata["temporal"], spatial=metadata["spatial"], genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
-    xml=metadata["xml"], mei=metadata["mei"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"])
-    
+    })
+
+    # We create the PieceSC from the dictionary returned by extract_mei_piece_fields
+    pc = PieceSc(**metadata)
+    print(pc)
+
+    # We create the Piece object from the PieceSC object
+    db_music = Piece(publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
+            type_file=pc.type_file, contributor_role=pc.contributor_role,desc=pc.desc, rightsp=pc.rightsp,
+            creatorp_role=pc.creatorp_role,contributorp_role=pc.contributorp_role, alt_title=pc.alt_title, datep=pc.datep, descp=pc.descp, type_piece=pc.type_piece, 
+            formattingp=pc.formattingp,subject=pc.subject, language=pc.language, relationp=pc.relationp, hasVersion=pc.hasVersion, isVersionOf=pc.isVersionOf,
+            coverage=pc.coverage,genre=pc.genre,meter=pc.meter,tempo=pc.tempo,real_key=pc.real_key,mode=pc.mode,instruments=pc.instruments, temporal=pc.temporal,spatial=pc.spatial,
+            xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio,video=pc.video,user_id=pc.user_id,col_id=pc.col_id,review=pc.review,title_xml=pc.title_xml)
+
     db.session.add(db_music)
     
     db.session.commit()
