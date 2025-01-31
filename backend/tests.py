@@ -1,10 +1,9 @@
 
 # from app.api.routes.games import melodyGame
-from app.api.routes.piece_route import parse_xml_to_metadata
-from fastapi import UploadFile
-import io
-import sys
+from app.api.routes.piece_route import piece_excel_to_sqlalchemy, excel_controller
+from app.api.routes.col_route import col_excel_to_sqlalchemy
 
+import sys
 import evaluation.cleaning as cleaning
 import evaluation.model_eval as model
 import evaluation.thresh_eval as thresh
@@ -12,12 +11,8 @@ import evaluation.pattern_generation as pattern
 import evaluation.similarity as similarity
 import evaluation.melodyGame as melodyGame
 
-parse_xml_to_metadata(5)
-
-
-
-
 if __name__ == "__main__":
+
     if sys.argv[1] == 'phrases_xml':
         cleaning.phrases_for_xml()
     elif sys.argv[1] == 'search':
@@ -48,3 +43,9 @@ if __name__ == "__main__":
         similarity.test_similarity_metric()
     elif sys.argv[1] == 'similarity_matrix':
         similarity.test_similarity_all()
+    elif sys.argv[1] == 'excel_to_piece':
+        piece_excel_to_sqlalchemy(user_id=1)
+    elif sys.argv[1] == 'excel_to_col':
+        col_excel_to_sqlalchemy()
+    elif sys.argv[1] == 'excel_controller':
+        excel_controller(user_id=1)
