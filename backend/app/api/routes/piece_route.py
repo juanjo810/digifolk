@@ -391,125 +391,45 @@ def parse_mei_to_metadata(user_id: int, mei: UploadFile = File(...)):
 @router.post("/XMLToCsv")
 def parse_xml_to_metadata(user_id: int, xml: UploadFile = File(...)):
     
+    # We read the XML file and convert it to MEI
     xml_data = xml.file.read()
     xml_data = base64.b64encode(xml_data).decode('utf-8')
-    
     data_encoded = convert_xml_to_mei(xml_data)
 
+    # Write the new MEI file to disk
     mei_path = "./input.mei"
     mei_data = base64.b64decode(data_encoded)
     with open(mei_path, "wb") as file:
         file.write(mei_data)
     
-
     # mei_path = "./PRUEBA_XML.mei"
 
     tree = ET.parse(mei_path)
     root = tree.getroot()
     
-    # Define the namespace
-    MEI_NS = '{http://www.music-encoding.org/ns/mei}'
-    # Start exploring from the root element
-    # score.explore_xml_element(root)
-    
-    
-    # Load the MEI file
-    # Find the metadata elements
-    title_main = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
-    if title_main is not None:
-        title_main = title_main.text
-    else:
-        title_main = "Unknown"
-    
+    # Extract the metadata fields from the MEI file
+    metadata = extract_mei_piece_fields(root, xml.filename)
+    # metadata = extract_mei_piece_fields(root, "PRUEBA-2025-XML.mei")
 
-    creation_date = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt/{MEI_NS}date')
-    creation_date = creation_date.text if creation_date is not None else "Unknown"
-    # Format date from YYYY-MM-DD to Day of Month Year
-    creation_date = datetime.datetime.strptime(creation_date, "%Y-%m-%d").strftime("%d %B %Y")
-
-    # Obtener el keySig
-    key_sig = root.find(f'.//{MEI_NS}staffDef/{MEI_NS}keySig')
-    mode = key_sig.get('mode') if key_sig is not None else 'Unknown'
-    key = key_sig.get('sig') if key_sig is not None else 'Unknown'
-
-    # Obtener el meterSig
-    meter_sig = root.find(f'.//{MEI_NS}staffDef/{MEI_NS}meterSig')
-    meter_sig_count = meter_sig.get('count') if meter_sig is not None else 'No meterSig count found'
-    meter_sig_unit = meter_sig.get('unit') if meter_sig is not None else 'No meterSig unit found'
-    meter = f'{meter_sig_count}/{meter_sig_unit}'
-
-    
-    # Close and remove the MEI file
-    os.remove(mei_path)
-
-    # Create a dictionary to store the metadata
-    # Current date in format Day of Month Year
+    # We define the current date in format Day of Month Year
     current_date = datetime.datetime.now().strftime("%d %B %Y")
-    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
-    id = xml.filename.split(".")[0]
-    # id = "ES-1913"
-    year_str = id.split("-")
-    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
-    if year_str == "Unknown":
-        id = xml.filename.split(".")[0]
-        year_str = id.split("-")[1]
-
-    # Obtener el siglo
-    century = str(int(year_str[:2]) + 1)
-    # Obtener la década
-    decade = f"{year_str[2]}0s"
-    # Obtener el año
-    year = year_str
-
-    metadata = {
-        "publisher": [],
-        "creator": "",
-        "title": [title_main],
-        "rights": 0,
+    # We add the user_id, date and mei to the metadata dictionary
+    metadata.update({
         "date": current_date,
-        "type_file": 0,
-        "contributor_role": [],
-        "desc": "",
-        "rightsp": 0,
-        "contributorp_role": [],
-        "creatorp_role": [],
-        "alt_title": "",
-        "datep": creation_date,
-        "descp": "",
-        "type_piece": 0,
-        "formattingp": "XML",
-        "subject": [],
-        "language": id.split("-")[0],
-        "relationp": [],
-        "hasVersion": [],
-        "isVersionOf": [],
-        "coverage": "",
-        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
-        "spatial": {"country": "Unknown", "state": "Unknown", "location": "Unknown"},
-        "genre": [],
-        "meter": meter,
-        "tempo": "",
-        "real_key": key,
-        "mode": mode,
-        "instruments": [],
-        "title_xml": id,
-        "xml": xml_data,
         "mei": data_encoded,
-        "audio": "",
-        "video": "",
-        "review": True,
         "user_id": user_id,
-        # "col_id": 0 # Revisar este valor para que coincida con algo de la tabla col
-    }
+    })
 
-    print(metadata)
-    
-    db_music = Piece(publisher=metadata["publisher"], creator=metadata["creator"], title=metadata["title"], rights=metadata["rights"], date=metadata["date"],
-    type_file=metadata["type_file"], contributor_role=metadata["contributor_role"],desc=metadata["desc"], rightsp=metadata["rightsp"],
-    creatorp_role=metadata["creatorp_role"],contributorp_role=metadata["contributorp_role"], alt_title=metadata["alt_title"], datep=metadata["datep"], descp=metadata["descp"], type_piece=metadata["type_piece"],
-    formattingp=metadata["formattingp"],subject=metadata["subject"], language=metadata["language"], relationp=metadata["relationp"], hasVersion=metadata["hasVersion"], isVersionOf=metadata["isVersionOf"],
-    coverage=metadata["coverage"], temporal=metadata["temporal"], spatial=metadata["spatial"], genre=metadata["genre"],meter=metadata["meter"],tempo=metadata["tempo"],real_key=metadata["real_key"],mode=metadata["mode"],instruments=metadata["instruments"],title_xml=metadata["title_xml"],
-    xml=metadata["xml"], mei=metadata["mei"], audio=metadata["audio"],video=metadata["video"],user_id=metadata["user_id"],review=metadata["review"])
+    # We create the PieceSC from the dictionary returned by extract_mei_piece_fields
+    pc = PieceSc(**metadata)
+
+    # We create the Piece object from the PieceSC object    
+    db_music = Piece(publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
+            type_file=pc.type_file, contributor_role=pc.contributor_role,desc=pc.desc, rightsp=pc.rightsp,
+            creatorp_role=pc.creatorp_role,contributorp_role=pc.contributorp_role, alt_title=pc.alt_title, datep=pc.datep, descp=pc.descp, type_piece=pc.type_piece,
+            formattingp=pc.formattingp,subject=pc.subject, language=pc.language, relationp=pc.relationp, hasVersion=pc.hasVersion, isVersionOf=pc.isVersionOf,
+            coverage=pc.coverage,genre=pc.genre,meter=pc.meter,tempo=pc.tempo,real_key=pc.real_key,mode=pc.mode,instruments=pc.instruments, temporal=pc.temporal,spatial=pc.spatial,
+            xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio,video=pc.video,user_id=pc.user_id,col_id=pc.col_id,review=pc.review,title_xml=pc.title_xml)
     
     db.session.add(db_music)
     

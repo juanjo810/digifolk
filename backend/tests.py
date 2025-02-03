@@ -1,4 +1,4 @@
-from app.api.routes.piece_route import piece_excel_to_sqlalchemy, excel_controller, parse_mei_to_metadata
+from app.api.routes.piece_route import piece_excel_to_sqlalchemy, excel_controller, parse_mei_to_metadata, parse_xml_to_metadata
 from app.api.routes.col_route import col_excel_to_sqlalchemy
 
 import sys
@@ -12,3 +12,5 @@ if __name__ == "__main__":
         excel_controller(user_id=1)
     elif sys.argv[1] == 'mei_to_piece':
         parse_mei_to_metadata(user_id=1)
+    elif sys.argv[1] == 'xml_to_piece':
+        parse_xml_to_metadata(user_id=1)

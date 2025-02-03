@@ -305,15 +305,22 @@ def extract_excel_collection_fields(row):
     return collection_dict
 
 def extract_mei_piece_fields(root, mei_name):
-    # Find the metadata elements
+    # FIND THE METADATA ELEMENTS
+    # Extract the ID from the MEI name
+    id = mei_name.split(".")[0]
+
+    # Extract the titles
     titles = root.findall(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt/{MEI_NS}title')
+    titles_found = []
     for title in titles:
         title_type = title.get('type')
-        if title_type == 'main':
-            title_main = title.text if title.text else "Unknown"
-            id = title.get(f'{XML_NS}id') if title.get(f'{XML_NS}id') else "Unknown"
-        elif title_type == 'subtitle':
+        if title_type == 'subtitle':
             title_subtitle = title.text if title.text else "Unknown"
+            titles_found.append(title_subtitle)
+        else:
+            title_main = title.text if title.text else "Unknown"
+            titles_found.append(title_main)
+    
     # Extract contributors
     contributors = []
 
@@ -358,21 +365,24 @@ def extract_mei_piece_fields(root, mei_name):
             term_value = term.text
             terms[term_type] = term_value
 
+
     genre = []
-    genre.append(terms["genre"])
+    if "genre" in terms:
+        genre.append(terms["genre"])
+    spatial = { 
+        "country": "Unknown",
+        "state": terms["region"] if "region" in terms else "Unknown",
+        "location": terms["district"] or terms["city"] if "district" in terms or "city" in terms else "Unknown"
+    }
     
     tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
     tempo = tempo.text if tempo is not None else "Unknown"
     
     # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
-    year_str = id.split("-")
-    year_str = year_str[1] if len(year_str) > 1 else "Unknown"
-    if year_str == "Unknown":
-        id = mei_name.split(".")[0]
-        year_str = id.split("-")[1]
-
+    year_str = id.split("-")[1]
     # Obtain the century
     century = str(int(year_str[:2]) + 1)
+    century = f"{century}th"
     # Obtain the decade
     decade = f"{year_str[2]}0s"
     # Obtain the year
@@ -382,7 +392,7 @@ def extract_mei_piece_fields(root, mei_name):
     metadata = {
         "publisher": publisher,
         "creator": author,
-        "title": [title_main, title_subtitle],
+        "title": titles_found,
         "rights": 0,
         "type_file": 0,
         "contributor_role": contributors,
@@ -401,8 +411,8 @@ def extract_mei_piece_fields(root, mei_name):
         "hasVersion": [],
         "isVersionOf": [],
         "coverage": "Unknown",
-        "temporal": {"century": f"{century}th", "decade": decade, "year": year},
-        "spatial": {"country": "Unknown", "state": terms["region"], "location": terms["district"] or terms["city"]},
+        "temporal": {"century": century, "decade": decade, "year": year},
+        "spatial": spatial,
         "genre": genre,
         "meter": meter,
         "tempo": tempo,
