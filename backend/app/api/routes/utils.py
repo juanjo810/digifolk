@@ -185,6 +185,9 @@ def get_cell(cell):
         return cell.strip()
     return ""
 
+"""
+Function to extract the fields from an Excel row, which is a piece
+"""
 def extract_excel_piece_fields(row):
     cont=split_cell(row["Contributor"], SEP)
     roles=split_cell(row["Role"], SEP)
@@ -260,6 +263,9 @@ def extract_excel_piece_fields(row):
 
     return piece_dict
 
+"""
+Function to extract the fields from an Excel row, which is a collection
+"""
 def extract_excel_collection_fields(row):
     cont = split_cell(row["ContributorC"], SEP)
     roles = split_cell(row["RoleCC"], SEP)
@@ -304,6 +310,9 @@ def extract_excel_collection_fields(row):
 
     return collection_dict
 
+"""
+Function to extract the fields from an XML file, which is a piece
+"""
 def extract_mei_piece_fields(root, mei_name):
     # FIND THE METADATA ELEMENTS
     # Extract the ID from the MEI name
@@ -378,8 +387,8 @@ def extract_mei_piece_fields(root, mei_name):
     tempo = root.find(f'.//{MEI_NS}workList/{MEI_NS}work/{MEI_NS}tempo')
     tempo = tempo.text if tempo is not None else "Unknown"
     
-    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX"
-    year_str = id.split("-")[1]
+    # Extract the year from the ID checking if the ID is in the format "IT-YYYY-XXXX or IT_YYYY_XXXX"
+    year_str = id.split("-")[1] if "-" in id else id.split("_")[1]
     # Obtain the century
     century = str(int(year_str[:2]) + 1)
     century = f"{century}th"
@@ -429,4 +438,68 @@ def extract_mei_piece_fields(root, mei_name):
     }
 
     return metadata
+
+
+def update_mei_with_metadata(root, metadata):
+    # Update titles
+    title_stmt = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt')
+    if title_stmt is not None:
+        for title in metadata["title"]:
+            title_element = ET.SubElement(title_stmt, f'{MEI_NS}title')
+            title_element.text = title
+
+    # Update contributors
+    title_stmt = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}titleStmt')
+    if title_stmt is not None:
+        for contributor in metadata["contributor_role"]:
+            print("Contributor:" ,contributor)
+            resp_stmt = ET.SubElement(title_stmt, f'{MEI_NS}respStmt')
+            pers_name = ET.SubElement(resp_stmt, f'{MEI_NS}persName')
+            pers_name.text = contributor["name"]
+            pers_name.set('role', contributor["role"])
+
+    # Update publisher
+    pub_stmt = root.find(f'.//{MEI_NS}fileDesc/{MEI_NS}pubStmt')
+    if pub_stmt is not None:
+        publisher = ET.SubElement(pub_stmt, f'{MEI_NS}publisher')
+        publisher.text = metadata["publisher"]
+
+    # Update creation date
+    if pub_stmt is not None:
+        date = ET.SubElement(pub_stmt, f'{MEI_NS}date')
+        date.text = metadata["datep"]
+
+    # Update author
+    work = root.find(f'.//{MEI_NS}workList/{MEI_NS}work')
+    if work is not None:
+        author = ET.SubElement(work, f'{MEI_NS}author')
+        author.text = metadata["creator"]
+
+    # Update key and mode
+    if work is not None:
+        key = ET.SubElement(work, f'{MEI_NS}key')
+        key.text = metadata["real_key"]
+        key.set('mode', metadata["mode"])
+
+    # Update meter
+    if work is not None:
+        meter = ET.SubElement(work, f'{MEI_NS}meter')
+        meter.text = metadata["meter"]
+
+    # Update tempo
+    if work is not None:
+        tempo = ET.SubElement(work, f'{MEI_NS}tempo')
+        tempo.text = metadata["tempo"]
+
+    # Update terms
+    if work is not None:
+        classification = ET.SubElement(work, f'{MEI_NS}classification')
+        term_list = ET.SubElement(classification, f'{MEI_NS}termList')
+        for term_type, term_value in metadata.items():
+            if term_type in ["genre", "spatial"]:
+                term = ET.SubElement(term_list, f'{MEI_NS}term')
+                term.text = term_value[0] if isinstance(term_value, list) else term_value
+                term.set('type', term_type)
+
+    return root
 

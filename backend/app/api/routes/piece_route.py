@@ -12,7 +12,7 @@ from typing import List
 import pandas as pd
 import music21 as m21
 import xml.etree.ElementTree as ET
-from app.api.routes.utils import extract_excel_piece_fields, extract_excel_collection_fields, extract_mei_piece_fields
+from app.api.routes.utils import extract_excel_piece_fields, extract_excel_collection_fields, extract_mei_piece_fields, update_mei_with_metadata
 import subprocess
 import os
 
@@ -200,8 +200,8 @@ def upload_midi(piece_id: int, file: UploadFile = File(...)):
 @router.post("/ExcelController")
 def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None , xml: List[UploadFile] = None, user_id: int = None):
     # Read the Excel File
-    # excel_file = file.file.read()
-    excel_file="Metadata template - IE_1797_BT_EB.xlsx"
+    excel_file = file.file.read()
+    # excel_file="Metadata template - IE_1797_BT_EB.xlsx"
 
     # Read the Collections from the file
     sheet_name="Collections"
@@ -283,8 +283,8 @@ def excel_controller(file: UploadFile = File(...), mei: List[UploadFile] = None 
 @router.post("/ExcelToPiece")
 def piece_excel_to_sqlalchemy(file: UploadFile = File(...), user_id: int=None, xml: str="", mei: str="", midi: str="", col_id_list: list=None, excel_file: bytes=None):
     # We read the Excel file
-    # excel_file= file.file.read()
-    excel_file="Metadata template - IE_1797_BT_EB.xlsx"
+    excel_file= file.file.read()
+    # excel_file="Metadata template - IE_1797_BT_EB.xlsx"
     sheet_name="Pieces"
     df = pd.read_excel(excel_file, sheet_name=sheet_name,skiprows=[0,1,3,4,5],index_col=None,dtype=str)
     df_p = df.iloc[:, :]  # Columns A to AJ
@@ -397,12 +397,12 @@ def parse_xml_to_metadata(user_id: int, xml: UploadFile = File(...)):
     data_encoded = convert_xml_to_mei(xml_data)
 
     # Write the new MEI file to disk
-    mei_path = "./input.mei"
-    mei_data = base64.b64decode(data_encoded)
-    with open(mei_path, "wb") as file:
-        file.write(mei_data)
+    # mei_path = "./input.mei"
+    # mei_data = base64.b64decode(data_encoded)
+    # with open(mei_path, "wb") as file:
+    #     file.write(mei_data)
     
-    # mei_path = "./PRUEBA_XML.mei"
+    mei_path = "./ES-1913-B-JSV-001.mei"
 
     tree = ET.parse(mei_path)
     root = tree.getroot()
@@ -436,6 +436,81 @@ def parse_xml_to_metadata(user_id: int, xml: UploadFile = File(...)):
     db.session.commit()
 
     return db_music
+
+
+@router.post("/mergeExcelAndMei")
+def merge_excel_and_mei(excel_file: UploadFile = File(...), mei_file: UploadFile = File(...), user_id: int = None):
+    # Read the Excel file
+    # excel_file = excel_file.file.read()
+    excel_file="Metadata template - IE_1797_BT_EB.xlsx"
+    df = pd.read_excel(excel_file, sheet_name="Pieces", skiprows=[0, 1, 3, 4, 5], index_col=None, dtype=str)
+    df_p = df.iloc[:, :]  # Columns A to AJ
+
+    # Read the MEI file
+    # mei_data = mei_file.file.read()
+    # mei_path = "./input.mei"
+    mei_path = "./IE_1797_BT_EB.mei"
+    # with open(mei_path, "wb") as file:
+    #     file.write(mei_data)
+
+    tree = ET.parse(mei_path)
+    root = tree.getroot()
+
+    # Extract metadata from MEI file
+    # mei_metadata = extract_mei_piece_fields(root, mei_file.filename)
+    mei_metadata = extract_mei_piece_fields(root, "IE_1797_BT_EB_02.mei")
+
+    # Extract metadata from Excel file
+    excel_metadata = {}
+    encontrado = False
+    for index, row in df_p.iterrows():
+        fields = extract_excel_piece_fields(row)
+        if fields["title_xml"] == mei_metadata["title_xml"]:
+            excel_metadata = fields
+            encontrado = True
+            break
+
+    if not encontrado:
+        return {"msg": "No matching title_xml found in the Excel file"}
+    
+    # Merge metadata, updating duplicated keys with the Excel metadata
+    merged_metadata = {**mei_metadata, **excel_metadata}
+
+    print(merged_metadata)
+
+    # Update MEI file with merged metadata
+    update_mei_with_metadata(root, merged_metadata)
+
+    new_mei_path = "./merged_output.mei"
+    tree.write(new_mei_path)
+
+    # Update MEI field in merged data with the new MEI file and set user_id
+    merged_metadata["mei"] = base64.b64encode(open(new_mei_path, "rb").read()).decode('utf-8')
+    merged_metadata["user_id"] = user_id
+    
+    # Create PieceSc object
+    pc = PieceSc(**merged_metadata)
+    print(pc)
+
+    # Create Piece object
+    # db_music = Piece(
+    #     publisher=pc.publisher, creator=pc.creator, title=pc.title, rights=pc.rights, date=pc.date,
+    #     type_file=pc.type_file, contributor_role=pc.contributor_role, desc=pc.desc, rightsp=pc.rightsp,
+    #     creatorp_role=pc.creatorp_role, contributorp_role=pc.contributorp_role, alt_title=pc.alt_title, datep=pc.datep,
+    #     descp=pc.descp, type_piece=pc.type_piece, formattingp=pc.formattingp, subject=pc.subject, language=pc.language,
+    #     relationp=pc.relationp, hasVersion=pc.hasVersion, isVersionOf=pc.isVersionOf, coverage=pc.coverage, genre=pc.genre,
+    #     meter=pc.meter, tempo=pc.tempo, real_key=pc.real_key, mode=pc.mode, instruments=pc.instruments, temporal=pc.temporal,
+    #     spatial=pc.spatial, xml=pc.xml, mei=pc.mei, midi=pc.midi, audio=pc.audio, video=pc.video, user_id=pc.user_id,
+    #     col_id=pc.col_id, review=pc.review, title_xml=pc.title_xml
+    # )
+
+    # db.session.add(db_music)
+    # db.session.commit()
+
+    return FileResponse(new_mei_path, headers={"Content-Disposition": "attachment; filename=merged_output.mei"})
+
+
+
 
 def parseEndings(song):
     """
